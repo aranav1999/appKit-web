@@ -1,5 +1,6 @@
 import Hero from "@/components/Home";
 import Demo from "@/components/Demo";
+import Features from "@/components/Features";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <main className="flex-grow">
         <Hero />
         <Demo />
+        <Features />
         {/* Other sections will be added here */}
       </main>
 

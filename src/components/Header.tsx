@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Header() {
     return (
-        <header className="bg-[#131519] py-4 px-6 flex justify-between items-center">
+        <header className="container mx-auto bg-[#131519] py-4 px-6 flex justify-between items-center">
             <div className="flex items-center space-x-6">
                 <Image
                     src="/Logo.svg"

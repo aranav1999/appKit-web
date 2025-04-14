@@ -1,11 +1,13 @@
 import Hero from "@/components/Home";
+import Demo from "@/components/Demo";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-grow">
+    <div className="container mx-auto flex flex-col flex-grow">
       {/* Main Content */}
       <main className="flex-grow">
         <Hero />
+        <Demo />
         {/* Other sections will be added here */}
       </main>
 

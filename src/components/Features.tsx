@@ -18,7 +18,7 @@ export default function Features() {
                 {/* Left column - Tall Social card */}
                 <div className="md:col-span-5 lg:col-span-4 h-full">
                     <div
-                        className="w-full h-full aspect-[3/4] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                        className="group w-full h-full aspect-[3/4] relative rounded-[24px] border-2 border-white/10 overflow-hidden transition-all duration-300 hover:border-white/30"
                         style={{
                             background: 'linear-gradient(to bottom, #0B88F0, #0BB3F0)'
                         }}
@@ -31,6 +31,7 @@ export default function Features() {
                                 fill
                                 style={{ objectFit: 'cover' }}
                                 priority
+                                className="transition-transform duration-500 group-hover:scale-105"
                             />
                         </div>
 
@@ -43,12 +44,13 @@ export default function Features() {
                                 height={350}
                                 style={{ objectFit: 'contain' }}
                                 priority
+                                className="transition-all duration-500 ease-in-out group-hover:animate-float"
                             />
                         </div>
 
                         {/* Text at the bottom */}
                         <div className="absolute bottom-0 left-0 w-full p-6 text-white">
-                            <h3 className="text-xl font-semibold">
+                            <h3 className="text-xl font-semibold transition-all duration-300 group-hover:translate-y-[-5px]">
                                 Profiles, chats, Interactive
                                 <br />
                                 and Tradeable Feed
@@ -62,7 +64,7 @@ export default function Features() {
                     {/* Swap Card */}
                     <div className="w-full h-full">
                         <div
-                            className="w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                            className="group w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden transition-all duration-300 hover:border-white/30"
                             style={{
                                 background: 'linear-gradient(to right, #00C978, #00C9A7)',
                                 padding: '42px 24px'
@@ -76,6 +78,7 @@ export default function Features() {
                                     fill
                                     style={{ objectFit: 'cover' }}
                                     priority
+                                    className="transition-transform duration-500 group-hover:scale-105"
                                 />
                             </div>
 
@@ -84,16 +87,17 @@ export default function Features() {
                                 <Image
                                     src="/features/Swap_Element.svg"
                                     alt="Swap Component"
-                                    width={180}
-                                    height={120}
+                                    width={220}
+                                    height={160}
                                     style={{ objectFit: 'contain' }}
                                     priority
+                                    className="transition-all duration-500 group-hover:rotate-[8deg] group-hover:scale-110"
                                 />
                             </div>
 
                             {/* Text at the bottom */}
                             <div className="absolute bottom-6 left-6 text-white">
-                                <h3 className="text-xl font-semibold">
+                                <h3 className="text-xl font-semibold transition-all duration-300 group-hover:translate-y-[-5px]">
                                     Swap and
                                     <br />
                                     Copy Trade
@@ -105,7 +109,7 @@ export default function Features() {
                     {/* NFT Card */}
                     <div className="w-full h-full">
                         <div
-                            className="w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                            className="group w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden transition-all duration-300 hover:border-white/30"
                             style={{
                                 background: 'linear-gradient(to right, #1C2027, #2C333F)',
                                 padding: '42px 24px'
@@ -119,6 +123,7 @@ export default function Features() {
                                     fill
                                     style={{ objectFit: 'cover' }}
                                     priority
+                                    className="transition-transform duration-500 group-hover:scale-105"
                                 />
                             </div>
 
@@ -127,16 +132,17 @@ export default function Features() {
                                 <Image
                                     src="/features/nft_components.svg"
                                     alt="NFT Components"
-                                    width={180}
-                                    height={120}
+                                    width={220}
+                                    height={160}
                                     style={{ objectFit: 'contain' }}
                                     priority
+                                    className="transition-all duration-500 group-hover:scale-125 group-hover:brightness-110"
                                 />
                             </div>
 
                             {/* Text at the bottom */}
                             <div className="absolute bottom-6 left-6 text-white">
-                                <h3 className="text-xl font-semibold">
+                                <h3 className="text-xl font-semibold transition-all duration-300 group-hover:translate-y-[-5px]">
                                     Mint and
                                     <br />
                                     Trade NFTs
@@ -148,7 +154,7 @@ export default function Features() {
                     {/* Graph Card */}
                     <div className="w-full h-full">
                         <div
-                            className="w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                            className="group w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden transition-all duration-300 hover:border-white/30"
                             style={{
                                 background: 'linear-gradient(to right, #FFBF44, #FFA844)',
                                 padding: '42px 24px'
@@ -162,6 +168,7 @@ export default function Features() {
                                     fill
                                     style={{ objectFit: 'cover' }}
                                     priority
+                                    className="transition-transform duration-500 group-hover:scale-105"
                                 />
                             </div>
 
@@ -170,16 +177,17 @@ export default function Features() {
                                 <Image
                                     src="/features/graph_component.svg"
                                     alt="Graph Component"
-                                    width={180}
-                                    height={120}
+                                    width={240}
+                                    height={180}
                                     style={{ objectFit: 'contain' }}
                                     priority
+                                    className="transition-all duration-500 group-hover:translate-y-[-15px] group-hover:rotate-[-5deg]"
                                 />
                             </div>
 
                             {/* Text at the bottom */}
                             <div className="absolute bottom-6 left-6 text-white">
-                                <h3 className="text-xl font-semibold">
+                                <h3 className="text-xl font-semibold transition-all duration-300 group-hover:translate-y-[-5px]">
                                     Configurable
                                     <br />
                                     Bonding Curves
@@ -191,7 +199,7 @@ export default function Features() {
                     {/* DApp Card */}
                     <div className="w-full h-full">
                         <div
-                            className="w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                            className="group w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden transition-all duration-300 hover:border-white/30"
                             style={{
                                 background: 'linear-gradient(to right, #B5E5FF, #98D8FF)',
                                 padding: '42px 24px'
@@ -205,24 +213,26 @@ export default function Features() {
                                     fill
                                     style={{ objectFit: 'cover' }}
                                     priority
+                                    className="transition-transform duration-500 group-hover:scale-105"
                                 />
                             </div>
 
                             {/* Elements SVG */}
-                            <div className="absolute inset-0 flex items-center justify-end -mr-2">
+                            <div className="absolute inset-0 flex items-center justify-end -mr-8">
                                 <Image
                                     src="/features/dApp_component.svg"
                                     alt="DApp Component"
-                                    width={180}
-                                    height={120}
+                                    width={220}
+                                    height={160}
                                     style={{ objectFit: 'contain' }}
                                     priority
+                                    className="transition-all duration-500 group-hover:translate-x-[-15px] group-hover:drop-shadow-2xl"
                                 />
                             </div>
 
                             {/* Text at the bottom */}
                             <div className="absolute bottom-6 left-6 text-white">
-                                <h3 className="text-xl font-semibold">
+                                <h3 className="text-xl font-semibold transition-all duration-300 group-hover:translate-y-[-5px]">
                                     Publish to Solana
                                     <br />
                                     Mobile dApp store

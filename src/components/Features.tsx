@@ -14,64 +14,226 @@ export default function Features() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                 {/* Left column - Tall Social card */}
-                <div className="md:col-span-5">
-                    <Image
-                        src="/features/Social.svg"
-                        alt="Social Trading Feature"
-                        width={400}
-                        height={600}
-                        style={{ objectFit: 'contain' }}
-                    />
+                <div className="md:col-span-5 lg:col-span-4 h-full">
+                    <div
+                        className="w-full h-full aspect-[3/4] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                        style={{
+                            background: 'linear-gradient(to bottom, #0B88F0, #0BB3F0)'
+                        }}
+                    >
+                        {/* Background SVG */}
+                        <div className="absolute inset-0 rounded-[22px] overflow-hidden">
+                            <Image
+                                src="/features/Social_bg.svg"
+                                alt="Social Background"
+                                fill
+                                style={{ objectFit: 'cover' }}
+                                priority
+                            />
+                        </div>
+
+                        {/* Elements SVG */}
+                        <div className="absolute inset-0 flex items-center justify-center -mt-16">
+                            <Image
+                                src="/features/Social_Elements.svg"
+                                alt="Social Elements"
+                                width={350}
+                                height={350}
+                                style={{ objectFit: 'contain' }}
+                                priority
+                            />
+                        </div>
+
+                        {/* Text at the bottom */}
+                        <div className="absolute bottom-0 left-0 w-full p-6 text-white">
+                            <h3 className="text-xl font-semibold">
+                                Profiles, chats, Interactive
+                                <br />
+                                and Tradeable Feed
+                            </h3>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Right column - 2x2 grid */}
-                <div className="md:col-span-7 grid grid-cols-2 gap-4 h-full">
-                    <div>
-                        <Image
-                            src="/features/Swap.svg"
-                            alt="Swap Feature"
-                            width={400}
-                            height={200}
-                            className="w-full h-auto rounded-xl"
-                            style={{ objectFit: 'contain' }}
-                        />
+                <div className="md:col-span-7 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* Swap Card */}
+                    <div className="w-full h-full">
+                        <div
+                            className="w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                            style={{
+                                background: 'linear-gradient(to right, #00C978, #00C9A7)',
+                                padding: '42px 24px'
+                            }}
+                        >
+                            {/* Background SVG */}
+                            <div className="absolute inset-0 rounded-[22px] overflow-hidden">
+                                <Image
+                                    src="/features/Swap_bg.svg"
+                                    alt="Swap Background"
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                    priority
+                                />
+                            </div>
+
+                            {/* Elements SVG */}
+                            <div className="absolute inset-0 flex items-center justify-end -mr-2">
+                                <Image
+                                    src="/features/Swap_Element.svg"
+                                    alt="Swap Component"
+                                    width={180}
+                                    height={120}
+                                    style={{ objectFit: 'contain' }}
+                                    priority
+                                />
+                            </div>
+
+                            {/* Text at the bottom */}
+                            <div className="absolute bottom-6 left-6 text-white">
+                                <h3 className="text-xl font-semibold">
+                                    Swap and
+                                    <br />
+                                    Copy Trade
+                                </h3>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <Image
-                            src="/features/NFT.svg"
-                            alt="NFT Feature"
-                            width={400}
-                            height={200}
-                            className="w-full h-auto rounded-xl"
-                            style={{ objectFit: 'contain' }}
-                        />
+
+                    {/* NFT Card */}
+                    <div className="w-full h-full">
+                        <div
+                            className="w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                            style={{
+                                background: 'linear-gradient(to right, #1C2027, #2C333F)',
+                                padding: '42px 24px'
+                            }}
+                        >
+                            {/* Background SVG */}
+                            <div className="absolute inset-0 rounded-[22px] overflow-hidden">
+                                <Image
+                                    src="/features/nft_bg.svg"
+                                    alt="NFT Background"
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                    priority
+                                />
+                            </div>
+
+                            {/* Elements SVG */}
+                            <div className="absolute inset-0 flex items-center justify-end -mr-2">
+                                <Image
+                                    src="/features/nft_components.svg"
+                                    alt="NFT Components"
+                                    width={180}
+                                    height={120}
+                                    style={{ objectFit: 'contain' }}
+                                    priority
+                                />
+                            </div>
+
+                            {/* Text at the bottom */}
+                            <div className="absolute bottom-6 left-6 text-white">
+                                <h3 className="text-xl font-semibold">
+                                    Mint and
+                                    <br />
+                                    Trade NFTs
+                                </h3>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <Image
-                            src="/features/Graph.svg"
-                            alt="Graph Feature"
-                            width={400}
-                            height={200}
-                            className="w-full h-auto rounded-xl"
-                            style={{ objectFit: 'contain' }}
-                        />
+
+                    {/* Graph Card */}
+                    <div className="w-full h-full">
+                        <div
+                            className="w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                            style={{
+                                background: 'linear-gradient(to right, #FFBF44, #FFA844)',
+                                padding: '42px 24px'
+                            }}
+                        >
+                            {/* Background SVG */}
+                            <div className="absolute inset-0 rounded-[22px] overflow-hidden">
+                                <Image
+                                    src="/features/Graph_bg.svg"
+                                    alt="Graph Background"
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                    priority
+                                />
+                            </div>
+
+                            {/* Elements SVG */}
+                            <div className="absolute inset-0 flex items-center justify-end -mb-34 mr-20">
+                                <Image
+                                    src="/features/graph_component.svg"
+                                    alt="Graph Component"
+                                    width={180}
+                                    height={120}
+                                    style={{ objectFit: 'contain' }}
+                                    priority
+                                />
+                            </div>
+
+                            {/* Text at the bottom */}
+                            <div className="absolute bottom-6 left-6 text-white">
+                                <h3 className="text-xl font-semibold">
+                                    Configurable
+                                    <br />
+                                    Bonding Curves
+                                </h3>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <Image
-                            src="/features/DApp.svg"
-                            alt="DApp Feature"
-                            width={400}
-                            height={200}
-                            className="w-full h-auto rounded-xl"
-                            style={{ objectFit: 'contain' }}
-                        />
+
+                    {/* DApp Card */}
+                    <div className="w-full h-full">
+                        <div
+                            className="w-full aspect-[3/2] relative rounded-[24px] border-2 border-white/10 overflow-hidden"
+                            style={{
+                                background: 'linear-gradient(to right, #B5E5FF, #98D8FF)',
+                                padding: '42px 24px'
+                            }}
+                        >
+                            {/* Background SVG */}
+                            <div className="absolute inset-0 rounded-[22px] overflow-hidden">
+                                <Image
+                                    src="/features/dApp_bg.svg"
+                                    alt="DApp Background"
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                    priority
+                                />
+                            </div>
+
+                            {/* Elements SVG */}
+                            <div className="absolute inset-0 flex items-center justify-end -mr-2">
+                                <Image
+                                    src="/features/dApp_component.svg"
+                                    alt="DApp Component"
+                                    width={180}
+                                    height={120}
+                                    style={{ objectFit: 'contain' }}
+                                    priority
+                                />
+                            </div>
+
+                            {/* Text at the bottom */}
+                            <div className="absolute bottom-6 left-6 text-white">
+                                <h3 className="text-xl font-semibold">
+                                    Publish to Solana
+                                    <br />
+                                    Mobile dApp store
+                                </h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 {/* Bottom row - Login (full width) */}
-                <div className="md:col-span-12">
+                <div className="md:col-span-12 mt-2">
                     <Image
                         src="/features/Login.svg"
                         alt="Login Feature"

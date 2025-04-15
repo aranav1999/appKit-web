@@ -42,7 +42,7 @@ export default function Demo() {
                 </div>
             </div>
 
-            <div className="pl-5 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="pl-15 grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* First app screenshot - top to bottom gradient, tilted left */}
                 <div className="rounded-3xl overflow-hidden relative" style={{
                     background: "linear-gradient(to bottom, #333A4A, #1C2027)",

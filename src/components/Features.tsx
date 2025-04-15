@@ -4,13 +4,15 @@ import Image from "next/image";
 
 export default function Features() {
     return (
-        <div className="bg-[#1C2027] py-10 px-4 md:px-8 m-4 rounded-xl">
+        <div className=" py-10 px-4 md:px-8 m-4 rounded-xl">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
                 <div className="text-white text-3xl md:text-4xl font-bold mb-4 md:mb-0 max-w-md">
-                    Everything you need in one app
+                    The Open-Source React Native Scaffold
                 </div>
                 <div className="text-white/70 text-lg md:text-right max-w-md">
-                    A powerful platform with features designed to make trading social and simple
+                    Plug-and-play app modules
+                    <br/>
+                     on top of Solana Protocols
                 </div>
             </div>
 

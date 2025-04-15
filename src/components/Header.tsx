@@ -17,7 +17,7 @@ export default function Header() {
                 </nav>
             </div>
             <div>
-                <button className="bg-white text-black rounded-full px-6 py-2 font-medium">
+                <button className="bg-white font-semibold text-black rounded-full px-6 py-2 font-medium">
                     Download the App
                 </button>
             </div>

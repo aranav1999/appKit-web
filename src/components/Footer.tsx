@@ -45,17 +45,17 @@ export default function Footer() {
                             <div>
                                 <h3 className="text-white/50 font-medium text-sm mb-4">Resources</h3>
                                 <ul className="space-y-1">
-                                    <li><Link href="#" className="text-white hover:text-white">Github</Link></li>
+                                    <li><Link href="https://github.com/SendArcade/solana-app-kit" target="_blank" className="text-white hover:text-white">Github</Link></li>
                                     <li><Link href="#" className="text-white hover:text-white">Docs</Link></li>
                                 </ul>
                             </div>
 
                             {/* Connect column */}
                             <div>
-                                <h3 className="text-white/50 font-medium text-sm mb-4">Connect</h3>
+                                <h3 className="text-white/50 font-medium text-sm mb-4">X (Twitter)</h3>
                                 <ul className="space-y-1">
-                                    <li><Link href="#" className="text-white hover:text-white">X (Twitter)</Link></li>
-                                    <li><Link href="#" className="text-white hover:text-white">Telegram</Link></li>
+                                    <li><Link href="https://x.com/SENDArcadeX" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white">Send Arcade</Link></li>
+                                    <li><Link href="https://x.com/sendaifun" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white">Send AI</Link></li>
                                 </ul>
                             </div>
                         </div>

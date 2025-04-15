@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Demo() {
     return (
-        <div className="bg-[#1C2027] py-10 px-4 md:px-8 m-4 rounded-xl">
+        <div className="bg-[#1C2027] py-10 px-4 md:px-8 m-4 rounded-3xl">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-25">
                 <div className="text-white text-3xl md:text-4xl font-bold mb-4 md:mb-0 max-w-md">
                     Try a Social Trading App and feel the magic!
@@ -16,7 +16,7 @@ export default function Demo() {
                     <div className="flex flex-wrap gap-3">
                         <a
                             href="#"
-                            className="flex items-center gap-2 bg-white text-black px-5 py-2 rounded-full"
+                            className="flex items-center gap-2 bg-white text-black px-5 py-2 rounded-full font-semibold"
                         >
                             <Image
                                 src="/AppleLogo.svg"
@@ -28,7 +28,7 @@ export default function Demo() {
                         </a>
                         <a
                             href="#"
-                            className="flex items-center gap-2 bg-white text-black px-5 py-2 rounded-full"
+                            className="flex items-center gap-2 bg-white text-black px-5 py-2 rounded-full font-semibold"
                         >
                             <Image
                                 src="/PlayStore.svg"
@@ -42,7 +42,7 @@ export default function Demo() {
                 </div>
             </div>
 
-            <div className="pl-15 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-center">
                 {/* First app screenshot - top to bottom gradient, tilted left */}
                 <div className="rounded-3xl overflow-hidden relative" style={{
                     background: "linear-gradient(to bottom, #333A4A, #1C2027)",

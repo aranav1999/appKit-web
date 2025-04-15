@@ -56,7 +56,7 @@ export default function Hero() {
     
     return (
       <section
-        className="relative flex items-center justify-center rounded-b-2xl overflow-hidden"
+        className="relative flex items-center justify-center rounded-b-3xl overflow-hidden"
         style={{
           background: "linear-gradient(to bottom, #131519, #1a2740)",
           minHeight: "calc(100vh - 64px)",

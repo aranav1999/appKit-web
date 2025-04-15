@@ -53,7 +53,7 @@ export default function Demo() {
                     zIndex: "1",
                     maxWidth: "350px"
                 }}>
-                    <div className="relative aspect-[9/16] w-full max-w-[260px] mx-auto overflow-hidden rounded-t-[32px] border-t-8 border-l-8 border-r-8 border-black">
+                    <div className="relative aspect-[9/16] w-full max-w-[260px] mx-auto overflow-hidden rounded-t-[32px] border-t-8 border-l-8 border-r-8 border-[#292D36]">
                         <Image
                             src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-03-31 at 23.32.50.png"
                             alt="Social Trading App Screenshot"

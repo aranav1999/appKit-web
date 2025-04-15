@@ -1,10 +1,11 @@
 import Demo from "@/components/Demo";
 import Features from "@/components/Features";
+import Footer from "@/components/Footer";
 import Hero from "@/components/Home";
 
 export default function Home() {
   return (
-    <div className="w-full xl:container xl:mx-auto flex flex-col flex-grow">
+    <div className="w-full flex flex-col flex-grow">
       {/* Main Content */}
       <main className="flex-grow">
         <Hero />
@@ -14,14 +15,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="py-4 px-6 text-center text-gray-400 text-sm">
-        <div className="flex justify-center space-x-6">
-          <a href="#" className="hover:text-white">Terms</a>
-          <a href="#" className="hover:text-white">Privacy</a>
-          <a href="#" className="hover:text-white">Contact</a>
-        </div>
-        <p className="mt-2">© 2023 AppKit. All rights reserved.</p>
-      </footer>
+      <Footer />
     </div>
   );
 }

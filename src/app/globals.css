@@ -36,3 +36,19 @@ body {
 .animate-blink {
   animation: blink 1s step-end infinite;
 }
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.group:hover .group-hover\:animate-float {
+  animation: float 3s ease-in-out infinite;
+}

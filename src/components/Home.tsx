@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function Hero() {
     return (
       <section
-        className="relative overflow-hidden flex items-center justify-center rounded-b-2xl"
+        className="relative flex items-center justify-center rounded-b-2xl overflow-hidden"
         style={{
           background: "linear-gradient(to bottom, #131519, #1a2740)",
           minHeight: "calc(100vh - 64px)",
@@ -18,16 +18,16 @@ export default function Hero() {
             <Image
               src="/left_section/zigzag.svg"
               alt="Blue shape"
-              width={384}
-              height={529}
-              className="absolute top-1/7 w-full h-auto max-w-[384px] -left-4"
+              width={600}
+              height={600}
+              className="absolute top-28 w-full -left-19"
             />
             <Image
               src="/left_section/setting.svg"
               alt="Blue shape"
-              width={160}
-              height={160}
-              className="absolute top-[36%]"
+              width={200}
+              height={200}
+              className="absolute top-[36%] -left-8"
             />
             <Image
               src="/left_section/Plus.svg"
@@ -42,6 +42,13 @@ export default function Hero() {
               width={60}
               height={60}
               className="absolute left-7 bottom-36"
+            />
+            <Image
+              src="/left_section/Star-2.svg"
+              alt="Star shape"
+              width={30}
+              height={30}
+              className="absolute left-47 bottom-88"
             />
             <Image
               src="/left_section/Rectangle-1.svg"
@@ -62,13 +69,13 @@ export default function Hero() {
               alt="Rectangle shape"
               width={30}
               height={30}
-              className="absolute left-88 bottom-55"
+              className="absolute left-87 bottom-60"
             />
             <Image
               src="/left_section/boomerang.svg"
               alt="Boomerang shape"
-              width={100}
-              height={100}
+              width={95}
+              height={95}
               className="absolute left-61 bottom-58"
             />
           </div>
@@ -78,14 +85,14 @@ export default function Hero() {
         <div className="absolute right-0 top-0 h-full w-1/3 pointer-events-none">
           <div className="relative w-full h-full">
             <Image
-              src="/right_section/Union.svg"
+              src="/right_section/grid.svg"
               alt="Shape"
               width={160}
               height={160}
               className="absolute right-20 top-1/4"
             />
             <Image
-              src="/right_section/Union copy.svg"
+              src="/right_section/zigzag-green.svg"
               alt="Shape"
               width={120}
               height={120}
@@ -106,11 +113,11 @@ export default function Hero() {
               className="absolute right-10 bottom-40"
             />
             <Image
-              src="/right_section/Ellipse 3517.svg"
+              src="/right_section/Ellipse.svg"
               alt="Circle shape"
-              width={100}
-              height={100}
-              className="absolute right-40 bottom-60"
+              width={700}
+              height={700}
+              className="absolute -right-50 bottom-40"
             />
           </div>
         </div>

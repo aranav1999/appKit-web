@@ -4,7 +4,7 @@ import Hero from "@/components/Home";
 
 export default function Home() {
   return (
-    <div className="container mx-auto flex flex-col flex-grow">
+    <div className="w-full xl:container xl:mx-auto flex flex-col flex-grow">
       {/* Main Content */}
       <main className="flex-grow">
         <Hero />

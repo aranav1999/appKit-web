@@ -25,15 +25,16 @@ export default function Header() {
 
   return (
     <header className={`py-4 px-6 flex justify-between items-center relative ${isMobileWidth ? 'bg-[#0C101A]' : 'bg-[#131519]'}`}>
-      <div className="flex items-center space-x-6">
+      <div className="flex items-end space-x-6">
         <Image
           src="/Logo.svg"
           alt="AppKit Logo"
-          width={110}
-          height={30}
+          width={130}
+          height={36}
           priority
+          className="mb-1"
         />
-        <nav className="hidden md:flex space-x-6">
+        <nav className="hidden md:flex space-x-6 pb-1">
           <a href="https://www.sendai.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
             SendAI
           </a>

@@ -10,7 +10,9 @@ export default function Home() {
       <main className="flex-grow">
         <Hero />
         {/* Other sections will be added here */}
-        <Demo />
+       <div className="m-4">
+       <Demo />
+       </div>
         <Features />
       </main>
 

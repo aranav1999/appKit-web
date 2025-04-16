@@ -77,7 +77,7 @@ export default function Demo() {
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             variants={containerVariants}
-            className="container mx-auto bg-[#1C2027] py-10 px-4 md:px-8 m-4 rounded-xl"
+            className="container mx-auto bg-[#1C2027] py-10 px-4 md:px-8 m-4 rounded-3xl"
         >
             <motion.div
                 variants={itemVariants}
@@ -97,7 +97,7 @@ export default function Demo() {
                         variants={itemVariants}
                         className="text-white/70 text-lg mb-4 text-center md:text-right"
                     >
-                        A fully open-source application for users and developers.
+                        A fully open-source application<br className="md:hidden" /> for users and developers.
                     </motion.div>
                     <motion.div
                         variants={itemVariants}
@@ -105,7 +105,7 @@ export default function Demo() {
                     >
                         <motion.a
                             href="#"
-                            className="flex items-center justify-center gap-2 bg-white text-black px-5 py-2 rounded-full font-semibold w-[180px] md:w-auto text-sm md:text-base whitespace-nowrap"
+                            className="flex items-center justify-center gap-2 bg-white text-black px-16 py-4 rounded-full font-medium md:font-semibold w-full md:w-auto text-sm md:text-base whitespace-nowrap"
                             whileHover={{
                                 scale: 1.03,
                                 boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
@@ -127,7 +127,7 @@ export default function Demo() {
                         </motion.a>
                         <motion.a
                             href="#"
-                            className="flex items-center justify-center gap-2 bg-white text-black px-5 py-2 rounded-full font-semibold w-[180px] md:w-auto text-sm md:text-base whitespace-nowrap"
+                            className="flex items-center justify-center gap-2 bg-white text-black px-16 py-4 rounded-full font-medium md:font-semibold w-full md:w-auto text-sm md:text-base whitespace-nowrap"
                             whileHover={{
                                 scale: 1.03,
                                 boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
@@ -163,20 +163,20 @@ export default function Demo() {
                             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                         >
                             {/* First Phone in Carousel */}
-                            <div className="w-full flex-shrink-0 flex justify-center">
+                            <div className="w-full flex-shrink-0 flex justify-center pt-4">
                                 <motion.div
                                     custom={0}
                                     variants={phoneVariants}
-                                    className="rounded-3xl overflow-hidden relative flex justify-center transform-gpu"
+                                    className="rounded-3xl overflow-hidden relative flex justify-center transform-gpu -rotate-3"
                                     style={{
                                         background: "linear-gradient(to bottom, #333A4A, #1C2027)",
-                                        padding: "20px 0 0",
+                                        padding: "20px",
                                         boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
-                                        width: "260px",
-                                        height: "480px"
+                                        width: "240px",
+                                        height: "440px"
                                     }}
                                 >
-                                    <div className="relative w-full h-full overflow-hidden rounded-t-[32px] border-t-8 border-l-8 border-r-8 border-[#292D36]">
+                                    <div className="relative w-full h-full overflow-hidden rounded-t-[32px] border-t-5 border-l-5 border-r-5 border-black">
                                         <Image
                                             src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-03-31 at 23.32.50.png"
                                             alt="Social Trading App Screenshot"
@@ -198,11 +198,11 @@ export default function Demo() {
                                         background: "linear-gradient(to top, #333A4A, #1C2027)",
                                         padding: "20px",
                                         boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
-                                        width: "260px",
-                                        height: "480px"
+                                        width: "240px",
+                                        height: "440px"
                                     }}
                                 >
-                                    <div className="relative w-full h-full overflow-hidden rounded-[32px] border-8 border-[#292D36]">
+                                    <div className="relative w-full h-full overflow-hidden rounded-[32px] border-5 border-black">
                                         <Image
                                             src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-04-11 at 21.03.08.png"
                                             alt="Social Trading App Screenshot"
@@ -215,20 +215,20 @@ export default function Demo() {
                             </div>
 
                             {/* Third Phone in Carousel */}
-                            <div className="w-full flex-shrink-0 flex justify-center">
+                            <div className="w-full flex-shrink-0 flex justify-center pt-4">
                                 <motion.div
                                     custom={0}
                                     variants={phoneVariants}
-                                    className="rounded-3xl overflow-hidden relative flex justify-center transform-gpu"
+                                    className="rounded-3xl overflow-hidden relative flex justify-center transform-gpu rotate-3"
                                     style={{
                                         background: "linear-gradient(to bottom, #333A4A, #1C2027)",
                                         padding: "20px",
                                         boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
-                                        width: "260px",
-                                        height: "480px"
+                                        width: "240px",
+                                        height: "440px"
                                     }}
                                 >
-                                    <div className="relative w-full h-full overflow-hidden rounded-[32px] border-8 border-[#292D36]">
+                                    <div className="relative w-full h-full overflow-hidden rounded-[32px] border-5 border-black">
                                         <Image
                                             src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-04-13 at 17.34.24.png"
                                             alt="Social Trading App Screenshot"
@@ -243,16 +243,18 @@ export default function Demo() {
                     </div>
 
                     {/* Carousel Indicator Dots */}
-                    <div className="flex justify-center mt-6 space-x-2">
-                        {[0, 1, 2].map((index) => (
-                            <button
-                                key={index}
-                                onClick={() => goToSlide(index)}
-                                className={`w-2 h-2 rounded-full transition-colors ${currentSlide === index ? 'bg-white' : 'bg-white/30'
-                                    }`}
-                                aria-label={`Go to slide ${index + 1}`}
-                            />
-                        ))}
+                    <div className="flex justify-center mt-6">
+                        <div className="flex items-center space-x-2 bg-slate-800 p-1.5 rounded-full">
+                            {[0, 1, 2].map((index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => goToSlide(index)}
+                                    className={`h-2 rounded-full transition-all duration-300 ease-out ${currentSlide === index ? 'w-8 bg-slate-400' : 'w-2 bg-slate-600'
+                                        }`}
+                                    aria-label={`Go to slide ${index + 1}`}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </motion.div>
             ) : (

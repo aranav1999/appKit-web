@@ -4,21 +4,21 @@ import Image from "next/image";
 
 export default function Features() {
     return (
-        <div className=" py-10 px-4 md:px-8 m-4 rounded-xl">
+        <div className="container mx-auto py-10 px-4 md:px-8 m-4 rounded-xl">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
                 <div className="text-white text-3xl md:text-4xl font-bold mb-4 md:mb-0 max-w-md">
                     The Open-Source React Native Scaffold
                 </div>
                 <div className="text-white/70 text-lg md:text-right max-w-md">
                     Plug-and-play app modules
-                    <br/>
-                     on top of Solana Protocols
+                    <br />
+                    on top of Solana Protocols
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
                 {/* Left column - Tall Social card */}
-                <div className="md:col-span-5 lg:col-span-4 h-full">
+                <div className="md:col-span-4 h-full">
                     <div
                         className="group w-full h-full aspect-[3/4] relative rounded-[24px] border-2 border-white/10 overflow-hidden transition-all duration-300 hover:border-white/30"
                         style={{
@@ -62,7 +62,7 @@ export default function Features() {
                 </div>
 
                 {/* Right column - 2x2 grid */}
-                <div className="md:col-span-7 lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                     {/* Swap Card */}
                     <div className="w-full h-full">
                         <div
@@ -246,14 +246,24 @@ export default function Features() {
 
                 {/* Bottom row - Login (full width) */}
                 <div className="md:col-span-12 mt-2">
-                    <Image
-                        src="/features/Login.svg"
-                        alt="Login Feature"
-                        width={1200}
-                        height={300}
-                        className="w-full h-auto rounded-xl"
-                        style={{ objectFit: 'contain' }}
-                    />
+                    <picture>
+                        <source
+                            srcSet="/screenshots/Login_Mobile.svg"
+                            media="(max-width: 640px)"
+                        />
+                        <source
+                            srcSet="/features/Login.svg"
+                            media="(min-width: 641px)"
+                        />
+                        <Image
+                            src="/features/Login.svg"
+                            alt="Login Feature"
+                            width={1200}
+                            height={300}
+                            className="w-full h-auto rounded-xl object-contain"
+                            style={{ maxWidth: '100%' }}
+                        />
+                    </picture>
                 </div>
             </div>
         </div>

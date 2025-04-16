@@ -51,7 +51,7 @@ export default function Hero() {
       const baseWidth = 1440;
       const scale = windowWidth / baseWidth;
       // Limit scaling to prevent elements from becoming too small or too large
-      return Math.max(0.6, Math.min(scale, 1.2));
+      return Math.max(0.6, Math.min(scale, 1.1));
     };
 
     const scale = getScaleFactor();
@@ -66,7 +66,10 @@ export default function Hero() {
         }}
       >
         {/* Left side SVG group */}
-        <div className="absolute left-0 top-0 h-full w-1/3 pointer-events-none">
+        <div
+          className="absolute left-0 h-full w-1/3 pointer-events-none"
+          style={{ maxHeight: "750px", maxWidth: "500px"}}
+        >
           <div className="relative w-full h-full">
             {/* SVG Container - all positions are relative to this container */}
             <div
@@ -304,7 +307,7 @@ export default function Hero() {
                   duration: 45,
                   ease: "linear",
                   repeat: Infinity,
-                  repeatType: "loop"
+                  repeatType: "loop",
                 }}
               >
                 <svg
@@ -372,7 +375,7 @@ export default function Hero() {
                   duration: 35,
                   ease: "linear",
                   repeat: Infinity,
-                  repeatType: "loop"
+                  repeatType: "loop",
                 }}
               >
                 <svg
@@ -449,7 +452,10 @@ export default function Hero() {
         </div>
 
         {/* Right side SVG group */}
-        <div className="absolute right-0 top-0 h-full w-1/3 pointer-events-none">
+        <div
+          className="absolute right-0 h-full w-1/3 pointer-events-none"
+          style={{ maxHeight: "750px", maxWidth: "500px" }}
+        >
           <div className="relative w-full h-full">
             {/* All SVGs positioned with responsive scaling */}
             <div
@@ -645,7 +651,7 @@ export default function Hero() {
                   duration: 60,
                   ease: "linear",
                   repeat: Infinity,
-                  repeatType: "loop"
+                  repeatType: "loop",
                 }}
               >
                 <svg
@@ -782,7 +788,7 @@ export default function Hero() {
                   duration: 40,
                   ease: "linear",
                   repeat: Infinity,
-                  repeatType: "loop"
+                  repeatType: "loop",
                 }}
               >
                 <svg
@@ -913,8 +919,8 @@ export default function Hero() {
               Build Solana Apps Faster
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-4">
-              In under 15 minutes and less than 50 
-              <br/>
+              In under 15 minutes and less than 50
+              <br />
               lines of code.
             </p>
 

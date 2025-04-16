@@ -186,7 +186,7 @@ export default function Demo() {
                                 >
                                     <div className="relative w-full h-full overflow-hidden rounded-t-[32px] border-t-5 border-l-5 border-r-5 border-black">
                                         <Image
-                                            src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-03-31 at 23.32.50.png"
+                                            src="/screenshots/For You.png"
                                             alt="Social Trading App Screenshot"
                                             fill
                                             className="object-cover"
@@ -212,7 +212,7 @@ export default function Demo() {
                                 >
                                     <div className="relative w-full h-full overflow-hidden rounded-[32px] border-5 border-black">
                                         <Image
-                                            src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-04-11 at 21.03.08.png"
+                                            src="/screenshots/Add NFT.png"
                                             alt="Social Trading App Screenshot"
                                             fill
                                             className="object-cover rounded-[24px]"
@@ -238,7 +238,7 @@ export default function Demo() {
                                 >
                                     <div className="relative w-full h-full overflow-hidden rounded-[32px] border-5 border-black">
                                         <Image
-                                            src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-04-13 at 17.34.24.png"
+                                            src="/screenshots/User Profile - posts.png"
                                             alt="Social Trading App Screenshot"
                                             fill
                                             className="object-cover rounded-[24px]"
@@ -298,7 +298,7 @@ export default function Demo() {
                         >
                             <div className="relative aspect-[9/16] w-full max-w-[260px] overflow-hidden rounded-t-[32px] border-t-8 border-l-8 border-r-8 border-[#292D36]">
                                 <Image
-                                    src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-03-31 at 23.32.50.png"
+                                    src="/screenshots/For You.png"
                                     alt="Social Trading App Screenshot"
                                     fill
                                     className="object-cover"
@@ -331,7 +331,7 @@ export default function Demo() {
                         >
                             <div className="relative aspect-[9/16] w-full max-w-[260px] overflow-hidden rounded-[32px] border-8 border-[#292D36]">
                                 <Image
-                                    src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-04-11 at 21.03.08.png"
+                                    src="/screenshots/Add NFT.png"
                                     alt="Social Trading App Screenshot"
                                     fill
                                     className="object-cover rounded-[24px]"
@@ -366,7 +366,7 @@ export default function Demo() {
                         >
                             <div className="relative aspect-[9/16] w-full max-w-[260px] overflow-hidden rounded-[32px] border-8 border-[#292D36]">
                                 <Image
-                                    src="/screenshots/Simulator Screenshot - iPhone 16 Pro - 2025-04-13 at 17.34.24.png"
+                                    src="/screenshots/User Profile - posts.png"
                                     alt="Social Trading App Screenshot"
                                     fill
                                     className="object-cover rounded-[24px]"

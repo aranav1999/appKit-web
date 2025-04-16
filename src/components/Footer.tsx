@@ -2,8 +2,19 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Footer() {
+    const [copied, setCopied] = useState(false);
+    const fullAddress = "SENDdRQtYMWaQrBroBrJ2Q53fgVuq95CV9UPGEvpCxa";
+    const displayAddress = `SEND...pCxa`;
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(fullAddress);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     return (
         <footer className="bg-[#1C2027] py-10 px-6 md:px-12 m-4 rounded-xl">
             <div className="max-w-7xl mx-auto">
@@ -20,11 +31,24 @@ export default function Footer() {
                             Download the App
                         </Link>
 
-                        <div className="bg-[#2A2E36] text-white/70 font-mono rounded-xl py-3 px-6 mb-16 w-64 flex items-center justify-center">
-                            $SEND...pCxa
-                            <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
+                        <div
+                            className="bg-[#2A2E36] text-white/70 font-mono rounded-xl py-3 px-6 mb-16 w-64 flex items-center justify-center cursor-pointer hover:bg-[#32363F] transition-colors group relative"
+                            onClick={copyToClipboard}
+                            title="Click to copy full address"
+                        >
+                            {displayAddress}
+                            {copied ? (
+                                <svg className="ml-2 h-4 w-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                            ) : (
+                                <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            )}
+                            <span className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                {copied ? "Copied!" : "Click to copy"}
+                            </span>
                         </div>
                     </div>
 
@@ -75,7 +99,7 @@ export default function Footer() {
                     </div>
 
                     <div className="text-white/50 text-sm text-center md:text-right">
-                        © Twenty'25, Built and Maintained By SendAI and Send Arcade • Crafted by Juicebox
+                        © Twenty'25, Built and Maintained By SendAI and Send Arcade
                     </div>
                 </div>
             </div>

@@ -51,24 +51,39 @@ export default function Hero() {
       const baseWidth = 1440;
       const scale = windowWidth / baseWidth;
       // Limit scaling to prevent elements from becoming too small or too large
-      return Math.max(0.6, Math.min(scale, 1.1));
+      return Math.max(0.45, Math.min(scale, 1.1));
+    };
+
+    const getHeightScaleFactor = () => {
+      if (windowWidth === 0) return 1; // Default before client-side hydration
+
+      // Base width for which the original design was created
+      const baseWidth = 1440;
+      const scale = windowWidth / baseWidth;
+      // Limit scaling to prevent elements from becoming too small or too large
+      return Math.min(Math.max(0.4, Math.min(scale, 1)), 1);
     };
 
     const scale = getScaleFactor();
+    const heightScale = getHeightScaleFactor();
     
     return (
       <section
         className="relative flex items-center justify-center rounded-b-3xl overflow-hidden"
         style={{
           background: "linear-gradient(to bottom, #131519, #1a2740)",
-          minHeight: "calc(100vh - 64px)",
-          height: "calc(100vh - 64px)",
+          minHeight: `${heightScale * 100}vh`,
+          height: `${heightScale * 100}vh`,
         }}
       >
-        {/* Left side SVG group */}
         <div
           className="absolute left-0 h-full w-1/3 pointer-events-none"
-          style={{ maxHeight: "750px", maxWidth: "500px"}}
+          style={{
+            maxHeight: "750px",
+            maxWidth: "500px",
+            minHeight: "750px",
+            minWidth: "500px",
+          }}
         >
           <div className="relative w-full h-full">
             {/* SVG Container - all positions are relative to this container */}
@@ -454,7 +469,12 @@ export default function Hero() {
         {/* Right side SVG group */}
         <div
           className="absolute right-0 h-full w-1/3 pointer-events-none"
-          style={{ maxHeight: "750px", maxWidth: "500px" }}
+          style={{
+            maxHeight: "750px",
+            maxWidth: "500px",
+            minHeight: "750px",
+            minWidth: "500px",
+          }}
         >
           <div className="relative w-full h-full">
             {/* All SVGs positioned with responsive scaling */}
@@ -924,23 +944,26 @@ export default function Hero() {
               lines of code.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4 w-1/2">
               <a
                 href="https://github.com/SendArcade/solana-app-kit"
                 target="_blank"
-                className="px-8 py-3 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2"
+                className="px-8 py-3 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2 w-full"
               >
                 Github
-                <Image
-                  src="/github-icon.svg"
-                  alt="GitHub"
-                  width={20}
-                  height={20}
-                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+                </svg>
               </a>
               <a
                 href="#"
-                className="px-8 py-3 rounded-full bg-[#2D3747] text-white font-semibold"
+                className="px-8 py-3 rounded-full bg-[#2D3747] text-white font-semibold w-full"
               >
                 Build on SAK
               </a>

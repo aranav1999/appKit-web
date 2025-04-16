@@ -81,13 +81,20 @@ export default function Demo() {
         >
             <motion.div
                 variants={itemVariants}
-                className="flex flex-col md:flex-row justify-between items-center md:items-center mb-10"
+                className="flex flex-col md:flex-row justify-between items-center md:items-start mb-10"
             >
                 <motion.div
                     variants={itemVariants}
-                    className="text-white text-3xl md:text-4xl font-bold mb-4 md:mb-0 max-w-md text-center md:text-left"
+                    className="text-white text-2xl md:text-2xl font-bold mb-4 md:mb-0 text-center md:text-left max-w-xs"
                 >
-                    Try a Social Trading App and feel the magic!
+                    <div className="md:hidden">
+                        Try a Social Trading App<br />
+                        and feel the magic!
+                    </div>
+                    <div className="hidden md:block">
+                        Try a Social Trading App<br />
+                        and feel the magic!
+                    </div>
                 </motion.div>
                 <motion.div
                     variants={itemVariants}
@@ -95,9 +102,10 @@ export default function Demo() {
                 >
                     <motion.div
                         variants={itemVariants}
-                        className="text-white/70 text-lg mb-4 text-center md:text-right"
+                        className="text-white/70 text-lg md:text-lg mb-4 text-center md:text-right max-w-full md:max-w-[300px]"
                     >
-                        A fully open-source application<br className="md:hidden" /> for users and developers.
+                        A fully open-source application <br className="md:hidden" />
+                        for users and developers.
                     </motion.div>
                     <motion.div
                         variants={itemVariants}
@@ -105,7 +113,7 @@ export default function Demo() {
                     >
                         <motion.a
                             href="#"
-                            className="flex items-center justify-center gap-2 bg-white text-black px-16 py-4 rounded-full font-medium md:font-semibold w-full md:w-auto text-sm md:text-base whitespace-nowrap"
+                            className="flex items-center justify-center gap-2 bg-white text-black px-5 py-3 md:px-3 md:py-3 rounded-full font-medium md:font-medium w-full md:w-auto text-xs md:text-xs whitespace-nowrap"
                             whileHover={{
                                 scale: 1.03,
                                 boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
@@ -127,7 +135,7 @@ export default function Demo() {
                         </motion.a>
                         <motion.a
                             href="#"
-                            className="flex items-center justify-center gap-2 bg-white text-black px-16 py-4 rounded-full font-medium md:font-semibold w-full md:w-auto text-sm md:text-base whitespace-nowrap"
+                            className="flex items-center justify-center gap-2 bg-white text-black px-5 py-2 md:px-3 md:py-1 rounded-full font-medium md:font-medium w-full md:w-auto text-xs md:text-xs whitespace-nowrap"
                             whileHover={{
                                 scale: 1.03,
                                 boxShadow: "0 4px 10px rgba(0,0,0,0.15)",

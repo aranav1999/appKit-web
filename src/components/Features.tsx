@@ -5,11 +5,11 @@ import Image from "next/image";
 export default function Features() {
     return (
         <div className="container mx-auto py-10 px-4 md:px-8 m-4 rounded-xl">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
-                <div className="text-white text-3xl md:text-4xl font-bold mb-4 md:mb-0 max-w-md">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-12">
+                <div className="text-white text-2xl md:text-2xl font-bold mb-4 md:mb-0 max-w-md text-center md:text-left">
                     The Open-Source React Native Scaffold
                 </div>
-                <div className="text-white/70 text-lg md:text-right max-w-md">
+                <div className="text-white/70 text-lg max-w-md text-center md:text-right">
                     Plug-and-play app modules
                     <br />
                     on top of Solana Protocols
@@ -92,7 +92,6 @@ export default function Features() {
                                     width={220}
                                     height={160}
                                     style={{ objectFit: 'contain' }}
-                                    priority
                                     className="transition-all duration-500 group-hover:rotate-[8deg] group-hover:scale-110"
                                 />
                             </div>
@@ -137,7 +136,6 @@ export default function Features() {
                                     width={220}
                                     height={160}
                                     style={{ objectFit: 'contain' }}
-                                    priority
                                     className="transition-all duration-500 group-hover:scale-125 group-hover:brightness-110"
                                 />
                             </div>
@@ -182,7 +180,6 @@ export default function Features() {
                                     width={240}
                                     height={180}
                                     style={{ objectFit: 'contain' }}
-                                    priority
                                     className="transition-all duration-500 group-hover:translate-y-[-15px] group-hover:rotate-[-5deg]"
                                 />
                             </div>
@@ -227,7 +224,6 @@ export default function Features() {
                                     width={220}
                                     height={160}
                                     style={{ objectFit: 'contain' }}
-                                    priority
                                     className="transition-all duration-500 group-hover:translate-x-[-15px] group-hover:drop-shadow-2xl"
                                 />
                             </div>

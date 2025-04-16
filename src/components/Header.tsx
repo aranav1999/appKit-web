@@ -34,10 +34,10 @@ export default function Header() {
             priority
           />
           <nav className="hidden md:flex space-x-6">
-            <a href="#" className="text-[#DAEEFE99] hover:text-white">
+            <a href="https://www.sendai.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white">
               SendAI
             </a>
-            <a href="#" className="text-[#DAEEFE99] hover:text-white">
+            <a href="https://sendarcade.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white">
               Send Arcade
             </a>
           </nav>
@@ -61,10 +61,10 @@ export default function Header() {
             </div>
 
             <div className="flex flex-col space-y-4 mt-10">
-              <a href="#" className="text-[#DAEEFE99] hover:text-white text-lg">
+              <a href="https://www.sendai.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
                 SendAI
               </a>
-              <a href="#" className="text-[#DAEEFE99] hover:text-white text-lg">
+              <a href="https://sendarcade.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
                 Send Arcade
               </a>
             </div>

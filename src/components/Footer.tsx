@@ -35,9 +35,9 @@ export default function Footer() {
                             <div>
                                 <h3 className="text-white/50 font-medium text-sm mb-4">Company</h3>
                                 <ul className="space-y-1">
-                                    <li><Link href="#" className="text-white hover:text-white">SendAI</Link></li>
-                                    <li><Link href="#" className="text-white hover:text-white">SendArcade</Link></li>
-                                    <li><Link href="#" className="text-white hover:text-white">Send Coin</Link></li>
+                                    <li><Link href="https://www.sendai.fun/" target="_blank" className="text-white hover:text-white">SendAI</Link></li>
+                                    <li><Link href="https://sendarcade.fun/" target="_blank" className="text-white hover:text-white">SendArcade</Link></li>
+                                    <li><Link href="https://www.thesendcoin.com/" target="_blank" className="text-white hover:text-white">Send Coin</Link></li>
                                 </ul>
                             </div>
 
@@ -46,7 +46,7 @@ export default function Footer() {
                                 <h3 className="text-white/50 font-medium text-sm mb-4">Resources</h3>
                                 <ul className="space-y-1">
                                     <li><Link href="https://github.com/SendArcade/solana-app-kit" target="_blank" className="text-white hover:text-white">Github</Link></li>
-                                    <li><Link href="#" className="text-white hover:text-white">Docs</Link></li>
+                                    <li><Link href="https://docs.1doma.in/docs/introduction" className="text-white hover:text-white">Docs</Link></li>
                                 </ul>
                             </div>
 

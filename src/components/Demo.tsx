@@ -238,7 +238,7 @@ export default function Demo() {
                                 >
                                     <div className="relative w-full h-full overflow-hidden rounded-[32px] border-5 border-black">
                                         <Image
-                                            src="/screenshots/User Profile - posts.png"
+                                            src="/screenshots/User_Profile.png"
                                             alt="Social Trading App Screenshot"
                                             fill
                                             className="object-cover rounded-[24px]"

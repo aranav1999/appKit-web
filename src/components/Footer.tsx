@@ -78,7 +78,7 @@ export default function Footer() {
                             <div>
                                 <h3 className="text-white/50 font-medium text-sm mb-4">X (Twitter)</h3>
                                 <ul className="space-y-1">
-                                    <li><Link href="https://x.com/SENDArcadeX" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white">Send Arcade</Link></li>
+                                    <li><Link href="https://x.com/sendarcadefun" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white">Send Arcade</Link></li>
                                     <li><Link href="https://x.com/sendaifun" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white">Send AI</Link></li>
                                 </ul>
                             </div>

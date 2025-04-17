@@ -10,7 +10,7 @@ export default function Header() {
   useEffect(() => {
     // Check if window width is less than 425px
     const handleResize = () => {
-      setIsMobileWidth(window.innerWidth < 425);
+      setIsMobileWidth(window.innerWidth < 632);
     };
 
     // Set initial value

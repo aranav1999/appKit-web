@@ -13,7 +13,7 @@ export default function Home() {
   useEffect(() => {
     // Handle initial check and window resize
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 425); // Standard breakpoint for mobile
+      setIsMobile(window.innerWidth < 632); // Standard breakpoint for mobile
     };
     
     // Initial check

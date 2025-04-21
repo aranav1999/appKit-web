@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AppKit Web",
+  title: "Solana AppKit",
   description: "Build Solana Apps Faster",
 };
 

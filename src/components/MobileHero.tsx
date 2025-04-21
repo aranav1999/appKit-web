@@ -115,21 +115,45 @@ export default function MobileHero() {
                 npx create-solana-app
               </code>
               <div className="relative ml-2 text-gray-400 p-1 hover:bg-gray-700/50 rounded transition-colors">
-                <Image
-                  src="/Copy_Icon.svg"
-                  alt="Copy"
-                  width={17}
-                  height={16}
-                  className="group-hover:scale-110 transition-transform"
-                />
-                {/* Tooltip */}
-                <div
-                  className={`absolute -top-8 -right-1 bg-black text-white text-xs py-1 px-2 rounded transition-opacity duration-300 ${
-                    isCopied ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  Copied!
-                </div>
+                {!isCopied ? (
+                  <Image
+                    src="/Copy_Icon.svg"
+                    alt="Copy"
+                    width={17}
+                    height={16}
+                    className="group-hover:scale-110 transition-transform"
+                  />
+                ) : (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 15,
+                    }}
+                    className="w-[17px] h-[16px] flex items-center justify-center"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="20"
+                      height="20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <motion.path
+                        d="M5 13L9 17L19 7"
+                        stroke="#4ade80"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.3, delay: 0.1 }}
+                      />
+                    </svg>
+                  </motion.div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -185,7 +209,8 @@ export default function MobileHero() {
           </a>
         </motion.div>
       </div>
-
+      
+      {scale ? (
       <div
         className="absolute left-0 h-full w-1/3 pointer-events-none"
         style={{
@@ -576,9 +601,11 @@ export default function MobileHero() {
             </div>
           </div>
         </div>
-      </div>
+      </div>):(<></>)
+      }
+      
 
-      {/* Right side SVG group */}
+      {scale ? (
       <div
         className="absolute right-0 h-full w-1/3 pointer-events-none"
         style={{
@@ -966,7 +993,7 @@ export default function MobileHero() {
             </div>
           </div>
         </div>
-      </div>
+      </div>):(<></>)}
     </section>
   );
 } 

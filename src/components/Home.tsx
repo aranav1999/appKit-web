@@ -7,6 +7,8 @@ import { motion, useAnimation } from "framer-motion"; // Added framer-motion imp
 export default function Hero() {
     const [windowWidth, setWindowWidth] = useState(0);
     const controls = useAnimation(); // Added animation controls for settings SVG
+    const plusIconControls = useAnimation(); // Added animation controls for plus icon
+    const [isCopied, setIsCopied] = useState(false); // Add state for copy animation
 
     useEffect(() => {
       // Initialize window width on client side
@@ -37,11 +39,33 @@ export default function Hero() {
       };
       sequence(); // Start the animation sequence
 
+      // Animation sequence for plus icon
+      const plusIconSequence = async () => {
+        while (true) {
+          // Rapidly rotate left and right with jerkier motion
+          await plusIconControls.start({
+            rotate: [0, -25, 25, -10, 0],
+            filter: ["blur(0px)", "blur(3px)", "blur(1px)", "blur(2px)", "blur(0px)"],
+            transition: {
+              duration: 2, // Shorter duration for jerkier motion
+              ease: "backOut", // More abrupt easing
+            },
+          });
+          
+          // Random pause between animations
+          await new Promise((resolve) => 
+            setTimeout(resolve, Math.random() * 800 + 200) // Shorter, more unpredictable pauses
+          );
+        }
+      };
+      plusIconSequence(); // Start the plus icon animation
+
       return () => {
       window.removeEventListener("resize", handleResize);
           controls.stop(); // Stop animation on component unmount
+          plusIconControls.stop(); // Stop plus icon animation on unmount
     };
-    }, [controls]);
+    }, [controls, plusIconControls]);
 
     // Calculate scale factor based on window width
     const getScaleFactor = () => {
@@ -66,6 +90,14 @@ export default function Hero() {
 
     const scale = getScaleFactor();
     const heightScale = getHeightScaleFactor();
+    
+    const handleCopy = () => {
+      navigator.clipboard.writeText("npx create solana-app");
+      setIsCopied(true);
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    };
     
     return (
       <section
@@ -110,7 +142,6 @@ export default function Hero() {
                   />
                 </svg>
               </div>
-
               {/* Setting SVG */}
               <motion.div // Wrapped with motion.div
                 className="absolute"
@@ -193,54 +224,6 @@ export default function Hero() {
                   </defs>
                 </svg>
               </motion.div>
-
-              {/* Plus SVG */}
-              <div
-                className="absolute"
-                style={{ top: "10.25rem", left: "9rem", width: "25%" }}
-              >
-                <svg
-                  width="100%"
-                  height="100%"
-                  viewBox="0 0 119 119"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M79.9735 1.48401C69.2949 -2.28699 57.5813 3.31269 53.8102 13.9912L46.9822 33.3265L27.647 26.4985C16.9684 22.7275 5.25476 28.3272 1.48376 39.0057C-2.28724 49.6843 3.31244 61.398 13.991 65.169L33.3262 71.997L26.4982 91.3322C22.7272 102.011 28.3269 113.724 39.0055 117.495C49.684 121.266 61.3977 115.667 65.1687 104.988L71.9967 85.653L91.332 92.481C102.011 96.252 113.724 90.6523 117.495 79.9737C121.266 69.2952 115.667 57.5815 104.988 53.8105L85.6527 46.9825L92.4807 27.6473C96.2517 16.9687 90.652 5.25501 79.9735 1.48401Z"
-                    fill="url(#paint0_linear_140_54)"
-                  />
-                  <path
-                    d="M79.9735 1.48401C69.2949 -2.28699 57.5813 3.31269 53.8102 13.9912L46.9822 33.3265L27.647 26.4985C16.9684 22.7275 5.25476 28.3272 1.48376 39.0057C-2.28724 49.6843 3.31244 61.398 13.991 65.169L33.3262 71.997L26.4982 91.3322C22.7272 102.011 28.3269 113.724 39.0055 117.495C49.684 121.266 61.3977 115.667 65.1687 104.988L71.9967 85.653L91.332 92.481C102.011 96.252 113.724 90.6523 117.495 79.9737C121.266 69.2952 115.667 57.5815 104.988 53.8105L85.6527 46.9825L92.4807 27.6473C96.2517 16.9687 90.652 5.25501 79.9735 1.48401Z"
-                    fill="url(#paint1_linear_140_54)"
-                  />
-                  <defs>
-                    <linearGradient
-                      id="paint0_linear_140_54"
-                      x1="79.9735"
-                      y1="1.48401"
-                      x2="39.0055"
-                      y2="117.495"
-                      gradientUnits="userSpaceOnUse"
-                    >
-                      <stop stopColor="#FF5E19" />
-                      <stop offset="1" stopColor="#FFB06A" />
-                    </linearGradient>
-                    <linearGradient
-                      id="paint1_linear_140_54"
-                      x1="79.9735"
-                      y1="1.48401"
-                      x2="39.0055"
-                      y2="117.495"
-                      gradientUnits="userSpaceOnUse"
-                    >
-                      <stop stopColor="#827EFC" />
-                      <stop offset="1" stopColor="#AEAAFC" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-
               {/* Star-1 SVG */}
               <motion.div // Wrap with motion.div
                 className="absolute"
@@ -276,7 +259,6 @@ export default function Hero() {
                   />
                 </svg>
               </motion.div>
-
               {/* Star-2 SVG */}
               <motion.div // Wrap with motion.div
                 className="absolute"
@@ -312,7 +294,6 @@ export default function Hero() {
                   />
                 </svg>
               </motion.div>
-
               {/* Rectangle-1 SVG */}
               <motion.div
                 className="absolute"
@@ -344,7 +325,6 @@ export default function Hero() {
                   />
                 </svg>
               </motion.div>
-
               {/* Ellipse SVG */}
               <div
                 className="absolute"
@@ -380,7 +360,6 @@ export default function Hero() {
                   </defs>
                 </svg>
               </div>
-
               {/* Rectangle-2 SVG */}
               <motion.div
                 className="absolute"
@@ -412,7 +391,6 @@ export default function Hero() {
                   />
                 </svg>
               </motion.div>
-
               {/* Boomerang SVG */}
               <div
                 className="absolute"
@@ -462,6 +440,58 @@ export default function Hero() {
                   />
                 </svg>
               </div>
+              {/* Plus SVG */}
+              <motion.div
+                className="absolute"
+                animate={plusIconControls}
+                style={{
+                  top: "10.25rem",
+                  left: "9rem",
+                  width: "25%",
+                  transformOrigin: "center",
+                }}
+              >
+                <svg
+                  width="100%"
+                  height="100%"
+                  viewBox="0 0 119 119"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M79.9735 1.48401C69.2949 -2.28699 57.5813 3.31269 53.8102 13.9912L46.9822 33.3265L27.647 26.4985C16.9684 22.7275 5.25476 28.3272 1.48376 39.0057C-2.28724 49.6843 3.31244 61.398 13.991 65.169L33.3262 71.997L26.4982 91.3322C22.7272 102.011 28.3269 113.724 39.0055 117.495C49.684 121.266 61.3977 115.667 65.1687 104.988L71.9967 85.653L91.332 92.481C102.011 96.252 113.724 90.6523 117.495 79.9737C121.266 69.2952 115.667 57.5815 104.988 53.8105L85.6527 46.9825L92.4807 27.6473C96.2517 16.9687 90.652 5.25501 79.9735 1.48401Z"
+                    fill="url(#paint0_linear_140_54)"
+                  />
+                  <path
+                    d="M79.9735 1.48401C69.2949 -2.28699 57.5813 3.31269 53.8102 13.9912L46.9822 33.3265L27.647 26.4985C16.9684 22.7275 5.25476 28.3272 1.48376 39.0057C-2.28724 49.6843 3.31244 61.398 13.991 65.169L33.3262 71.997L26.4982 91.3322C22.7272 102.011 28.3269 113.724 39.0055 117.495C49.684 121.266 61.3977 115.667 65.1687 104.988L71.9967 85.653L91.332 92.481C102.011 96.252 113.724 90.6523 117.495 79.9737C121.266 69.2952 115.667 57.5815 104.988 53.8105L85.6527 46.9825L92.4807 27.6473C96.2517 16.9687 90.652 5.25501 79.9735 1.48401Z"
+                    fill="url(#paint1_linear_140_54)"
+                  />
+                  <defs>
+                    <linearGradient
+                      id="paint0_linear_140_54"
+                      x1="79.9735"
+                      y1="1.48401"
+                      x2="39.0055"
+                      y2="117.495"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop stopColor="#FF5E19" />
+                      <stop offset="1" stopColor="#FFB06A" />
+                    </linearGradient>
+                    <linearGradient
+                      id="paint1_linear_140_54"
+                      x1="79.9735"
+                      y1="1.48401"
+                      x2="39.0055"
+                      y2="117.495"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop stopColor="#827EFC" />
+                      <stop offset="1" stopColor="#AEAAFC" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -557,7 +587,6 @@ export default function Hero() {
                   </defs>
                 </svg>
               </div>
-
               {/* Zigzag Green SVG */}
               <div
                 className="absolute"
@@ -589,7 +618,6 @@ export default function Hero() {
                   </defs>
                 </svg>
               </div>
-
               {/* Star Up SVG */}
               <motion.div // Wrap with motion.div
                 className="absolute"
@@ -625,7 +653,6 @@ export default function Hero() {
                   />
                 </svg>
               </motion.div>
-
               {/* Star Down SVG */}
               <motion.div // Wrap with motion.div
                 className="absolute"
@@ -661,7 +688,6 @@ export default function Hero() {
                   />
                 </svg>
               </motion.div>
-
               {/* Rectangle Big SVG */}
               <motion.div
                 className="absolute"
@@ -693,20 +719,31 @@ export default function Hero() {
                   />
                 </svg>
               </motion.div>
-
               {/* Swap SVG */}
-              <motion.div // Wrapped with motion.div
+              <motion.div
                 className="absolute"
-                style={{ right: "35%", bottom: "20%", width: "22%" }}
+                style={{
+                  right: "35%",
+                  bottom: "20%",
+                  width: "22%",
+                  transformOrigin: "center center",
+                  mixBlendMode: "lighten", // Enhances the draggy blur effect
+                }}
                 animate={{
-                  // Reverted to jerky animation with size changes
                   rotate: [-90, -45, -90, 225, -90], // Jerky rotation keyframes
-                  scale: [1, 1.03, 0.97, 1.03, 1], // Subtle size change keyframes
+                  scale: [1, 1.03, 0.97, 1.03, 1], // Subtle size changes
+                  filter: [
+                    "blur(0px) brightness(1)",
+                    "blur(1px) brightness(1.2) contrast(0.8)",
+                    "blur(0.5px) brightness(1)",
+                    "blur(2px) brightness(1.2) contrast(0.7)",
+                    "blur(0px) brightness(1)",
+                  ],
                 }}
                 transition={{
-                  duration: 4, // Duration for one cycle
-                  ease: "easeInOut", // Smooth easing between keyframes
-                  times: [0, 0.2, 0.4, 0.6, 1], // Control timing for jerky effect (adjusted timing)
+                  duration: 4,
+                  ease: "backOut", // More abrupt easing for draggy effect
+                  times: [0, 0.2, 0.4, 0.6, 1],
                   repeat: Infinity,
                   repeatType: "loop",
                 }}
@@ -752,7 +789,6 @@ export default function Hero() {
                   </defs>
                 </svg>
               </motion.div>
-
               {/* Boomerang SVG */}
               <div
                 className="absolute"
@@ -798,7 +834,6 @@ export default function Hero() {
                   />
                 </svg>
               </div>
-
               {/* Rectangle Small SVG */}
               <motion.div
                 className="absolute"
@@ -830,7 +865,6 @@ export default function Hero() {
                   />
                 </svg>
               </motion.div>
-
               {/* Ellipse SVG */}
               <div
                 className="absolute"
@@ -867,43 +901,13 @@ export default function Hero() {
             <div className="mb-4 flex justify-center">
               <div
                 className="relative group"
-                onClick={() => {
-                  navigator.clipboard.writeText("npx create solana-app");
-                  document
-                    .getElementById("copyTooltip")
-                    ?.classList.remove("opacity-0");
-                  document
-                    .getElementById("copyTooltip")
-                    ?.classList.add("opacity-100");
-                  setTimeout(() => {
-                    document
-                      .getElementById("copyTooltip")
-                      ?.classList.remove("opacity-100");
-                    document
-                      .getElementById("copyTooltip")
-                      ?.classList.add("opacity-0");
-                  }, 2000);
-                }}
+                onClick={handleCopy}
                 role="button"
                 tabIndex={0}
                 aria-label="Copy 'npx create solana-app' to clipboard"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    navigator.clipboard.writeText("npx create solana-app");
-                    document
-                      .getElementById("copyTooltip")
-                      ?.classList.remove("opacity-0");
-                    document
-                      .getElementById("copyTooltip")
-                      ?.classList.add("opacity-100");
-                    setTimeout(() => {
-                      document
-                        .getElementById("copyTooltip")
-                        ?.classList.remove("opacity-100");
-                      document
-                        .getElementById("copyTooltip")
-                        ?.classList.add("opacity-0");
-                    }, 2000);
+                    handleCopy();
                   }
                 }}
               >
@@ -914,19 +918,35 @@ export default function Hero() {
                 <div className="relative bg-[#1A1E23] rounded-lg pl-4 pr-2 py-2 text-white font-mono text-sm shadow-xl border border-transparent flex items-center cursor-pointer z-10 transition-all duration-300 group-hover:bg-[#232830]">
                   <span>npx create solana-app</span>
                   <div className="relative ml-4 p-2 hover:bg-gray-800 rounded transition-colors">
-                    <Image
-                      src="/Copy_Icon.svg"
-                      alt="Copy"
-                      width={17}
-                      height={16}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                    <div
-                      id="copyTooltip"
-                      className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs py-1 px-2 rounded opacity-0 transition-opacity duration-300"
+                    <motion.div
+                      initial={false}
+                      animate={isCopied ? { scale: [1, 0.8, 1.1, 1] } : {}}
+                      transition={{ duration: 0.3 }}
                     >
-                      Copied!
-                    </div>
+                      {isCopied ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="17"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#4ade80"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      ) : (
+                        <Image
+                          src="/Copy_Icon.svg"
+                          alt="Copy"
+                          width={17}
+                          height={16}
+                          className="group-hover:scale-110 transition-transform"
+                        />
+                      )}
+                    </motion.div>
                   </div>
                 </div>
               </div>

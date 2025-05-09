@@ -92,7 +92,7 @@ export default function Hero() {
     const heightScale = getHeightScaleFactor();
     
     const handleCopy = () => {
-      navigator.clipboard.writeText("npx create solana-app");
+      navigator.clipboard.writeText("npx start-solana-app");
       setIsCopied(true);
       setTimeout(() => {
         setIsCopied(false);
@@ -904,7 +904,7 @@ export default function Hero() {
                 onClick={handleCopy}
                 role="button"
                 tabIndex={0}
-                aria-label="Copy 'npx create solana-app' to clipboard"
+                aria-label="Copy 'npx start-solana-app' to clipboard"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     handleCopy();
@@ -916,7 +916,7 @@ export default function Hero() {
 
                 {/* Inner content */}
                 <div className="relative bg-[#1A1E23] rounded-lg pl-4 pr-2 py-2 text-white font-mono text-sm shadow-xl border border-transparent flex items-center cursor-pointer z-10 transition-all duration-300 group-hover:bg-[#232830]">
-                  <span>npx create solana-app</span>
+                  <span>npx start-solana-app</span>
                   <div className="relative ml-4 p-2 hover:bg-gray-800 rounded transition-colors">
                     <motion.div
                       initial={false}

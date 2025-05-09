@@ -6,6 +6,7 @@ import Features from "@/components/Features";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Home";
 import MobileHero from "@/components/MobileHero";
+import Protocols from "@/components/Protocols";
 
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
@@ -15,13 +16,13 @@ export default function Home() {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 632); // Standard breakpoint for mobile
     };
-    
+
     // Initial check
     checkIfMobile();
-    
+
     // Add resize listener
     window.addEventListener("resize", checkIfMobile);
-    
+
     // Cleanup
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
@@ -31,10 +32,12 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-grow">
         {isMobile ? <MobileHero /> : <Hero />}
-        {/* Other sections will be added here */}
-       <div className="m-4">
-       <Demo />
-       </div>
+        {/* Protocols section */}
+        <Protocols />
+        {/* Demo section */}
+        <div className="m-4">
+          <Demo />
+        </div>
         <Features />
       </main>
 

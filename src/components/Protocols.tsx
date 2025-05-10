@@ -174,10 +174,10 @@ export default function Protocols() {
 
     const headingSection = (
         <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-4xl font-bold tracking-wider text-white mb-2">
+            <h2 className="text-4xl md:text-3xl font-bold tracking-wider text-white mb-2">
                 PROTOCOLS INTEGRATED
             </h2>
-            <p className="text-gray-400 text-lg">
+            <p className="text-gray-400 text-md">
                 Explore the leading protocols integrated with Solana App Kit
             </p>
         </div>
@@ -204,8 +204,34 @@ export default function Protocols() {
 
 function ProtocolCard({ protocol }: { protocol: Protocol }) {
     const getDomainFromUrl = (url: string) => {
-        try { return new URL(url).hostname; }
-        catch (e) { return url; }
+        try {
+            const urlObj = new URL(url);
+            const hostname = urlObj.hostname;
+
+            // Special handling for social media sites
+            if (hostname === 'x.com' || hostname === 'twitter.com') {
+                // Extract username after removing trailing slashes
+                const path = urlObj.pathname.replace(/^\/|\/$/g, '');
+                return path ? `@${path}` : 'X/Twitter';
+            } else if (hostname === 'github.com') {
+                const path = urlObj.pathname.replace(/^\/|\/$/g, '');
+                return path ? `GitHub: ${path}` : 'GitHub';
+            } else if (hostname.includes('linkedin.com')) {
+                return 'LinkedIn';
+            } else if (hostname.includes('discord')) {
+                return 'Discord';
+            } else if (hostname.includes('telegram.org') || hostname.includes('t.me')) {
+                const path = urlObj.pathname.replace(/^\/|\/$/g, '');
+                return path ? `Telegram: ${path}` : 'Telegram';
+            } else if (hostname.includes('medium.com')) {
+                const path = urlObj.pathname.replace(/^\/|\/$/g, '');
+                return path ? `Medium: ${path}` : 'Medium';
+            }
+
+            return hostname;
+        } catch (e) {
+            return url;
+        }
     };
 
     return (
@@ -213,7 +239,7 @@ function ProtocolCard({ protocol }: { protocol: Protocol }) {
             href={protocol.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="min-w-[260px] h-[80px] p-4 bg-[#1C2027] rounded-xl flex items-center cursor-pointer gap-4"
+            className="min-w-[220px] h-[70px] p-4 bg-[#1C2027] rounded-xl flex items-center cursor-pointer gap-4"
             variants={cardVariants}
             initial="initial"
             whileHover="hover"

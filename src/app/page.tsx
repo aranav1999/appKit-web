@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Home";
 import MobileHero from "@/components/MobileHero";
 import Protocols from "@/components/Protocols";
+import ProtocolLogos from "@/components/ProtocolLogos";
 
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
@@ -33,12 +34,14 @@ export default function Home() {
       <main className="flex-grow">
         {isMobile ? <MobileHero /> : <Hero />}
         {/* Protocols section */}
-        <Protocols />
         {/* Demo section */}
         <div className="m-4">
+          {/* <ProtocolLogos/> */}
           <Demo />
         </div>
         <Features />
+        <Protocols />
+
       </main>
 
       {/* Footer */}

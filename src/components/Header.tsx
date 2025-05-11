@@ -41,6 +41,9 @@ export default function Header() {
           <a href="https://sendarcade.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
             Send Arcade
           </a>
+          <a href="https://www.thesendcoin.com/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
+            SEND
+          </a>
         </nav>
       </div>
       <div className="hidden md:block">

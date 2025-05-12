@@ -24,13 +24,13 @@ export default function PrivacyPolicy() {
               App Kit.
             </p>
             <p>
-              The Solana App Kit Interface backed by Solana App Kit Inc, a company
+              The Solana App Kit Interface backed by SendAI Inc, a company
               incorporated in RAKDAO, UAE, is the controller for your Personal
-              Data within the scope of this Privacy Policy. Solana App Kit Inc. decides
+              Data within the scope of this Privacy Policy. SendAI Inc. decides
               "why" and "how" your Personal Data is processed in connection with
               the Interface. If you have additional questions or require more
               information about this Privacy Policy, do not hesitate to contact{" "}
-              <b>aryan@Solana App Kit.fun</b>.
+              <b>aryan@sendai.fun</b>.
             </p>
 
             <h2 className="text-2xl font-semibold mt-8 mb-2 text-white">
@@ -81,7 +81,7 @@ export default function PrivacyPolicy() {
               of our data processing activities with regard to each piece of the
               Personal Data we may collect through the Interface, as well as
               your place in every data processing event. It can be requested at
-              aryan@Solana App Kit.fun. Below are the categories of our processors which
+              aryan@sendai.fun. Below are the categories of our processors which
               can access and process your Personal Data through the Interface:
             </p>
             <ul className="list-disc ml-6">

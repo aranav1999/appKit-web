@@ -659,7 +659,7 @@ export default function TermsAndConditions() {
               other, in writing, of any Dispute within thirty (30) days of when
               it arises so that the parties can attempt, in good faith, to
               resolve the Dispute informally. Notice to Solana App Kit shall be provided
-              by sending an email to aryan@Solana App Kit.fun. Your notice must include
+              by sending an email to aryan@sendai.fun. Your notice must include
               (1) your name, postal address, and email address; (2) a
               description of the nature or basis of the Dispute; and (3) the
               specific action that you are seeking. If you and the Solana App Kit cannot
@@ -767,7 +767,7 @@ export default function TermsAndConditions() {
             </p>
             <p>
               If you come up with any further questions, please don't be shy and
-              feel free to contact us at <b>aryan@Solana App Kit.fun</b>.
+              feel free to contact us at <b>aryan@sendai.fun</b>.
             </p>
           </div>
         </div>

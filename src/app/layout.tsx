@@ -16,8 +16,35 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.solanaappkit.com'),
   title: "Solana AppKit",
-  description: "Build Solana Apps Faster",
+  description: "Build Solana Vibe Apps for mobile in ~15 minutes and 1 line of command — powered by SendAI and Send Arcade.",
+  openGraph: {
+    title: 'Solana AppKit',
+    description: 'Build Solana Vibe Apps for mobile in ~15 minutes and 1 line of command — powered by SendAI and Send Arcade.',
+    images: [
+      {
+        url: '/OG_IMAGE.png',
+        width: 1200,
+        height: 630,
+        alt: 'Solana AppKit Open Graph Image',
+      },
+    ],
+    siteName: 'Solana AppKit',
+    type: 'website',
+    locale: 'en_US',
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/Logo.svg',
+        color: '#FFFFFF',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

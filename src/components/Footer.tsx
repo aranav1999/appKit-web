@@ -98,8 +98,14 @@ export default function Footer() {
                         />
                     </div>
 
-                    <div className="text-white/50 text-sm text-center md:text-right">
-                        © Twenty'25, Built and Maintained By SendAI and Send Arcade
+                    <div className="flex flex-col items-end text-xs text-white/40">
+                        <div className="text-white/50 text-sm text-center md:text-right">
+                            © Twenty'25, Built and Maintained By SendAI and Send Arcade
+                        </div>
+                    <div className="mt-2 flex flex-row gap-4 items-end text-xs text-white/40">
+                        <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
+                        <Link href="/tnc" className="hover:underline">Terms & Conditions</Link>
+                        </div>
                     </div>
                 </div>
             </div>

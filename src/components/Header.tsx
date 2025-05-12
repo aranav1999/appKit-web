@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Header() {
@@ -17,37 +18,55 @@ export default function Header() {
     handleResize();
 
     // Add event listener
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Clean up
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
-    <header className={`py-4 px-6 flex justify-between items-center relative ${isMobileWidth ? 'bg-[#0C101A]' : 'bg-[#131519]'}`}>
+    <header
+      className={`py-4 px-6 flex justify-between items-center relative ${
+        isMobileWidth ? "bg-[#0C101A]" : "bg-[#131519]"
+      }`}
+    >
       <div className="flex items-end space-x-6">
-        <Image
-          src="/Logo.svg"
-          alt="AppKit Logo"
-          width={130}
-          height={36}
-          priority
-          className="mb-1"
-        />
+        <Link href="/">
+          <Image
+            src="/Logo.svg"
+            alt="AppKit Logo"
+            width={130}
+            height={36}
+            priority
+            className="mb-1"
+          />
+        </Link>
         <nav className="hidden md:flex space-x-6 pb-1">
-          <a href="https://www.sendai.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
+          <a
+            href="https://www.sendai.fun/"
+            target="_blank"
+            className="text-[#DAEEFE99] hover:text-white text-lg"
+          >
             SendAI
           </a>
-          <a href="https://sendarcade.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
+          <a
+            href="https://sendarcade.fun/"
+            target="_blank"
+            className="text-[#DAEEFE99] hover:text-white text-lg"
+          >
             Send Arcade
           </a>
-          <a href="https://www.thesendcoin.com/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
+          <a
+            href="https://www.thesendcoin.com/"
+            target="_blank"
+            className="text-[#DAEEFE99] hover:text-white text-lg"
+          >
             SEND
           </a>
         </nav>
       </div>
       <div className="hidden md:block">
-        <button className="bg-white font-semibold text-black rounded-full px-6 py-2 font-medium">
+        <button className="bg-white text-black rounded-full px-6 py-2 font-medium">
           Download the App
         </button>
       </div>
@@ -65,10 +84,18 @@ export default function Header() {
           </div>
 
           <div className="flex flex-col space-y-4 mt-10">
-            <a href="https://www.sendai.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
+            <a
+              href="https://www.sendai.fun/"
+              target="_blank"
+              className="text-[#DAEEFE99] hover:text-white text-lg"
+            >
               SendAI
             </a>
-            <a href="https://sendarcade.fun/" target="_blank" className="text-[#DAEEFE99] hover:text-white text-lg">
+            <a
+              href="https://sendarcade.fun/"
+              target="_blank"
+              className="text-[#DAEEFE99] hover:text-white text-lg"
+            >
               Send Arcade
             </a>
           </div>

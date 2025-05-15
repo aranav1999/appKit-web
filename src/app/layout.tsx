@@ -16,35 +16,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.solanaappkit.com'),
   title: "Solana AppKit",
-  description: "Build Solana Vibe Apps for mobile in ~15 minutes and 1 line of command — powered by SendAI and Send Arcade.",
+  description:
+    "Build Vibe Apps using AI, powered by Solana App Kit | Sendcoin Ecosystem",
+  keywords: ["solana", "hackathon", "ai", "SendAI", "Solana AppKit"],
+  authors: [{ name: "Solana AppKit", url: "https://www.solanaappkit.com" }],
   openGraph: {
-    title: 'Solana AppKit',
-    description: 'Build Solana Vibe Apps for mobile in ~15 minutes and 1 line of command — powered by SendAI and Send Arcade.',
+    title: "Solana AppKit",
+    description:
+      "Build Vibe Apps using AI, powered by Solana App Kit | Sendcoin Ecosystem",
+    url: "https://www.solanaappkit.com",
+    siteName: "Solana AppKit",
     images: [
       {
-        url: '/OG_IMAGE.png',
+        url: "/og.png",
         width: 1200,
         height: 630,
-        alt: 'Solana AppKit Open Graph Image',
+        alt: "Solana AppKit",
       },
     ],
-    siteName: 'Solana AppKit',
-    type: 'website',
-    locale: 'en_US',
+    locale: "en_US",
+    type: "website",
   },
-  icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    other: [
-      {
-        rel: 'mask-icon',
-        url: '/Logo.svg',
-        color: '#FFFFFF',
-      },
-    ],
+  twitter: {
+    card: "summary_large_image",
+    title: "Solana AppKit",
+    description:
+      "Build Vibe Apps using AI, powered by Solana App Kit | Sendcoin Ecosystem",
+    images: ["/og.png"],
   },
+  metadataBase: new URL("https://www.solanaappkit.com"),
 };
 
 export default function RootLayout({

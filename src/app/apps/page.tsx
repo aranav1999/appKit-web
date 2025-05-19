@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Global, IPhone, Smartphone, Copy } from '@solar-icons/react';
 import Image from 'next/image';
@@ -42,6 +42,56 @@ const mockApps = [
     tags: ['NFTs', 'SocialFi'],
     banner: 'https://picsum.photos/seed/nftgallery/400/200',
     website: 'https://nftgallery.app',
+    android: '#',
+    ios: '#',
+  },
+  {
+    id: 5,
+    name: 'Solana Wallet',
+    description: 'Secure and user-friendly wallet for managing your Solana assets.',
+    tags: ['Wallet', 'Security'],
+    banner: 'https://picsum.photos/seed/solanawallet/400/200',
+    website: 'https://solanawallet.app',
+    android: '#',
+    ios: '#',
+  },
+  {
+    id: 6,
+    name: 'GameFi Hub',
+    description: 'Play-to-earn games built on Solana with instant rewards.',
+    tags: ['GameFi', 'P2E'],
+    banner: 'https://picsum.photos/seed/gamefi/400/200',
+    website: 'https://gamefi.app',
+    android: '#',
+    ios: '#',
+  },
+  {
+    id: 7,
+    name: 'SolPay',
+    description: 'Lightning-fast payment solution for Solana merchants and users.',
+    tags: ['Payments', 'Retail'],
+    banner: 'https://picsum.photos/seed/solpay/400/200',
+    website: 'https://solpay.app',
+    android: '#',
+    ios: '#',
+  },
+  {
+    id: 8,
+    name: 'DAO Maker',
+    description: 'Create and manage decentralized autonomous organizations on Solana.',
+    tags: ['DAO', 'Governance'],
+    banner: 'https://picsum.photos/seed/daomaker/400/200',
+    website: 'https://daomaker.app',
+    android: '#',
+    ios: '#',
+  },
+  {
+    id: 9,
+    name: 'SolStake',
+    description: 'Simplified staking solution with competitive APY rates.',
+    tags: ['Staking', 'Yield'],
+    banner: 'https://picsum.photos/seed/solstake/400/200',
+    website: 'https://solstake.app',
     android: '#',
     ios: '#',
   },
@@ -117,32 +167,83 @@ const CA = 'SENDdRQtYMWaQrBroBrJ2Q53fgVuq95CV9UPGEvpCxa';
 const marketCap = '$30M';
 const dexscreenerUrl = 'https://dexscreener.com/solana/esr8sbvggbmrcgcddfl9x8dwpgldatgllkkgx3uukoaq';
 
-// Helper to generate random sparkline points for SVG
-function getRandomSparklinePoints() {
-  // 9 points for a simple sparkline
-  const points = Array.from({ length: 9 }, (_, i) => {
-    const x = i * 5;
-    // y between 2 and 14 for some variation
-    const y = 2 + Math.floor(Math.random() * 12);
-    return `${x},${y}`;
-  });
-  return points.join(' ');
+// Helper to generate sparkline points for SVG - now using deterministic values
+function getRandomSparklinePoints(seedId = 0) {
+  // Use deterministic points based on seedId to avoid hydration errors
+  const predefinedPoints = [
+    "0,10 5,2 10,5 15,9 20,6 25,6 30,7 35,11 40,7", // 0
+    "0,10 5,9 10,10 15,9 20,3 25,11 30,11 35,4 40,5", // 1
+    "0,2 5,10 10,9 15,9 20,8 25,5 30,5 35,9 40,8", // 2
+    "0,7 5,5 10,8 15,12 20,11 25,10 30,5 35,5 40,4", // 3
+    "0,9 5,7 10,6 15,10 20,7 25,3 30,10 35,3 40,7", // 4
+    "0,12 5,8 10,4 15,8 20,12 25,9 30,7 35,10 40,2", // 5
+    "0,6 5,7 10,11 15,11 20,11 25,12 30,8 35,13 40,11", // 6
+    "0,12 5,8 10,12 15,6 20,2 25,9 30,9 35,10 40,10", // 7
+    "0,9 5,4 10,3 15,10 20,5 25,7 30,4 35,5 40,8", // 8
+  ];
+  
+  // Use seedId to select a point pattern, or fallback to the first pattern
+  const pointIndex = seedId % predefinedPoints.length;
+  return predefinedPoints[pointIndex];
 }
 
 export default function AppsPage() {
   const [featuredImgRef, featuredImgStyle] = use3DImageTilt<HTMLImageElement>();
   const [copied, setCopied] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [selectedTag, setSelectedTag] = useState<string>('All');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  // Dropdown ref for handling outside clicks
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+  
+  // Handle clicks outside the dropdown to close it
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
   
   // Generate sparkline points once for featured and each grid card
-  const featuredSparkline = React.useMemo(() => getRandomSparklinePoints(), []);
-  const gridSparklines = React.useMemo(() => mockApps.slice(1).map(() => getRandomSparklinePoints()), []);
+  const featuredSparkline = React.useMemo(() => getRandomSparklinePoints(0), []);
+  const gridSparklines = React.useMemo(() => 
+    mockApps.slice(1).map((app, i) => getRandomSparklinePoints(app.id)), 
+    []
+  );
   
-  // Call hooks at the top level for each app - one for featured, and one for each app in the grid
-  // These are named using array destructuring so they're called consistently
+  // Get all unique tags from mockApps
+  const allTags = React.useMemo(() => {
+    const tags = new Set<string>();
+    tags.add('All'); // Add "All" as the default option
+    mockApps.forEach(app => {
+      app.tags.forEach(tag => tags.add(tag));
+    });
+    return Array.from(tags);
+  }, []);
+  
+  // Filter apps based on selected tag
+  const filteredApps = React.useMemo(() => {
+    if (selectedTag === 'All') return mockApps.slice(1);
+    return mockApps.slice(1).filter(app => app.tags.includes(selectedTag));
+  }, [selectedTag]);
+  
+  // Call hooks at the top level for each app
   const [img1Ref, img1Style] = use3DImageTilt<HTMLImageElement>();
   const [img2Ref, img2Style] = use3DImageTilt<HTMLImageElement>();
   const [img3Ref, img3Style] = use3DImageTilt<HTMLImageElement>();
+  const [img4Ref, img4Style] = use3DImageTilt<HTMLImageElement>();
+  const [img5Ref, img5Style] = use3DImageTilt<HTMLImageElement>();
+  const [img6Ref, img6Style] = use3DImageTilt<HTMLImageElement>();
+  const [img7Ref, img7Style] = use3DImageTilt<HTMLImageElement>();
+  const [img8Ref, img8Style] = use3DImageTilt<HTMLImageElement>();
+  const [img9Ref, img9Style] = use3DImageTilt<HTMLImageElement>();
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(CA);
@@ -151,293 +252,423 @@ export default function AppsPage() {
   };
 
   // Map the refs and styles to the apps
-  const imageRefs = [img1Ref, img2Ref, img3Ref];
-  const imageStyles = [img1Style, img2Style, img3Style];
+  const imageRefs = [img1Ref, img2Ref, img3Ref, img4Ref, img5Ref, img6Ref, img7Ref, img8Ref, img9Ref];
+  const imageStyles = [img1Style, img2Style, img3Style, img4Style, img5Style, img6Style, img7Style, img8Style, img9Style];
+
+  // Animation variants for background elements
+  const settingsIconVariants = {
+    animate: {
+      rotate: 360,
+      transition: {
+        duration: 20,
+        repeat: Infinity,
+        ease: "linear"
+      }
+    }
+  };
+
+  const circleVariants = {
+    animate: {
+      scale: [1, 1.1, 1],
+      opacity: [0.6, 0.8, 0.6],
+      transition: {
+        duration: 8,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      {/* Semantic Search Bar */}
-      <div className="mb-8">
-        <div className="flex justify-center my-12">
-          <h1
-            className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-center select-none px-4 py-4 rounded-xl shadow-2xl "
-            style={{
-              textShadow: '0 4px 24px rgba(0,0,0,0.45), 0 1px 0 #fff',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            Build & Launch Solana Apps, Faster
-          </h1>
-        </div>
-        <input
-          type="text"
-          placeholder="Search apps..."
-          className="w-full p-3 rounded-lg border border-[#23262B] bg-[#181A20] text-white/90 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-white/40"
-        />
-      </div>
-
-      {/* Featured App */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold mb-4 text-white">Featured App</h2>
-        <motion.div
-          className="flex flex-col md:flex-row items-center bg-[#23262B] rounded-2xl shadow-lg p-6 gap-6 border border-[#23262B] transition-transform duration-200"
-          initial="hidden"
-          animate="visible"
-          variants={cardVariants}
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#131519] to-[#1a2740] -z-10" />
+      
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden -z-5">
+        {/* Left decoration */}
+        <motion.svg 
+          id="settingsIcon"
+          className="absolute left-0 top-[20%] opacity-10 w-[200px] h-[200px]" 
+          viewBox="0 0 205 209" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+          variants={settingsIconVariants}
+          animate="animate"
         >
-          <motion.img
-            ref={featuredImgRef}
-            style={featuredImgStyle}
-            src={mockApps[0].banner}
-            alt={mockApps[0].name}
-            className="w-full md:w-64 h-40 object-cover rounded-xl border border-[#23262B] bg-[#181A20]"
-            whileHover={{ scale: 1.10 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M84.8449 2.36017C93.3022 0.868169 97.5308 0.122166 101.452 1.08139C102.81 1.41346 104.127 1.89276 105.381 2.51079C109.002 4.29605 111.747 7.56744 117.238 14.1102C122.729 20.653 125.475 23.9244 129.096 25.7097C130.349 26.3277 131.666 26.807 133.024 27.139C136.945 28.0983 141.151 27.3563 149.563 25.8723C157.975 24.3883 162.181 23.6463 166.102 24.6056C167.46 24.9376 168.777 25.4169 170.03 26.035C173.651 27.8202 176.412 31.1093 181.933 37.6875C187.541 44.3707 190.346 47.7122 191.468 51.6587C191.828 52.9219 192.056 54.2185 192.151 55.5283C192.447 59.6207 190.957 63.7147 187.978 71.9027C185.02 80.0316 183.541 84.096 183.823 88.1608C183.915 89.4879 184.145 90.8018 184.508 92.0814C185.622 96.0006 188.382 99.3087 193.9 105.925C199.419 112.541 202.178 115.849 203.292 119.769C203.656 121.048 203.886 122.362 203.978 123.689C204.26 127.754 202.775 131.835 199.805 139.996C196.835 148.158 195.351 152.239 192.522 155.172C191.599 156.129 190.578 156.988 189.477 157.735C186.105 160.022 181.865 160.783 173.385 162.306C164.905 163.828 160.665 164.589 157.293 166.876C156.192 167.623 155.171 168.482 154.248 169.439C151.42 172.372 149.941 176.437 146.983 184.566C144.003 192.754 142.514 196.848 139.657 199.793C138.743 200.736 137.735 201.582 136.648 202.319C133.251 204.621 128.955 205.379 120.363 206.895C111.906 208.387 107.677 209.133 103.755 208.174C102.398 207.842 101.081 207.363 99.8272 206.745C96.2062 204.959 93.4607 201.688 87.9697 195.145C82.4787 188.602 79.7331 185.331 76.1122 183.546C74.8587 182.928 73.5414 182.448 72.1839 182.116C68.2623 181.157 64.0565 181.899 55.6448 183.383C47.233 184.867 43.0272 185.609 39.1056 184.65C37.7481 184.318 36.4308 183.838 35.1773 183.22C31.5564 181.435 28.796 178.146 23.2753 171.568C17.6664 164.885 14.862 161.543 13.7394 157.597C13.3801 156.333 13.1514 155.037 13.0567 153.727C12.7611 149.635 14.2449 145.557 17.2123 137.402C20.1798 129.246 21.6635 125.169 21.3679 121.077C21.2733 119.767 21.0445 118.47 20.6852 117.207C19.5626 113.26 16.7732 109.937 11.1944 103.289C5.61558 96.6418 2.82617 93.3181 1.70359 89.3716C1.3443 88.1085 1.11555 86.8118 1.02093 85.502C0.725336 81.4096 2.20906 77.332 5.17652 69.1767C8.14395 61.0215 9.62766 56.9439 12.4841 53.9985C13.3984 53.0557 14.407 52.2093 15.4941 51.4724C18.8904 49.1702 23.1635 48.4164 31.7097 46.9087C40.2559 45.401 44.5291 44.6471 47.9253 42.3449C49.0125 41.608 50.0211 40.7615 50.9354 39.8187C53.7918 36.8733 55.2755 32.7957 58.2429 24.6405C61.2103 16.4853 62.694 12.4076 65.5505 9.46217C66.4647 8.51942 67.4733 7.67297 68.5604 6.9361C71.9567 4.63389 76.2528 3.87599 84.8449 2.36017Z"
+            fill="#64C6FF"
+            fillOpacity="0.6"
           />
-          <div className="flex-1">
-            <h3 className="text-xl font-semibold mb-2 text-white/90">{mockApps[0].name}</h3>
-            <p className="mb-2 text-white/70">{mockApps[0].description}</p>
-            <div className="mb-2 flex flex-wrap gap-2">
-              {mockApps[0].tags.map(tag => (
-                <span key={tag} className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            {/* X (Twitter) link below CTAs */}
-            <div className="flex mt-2">
-              <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="bg-[#181A20] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium border border-[#23262B] hover:bg-[#23262B] transition">
-                <Image src="/icons/twitter-x.svg" alt="X" width={14} height={14} className="inline-block" />
-                <span>X</span>
-              </a>
-            </div>
-            {/* CA, Graph, and Market Cap Row at the bottom */}
-            <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
-              <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
-                <Image src="/icons/solana.svg" alt="Solana" width={14} height={14} className="inline-block" />
-                {shortenCA(CA)}
-                <button onClick={handleCopy} className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition" title="Copy CA">
-                  {copied ? (
-                    <Image src="/icons/Check_Icon.svg" alt="Copied" width={13} height={13} className="inline-block transition-all duration-200" />
-                  ) : (
-                    <Image src="/Copy_Icon.svg" alt="Copy" width={13} height={13} className="inline-block transition-all duration-200" />
-                  )}
-                </button>
-              </span>
-              {/* Inline SVG sparkline graph as placeholder */}
-              <span className="flex items-center justify-center mx-2">
-                <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <polyline
-                    fill="none"
-                    stroke="#4ADE80"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    points={featuredSparkline}
-                  />
-                </svg>
-              </span>
-              <a
-                href={dexscreenerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
-              >
-                <Image src="/icons/dexscreener.png" alt="Dexscreener" width={14} height={14} className="inline-block" />
-                {marketCap}
-              </a>
-            </div>
-            
-            <div className="flex gap-1 mt-2">
-              <a href={mockApps[0].website} target="_blank" rel="noopener noreferrer" className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200">
-                <Global size={15} weight="Bold" /> <span>Website</span>
-              </a>
-              <a href={mockApps[0].android} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                <Smartphone size={15} weight="Bold" /> <span>Android</span>
-              </a>
-              <a href={mockApps[0].ios} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                <IPhone size={15} weight="Bold" /> <span>iOS</span>
-              </a>
-            </div>
-          </div>
-        </motion.div>
+        </motion.svg>
+        
+        {/* Right decoration circle */}
+        <motion.svg 
+          id="circleElement"
+          className="absolute right-12 top-[40%] opacity-5 w-[350px] h-[350px]" 
+          viewBox="0 0 200 200" 
+          xmlns="http://www.w3.org/2000/svg"
+          variants={circleVariants}
+          animate="animate"
+        >
+          <circle cx="100" cy="100" r="100" fill="#64C6FF" />
+        </motion.svg>
+        
+        {/* Bottom right zigzag */}
+        <svg 
+          className="absolute right-0 bottom-0 opacity-10 w-[300px] h-[300px]" 
+          viewBox="0 0 446 520" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M81.2498 8.80003C59.4331 1.35181 48.5248 -2.37229 39.4334 2.0914C30.342 6.55509 26.6179 17.4634 19.1697 39.28L9.44654 67.7601C1.99832 89.5767 -1.72579 100.485 2.7379 109.576C7.20159 118.668 18.1099 122.392 39.9265 129.84L64.8466 138.348C76.594 142.358 82.4677 144.364 84.8712 149.259C87.2747 154.155 85.2694 160.028 81.2589 171.776L64.2434 221.616C56.7952 243.432 53.0711 254.341 57.5348 263.432C61.9985 272.524 72.9068 276.248 94.7234 283.696L116.083 290.988C127.831 294.999 133.705 297.004 136.108 301.899C138.512 306.795 136.506 312.669 132.496 324.416L115.48 374.256C108.032 396.073 104.308 406.981 108.772 416.072C113.235 425.164 124.144 428.888 145.96 436.336L364.901 511.083C386.717 518.531 397.625 522.255 406.717 517.791C415.808 513.327 419.532 502.419 426.981 480.603L436.704 452.123C444.152 430.306 447.876 419.398 443.412 410.306C438.949 401.215 428.04 397.491 406.224 390.042L384.864 382.75C373.116 378.739 367.243 376.734 364.839 371.839C362.436 366.943 364.441 361.07 368.451 349.322L385.467 299.482C392.915 277.666 396.639 266.757 392.176 257.666C387.712 248.574 376.804 244.85 354.987 237.402L330.067 228.894C318.319 224.884 312.446 222.879 310.042 217.983C307.639 213.088 309.644 207.214 313.655 195.467L330.67 145.627C338.118 123.81 341.842 112.902 337.379 103.81C332.915 94.7188 322.007 90.9947 300.19 83.5465L81.2498 8.80003Z"
+            fill="#64C6FF"
+            fillOpacity="0.4"
+          />
+        </svg>
       </div>
 
-      {/* Apps Grid/Table */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-white">All Apps</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-colors ${
-                viewMode === 'grid' ? 'bg-[#2D3138] text-white' : 'text-white/60 hover:text-white'
-              }`}
+      <div className="max-w-7xl mx-auto px-4 py-10 relative z-10">
+        {/* Semantic Search Bar */}
+        <div className="mb-8">
+          <div className="flex justify-center my-12">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-center select-none px-4 py-4 rounded-xl shadow-2xl "
+              style={{
+                textShadow: '0 4px 24px rgba(0,0,0,0.45), 0 1px 0 #fff',
+                letterSpacing: '-0.02em',
+              }}
             >
-              <Global size={20} weight="Bold" />
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className={`p-2 rounded-lg transition-colors ${
-                viewMode === 'table' ? 'bg-[#2D3138] text-white' : 'text-white/60 hover:text-white'
-              }`}
-            >
-              <Smartphone size={20} weight="Bold" />
-            </button>
+              Build & Launch Solana Apps, Faster
+            </h1>
           </div>
+          <input
+            type="text"
+            placeholder="Search apps..."
+            className="w-full p-3 rounded-lg border border-[#23262B] bg-[#181A20] text-white/90 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-white/40"
+          />
         </div>
 
-        {viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {mockApps.slice(1).map((app, i) => {
-              return (
-                <motion.div
-                  key={app.id}
-                  className="bg-[#23262B] rounded-2xl shadow-lg p-4 flex flex-col border border-[#23262B] transition-transform duration-200"
-                  initial="hidden"
-                  animate="visible"
-                  whileHover="hover"
-                  variants={cardVariants}
-                  transition={{ ...spring, delay: i * 0.1 }}
+        {/* Featured App */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold mb-4 text-white">Featured App</h2>
+          <motion.div
+            className="flex flex-col md:flex-row items-center bg-[#23262B]/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 gap-6 border border-[#23262B] transition-transform duration-200"
+            initial="hidden"
+            animate="visible"
+            variants={cardVariants}
+          >
+            <motion.img
+              ref={featuredImgRef}
+              style={featuredImgStyle}
+              src={mockApps[0].banner}
+              alt={mockApps[0].name}
+              className="w-full md:w-64 h-40 object-cover rounded-xl border border-[#23262B] bg-[#181A20]"
+              whileHover={{ scale: 1.10 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+            />
+            <div className="flex-1">
+              <h3 className="text-xl font-semibold mb-2 text-white/90">{mockApps[0].name}</h3>
+              <p className="mb-2 text-white/70">{mockApps[0].description}</p>
+              <div className="mb-2 flex flex-wrap gap-2">
+                {mockApps[0].tags.map(tag => (
+                  <span key={tag} className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              {/* X (Twitter) link below CTAs */}
+              <div className="flex mt-2">
+                <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="bg-[#181A20] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium border border-[#23262B] hover:bg-[#23262B] transition">
+                  <Image src="/icons/twitter-x.svg" alt="X" width={14} height={14} className="inline-block" />
+                  <span>X</span>
+                </a>
+              </div>
+              {/* CA, Graph, and Market Cap Row at the bottom */}
+              <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
+                <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
+                  <Image src="/icons/send-logo.png" alt="Solana" width={14} height={14} className="inline-block" />
+                  {shortenCA(CA)}
+                  <button onClick={handleCopy} className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition" title="Copy CA">
+                    {copied ? (
+                      <Image src="/icons/Check_Icon.svg" alt="Copied" width={13} height={13} className="inline-block transition-all duration-200" />
+                    ) : (
+                      <Image src="/Copy_Icon.svg" alt="Copy" width={13} height={13} className="inline-block transition-all duration-200" />
+                    )}
+                  </button>
+                </span>
+                {/* Inline SVG sparkline graph as placeholder */}
+                <span className="flex items-center justify-center mx-2">
+                  <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline
+                      fill="none"
+                      stroke="#4ADE80"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
+                      points={featuredSparkline}
+                    />
+                  </svg>
+                </span>
+                <a
+                  href={dexscreenerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
                 >
-                  <motion.img
-                    ref={imageRefs[i]}
-                    style={imageStyles[i]}
-                    src={app.banner}
-                    alt={app.name}
-                    className="w-full h-32 object-cover rounded-xl mb-3 border border-[#23262B] bg-[#181A20]"
-                    whileHover={{ scale: 1.10 }}
-                    transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-                  />
-                  <h3 className="text-lg font-semibold mb-1 text-white/90">{app.name}</h3>
-                  <p className="text-white/70 mb-2 text-sm">{app.description}</p>
-                  <div className="mb-2 flex flex-wrap gap-2">
-                    {app.tags.map(tag => (
-                      <span key={tag} className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]">
+                  <Image src="/icons/dexscreener.png" alt="Dexscreener" width={14} height={14} className="inline-block" />
+                  {marketCap}
+                </a>
+              </div>
+              
+              <div className="flex gap-1 mt-2">
+                <a href={mockApps[0].website} target="_blank" rel="noopener noreferrer" className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200">
+                  <Global size={15} weight="Bold" /> <span>Website</span>
+                </a>
+                <a href={mockApps[0].android} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
+                  <Smartphone size={15} weight="Bold" /> <span>Android</span>
+                </a>
+                <a href={mockApps[0].ios} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
+                  <IPhone size={15} weight="Bold" /> <span>iOS</span>
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Apps Grid/Table */}
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-white">All Apps</h2>
+              {/* Custom themed dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button 
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 bg-[#2D3138] text-white rounded-lg px-3 py-1.5 text-sm font-medium border border-[#23262B] hover:bg-[#32363F] transition-colors focus:outline-none focus:ring-1 focus:ring-white/10"
+                >
+                  <span>{selectedTag}</span>
+                  <svg 
+                    className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? 'transform rotate-180' : ''}`} 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fill="currentColor"/>
+                  </svg>
+                </button>
+                
+                {isDropdownOpen && (
+                  <div className="absolute z-10 mt-1 w-48 bg-[#23262B] border border-[#32363F] rounded-lg shadow-lg py-1 max-h-56 overflow-y-auto scrollbar-hide">
+                    {allTags.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => {
+                          setSelectedTag(tag);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          selectedTag === tag 
+                            ? 'bg-[#32363F] text-white font-medium' 
+                            : 'text-white/80 hover:bg-[#32363F] hover:text-white'
+                        }`}
+                      >
                         {tag}
-                      </span>
+                      </button>
                     ))}
                   </div>
-
-                  <div className="flex gap-1 mt-auto">
-                    <a href={app.website} target="_blank" rel="noopener noreferrer" className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200">
-                      <Global size={13} weight="Bold" /> <span>Website</span>
-                    </a>
-                    <a href={app.android} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                      <Smartphone size={13} weight="Bold" /> <span>Android</span>
-                    </a>
-                    <a href={app.ios} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                      <IPhone size={13} weight="Bold" /> <span>iOS</span>
-                    </a>
-                  </div>
-
-                  {/* CA, Graph, and Market Cap Row at the bottom */}
-                  <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
-                    <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
-                      <Image src="/icons/solana.svg" alt="Solana" width={14} height={14} className="inline-block" />
-                      {shortenCA(CA)}
-                      <button onClick={handleCopy} className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition" title="Copy CA">
-                        {copied ? (
-                          <Image src="/icons/Check_Icon.svg" alt="Copied" width={13} height={13} className="inline-block transition-all duration-200" />
-                        ) : (
-                          <Image src="/Copy_Icon.svg" alt="Copy" width={13} height={13} className="inline-block transition-all duration-200" />
-                        )}
-                      </button>
-                    </span>
-                    {/* Inline SVG sparkline graph as placeholder */}
-                    <span className="flex items-center justify-center mx-2">
-                      <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <polyline
-                          fill="none"
-                          stroke="#4ADE80"
-                          strokeWidth="2"
-                          strokeLinejoin="round"
-                          strokeLinecap="round"
-                          points={gridSparklines[i]}
-                        />
-                      </svg>
-                    </span>
-                    <a
-                      href={dexscreenerUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
-                    >
-                      <Image src="/icons/dexscreener.png" alt="Dexscreener" width={14} height={14} className="inline-block" />
-                      {marketCap}
-                    </a>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="bg-[#23262B] rounded-2xl shadow-lg border border-[#23262B] overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-[#2D3138]">
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">App</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Description</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Tags</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Market Cap</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mockApps.slice(1).map((app, i) => (
-                    <tr key={app.id} className="border-b border-[#2D3138] last:border-0 hover:bg-[#2D3138]/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={app.banner}
-                            alt={app.name}
-                            className="w-12 h-12 rounded-lg object-cover"
-                          />
-                          <span className="font-medium text-white/90">{app.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-white/70 text-sm">{app.description}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-wrap gap-2">
-                          {app.tags.map(tag => (
-                            <span key={tag} className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <a
-                          href={dexscreenerUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
-                        >
-                          <Image src="/icons/dexscreener.png" alt="Dexscreener" width={14} height={14} className="inline-block" />
-                          {marketCap}
-                        </a>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex gap-1">
-                          <a href={app.website} target="_blank" rel="noopener noreferrer" className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200">
-                            <Global size={13} weight="Bold" />
-                          </a>
-                          <a href={app.android} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                            <Smartphone size={13} weight="Bold" />
-                          </a>
-                          <a href={app.ios} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                            <IPhone size={13} weight="Bold" />
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                )}
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-lg transition-colors ${
+                  viewMode === 'grid' ? 'bg-[#2D3138] text-white' : 'text-white/60 hover:text-white'
+                }`}
+              >
+                <Global size={20} weight="Bold" />
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`p-2 rounded-lg transition-colors ${
+                  viewMode === 'table' ? 'bg-[#2D3138] text-white' : 'text-white/60 hover:text-white'
+                }`}
+              >
+                <Smartphone size={20} weight="Bold" />
+              </button>
             </div>
           </div>
-        )}
+
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredApps.map((app, i) => {
+                return (
+                  <motion.div
+                    key={app.id}
+                    className="bg-[#23262B]/80 backdrop-blur-sm rounded-2xl shadow-lg p-4 flex flex-col border border-[#23262B] transition-transform duration-200"
+                    initial="hidden"
+                    animate="visible"
+                    whileHover="hover"
+                    variants={cardVariants}
+                    transition={{ ...spring, delay: i * 0.1 }}
+                  >
+                    <motion.img
+                      ref={imageRefs[i]}
+                      style={imageStyles[i]}
+                      src={app.banner}
+                      alt={app.name}
+                      className="w-full h-32 object-cover rounded-xl mb-3 border border-[#23262B] bg-[#181A20]"
+                      whileHover={{ scale: 1.10 }}
+                      transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+                    />
+                    <h3 className="text-lg font-semibold mb-1 text-white/90">{app.name}</h3>
+                    <p className="text-white/70 mb-2 text-sm">{app.description}</p>
+                    <div className="mb-2 flex flex-wrap gap-2">
+                      {app.tags.map(tag => (
+                        <span key={tag} className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-1 mt-auto">
+                      <a href={app.website} target="_blank" rel="noopener noreferrer" className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200">
+                        <Global size={13} weight="Bold" /> <span>Website</span>
+                      </a>
+                      <a href={app.android} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
+                        <Smartphone size={13} weight="Bold" /> <span>Android</span>
+                      </a>
+                      <a href={app.ios} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
+                        <IPhone size={13} weight="Bold" /> <span>iOS</span>
+                      </a>
+                    </div>
+
+                    {/* CA, Graph, and Market Cap Row at the bottom */}
+                    <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
+                      <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
+                        <Image src="/icons/send-logo.png" alt="Solana" width={14} height={14} className="inline-block" />
+                        {shortenCA(CA)}
+                        <button onClick={handleCopy} className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition" title="Copy CA">
+                          {copied ? (
+                            <Image src="/icons/Check_Icon.svg" alt="Copied" width={13} height={13} className="inline-block transition-all duration-200" />
+                          ) : (
+                            <Image src="/Copy_Icon.svg" alt="Copy" width={13} height={13} className="inline-block transition-all duration-200" />
+                          )}
+                        </button>
+                      </span>
+                      {/* Inline SVG sparkline graph as placeholder */}
+                      <span className="flex items-center justify-center mx-2">
+                        <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <polyline
+                            fill="none"
+                            stroke="#4ADE80"
+                            strokeWidth="2"
+                            strokeLinejoin="round"
+                            strokeLinecap="round"
+                            points={gridSparklines[i]}
+                          />
+                        </svg>
+                      </span>
+                      <a
+                        href={dexscreenerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
+                      >
+                        <Image src="/icons/dexscreener.png" alt="Dexscreener" width={14} height={14} className="inline-block" />
+                        {marketCap}
+                      </a>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-[#23262B]/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#23262B] overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-[#2D3138]">
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">App</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Description</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Tags</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">CA</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Market Cap</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredApps.map((app, i) => (
+                      <tr key={app.id} className="border-b border-[#2D3138] last:border-0 hover:bg-[#2D3138]/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={app.banner}
+                              alt={app.name}
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                            <span className="font-medium text-white/90">{app.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-white/70 text-sm">{app.description}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-wrap gap-2">
+                            {app.tags.map(tag => (
+                              <span key={tag} className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
+                            <Image src="/icons/send-logo.png" alt="Solana" width={14} height={14} className="inline-block" />
+                            {shortenCA(CA)}
+                            <button onClick={handleCopy} className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition" title="Copy CA">
+                              {copied ? (
+                                <Image src="/icons/Check_Icon.svg" alt="Copied" width={13} height={13} className="inline-block transition-all duration-200" />
+                              ) : (
+                                <Image src="/Copy_Icon.svg" alt="Copy" width={13} height={13} className="inline-block transition-all duration-200" />
+                              )}
+                            </button>
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <a
+                            href={dexscreenerUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
+                          >
+                            <Image src="/icons/dexscreener.png" alt="Dexscreener" width={14} height={14} className="inline-block" />
+                            {marketCap}
+                          </a>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-1">
+                            <a href={app.website} target="_blank" rel="noopener noreferrer" className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200">
+                              <Global size={13} weight="Bold" />
+                            </a>
+                            <a href={app.android} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
+                              <Smartphone size={13} weight="Bold" />
+                            </a>
+                            <a href={app.ios} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
+                              <IPhone size={13} weight="Bold" />
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -45,13 +45,13 @@ export default function ProtocolLogos() {
             <h3 className="text-slate-500 text-center text-xs font-medium mb-2 opacity-90">
                 PROTOCOLS INTEGRATED
             </h3>
-            <div className="flex items-center justify-center gap-5 flex-wrap px-4">
+            <div className="flex items-center justify-center gap-3 md:gap-4 lg:gap-5 flex-wrap px-2 md:px-4">
                 {isLoading ? (
                     // Loading skeleton placeholders
                     placeholderArray.map((_, index) => (
                         <div key={`placeholder-${index}`} className="flex-shrink-0">
-                            <div className="w-10 h-10 bg-[#1C2027] rounded-full flex items-center justify-center p-1.5 opacity-30">
-                                <div className="w-7 h-7 rounded-full bg-gray-700 animate-pulse"></div>
+                            <div className="w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 bg-[#1C2027] rounded-full flex items-center justify-center p-1 md:p-1.5 opacity-30">
+                                <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 rounded-full bg-gray-700 animate-pulse"></div>
                             </div>
                         </div>
                     ))
@@ -59,8 +59,8 @@ export default function ProtocolLogos() {
                     // Error state - quiet fallback
                     placeholderArray.slice(0, 6).map((_, index) => (
                         <div key={`error-placeholder-${index}`} className="flex-shrink-0">
-                            <div className="w-10 h-10 bg-[#1C2027] rounded-full flex items-center justify-center p-1.5 opacity-30">
-                                <div className="w-7 h-7 rounded-full bg-gray-700"></div>
+                            <div className="w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 bg-[#1C2027] rounded-full flex items-center justify-center p-1 md:p-1.5 opacity-30">
+                                <div className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 rounded-full bg-gray-700"></div>
                             </div>
                         </div>
                     ))
@@ -82,7 +82,7 @@ export default function ProtocolLogos() {
                             whileTap={{ scale: 0.95 }}
                         >
                             <motion.div
-                                className="relative w-10 h-10 bg-[#1C2027] rounded-full flex items-center justify-center p-1 transition-all duration-200"
+                                className="relative w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 bg-[#1C2027] rounded-full flex items-center justify-center p-0.5 md:p-1 transition-all duration-200"
                                 style={{
                                     boxShadow: "0 4px 8px rgba(0,0,0,0.1)"
                                 }}
@@ -94,9 +94,9 @@ export default function ProtocolLogos() {
                                 <Image
                                     src={protocol.imageUrl}
                                     alt={`${protocol.name} logo`}
-                                    width={30}
-                                    height={30}
-                                    className="object-contain rounded-full"
+                                    width={24}
+                                    height={24}
+                                    className="object-contain rounded-full w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8"
                                 />
                             </motion.div>
                         </motion.div>

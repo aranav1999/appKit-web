@@ -243,7 +243,7 @@ export default function SubmitAppPage() {
       }
 
       // Redirect to app detail page
-      router.push(`/apps/${createdApp.id}`);
+      router.push(`/apps`);
     } catch (error) {
       console.error('Error submitting app:', error);
       setFormError('Failed to submit app. Please try again.');

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
+import Link from "next/link";
 
 export default function MobileHero() {
   const [isCopied, setIsCopied] = useState(false);
@@ -145,16 +146,16 @@ export default function MobileHero() {
           </motion.div>
 
           <motion.div
-                      className="relative group mx-auto max-w-xs mb-6"
+                      className="relative group mx-auto w-fit mb-6"
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.2 }}
           >
             {/* Animated border gradient */}
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 via-blue-500 to-teal-400 rounded-lg blur-sm opacity-60 group-hover:opacity-100 group-hover:blur-md transition duration-300 animate-gradient-x animate-pulse-glow"></div>
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 via-blue-500 to-teal-400 rounded-lg blur-sm opacity-60 group-hover:opacity-100 group-hover:blur-md transition duration-300 animate-gradient-x animate-pulse-glow w-full "></div>
 
             {/* Inner content */}
             <div
-            className="relative bg-gray-800/90 py-2 px-4 rounded-lg flex items-center justify-between z-10 cursor-pointer group-hover:bg-gray-800/100 transition-colors duration-300"
+            className="relative bg-gray-800/90 py-2 px-4 rounded-lg flex items-center justify-center z-10 cursor-pointer group-hover:bg-gray-800/100 transition-colors duration-300 w-fit"
               onClick={copyToClipboard}
               aria-label="Copy 'npx create-solana-app' to clipboard"
               role="button"
@@ -289,7 +290,7 @@ export default function MobileHero() {
             href="https://github.com/SendArcade/solana-app-kit"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full max-w-xs"
+            className="w-full"
           >
             <motion.button
               className="bg-white text-black py-2 px-6 rounded-full font-semibold w-full flex items-center justify-center gap-2 text-sm"
@@ -308,20 +309,19 @@ export default function MobileHero() {
               </svg>
             </motion.button>
           </a>
-          <a
-            href="https://docs.1doma.in/docs/introduction"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full max-w-xs"
+          <Link
+            href="/apps"
+            className="w-full"
           >
-            <motion.button
-              className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-6 rounded-full font-semibold w-full text-sm"
+            <motion.a
+              href="/apps"
+              className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-6 rounded-full font-semibold w-full text-sm flex items-center justify-center gap-2"
               whileHover={{ scale: 1.02, y: -2 }}
               transition={{ duration: 0.2 }}
             >
-              Build on SAK
-            </motion.button>
-          </a>
+              Apps
+            </motion.a>
+          </Link>
         </motion.div>
       </div>
       

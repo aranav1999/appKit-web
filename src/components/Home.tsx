@@ -1060,7 +1060,7 @@ export default function Hero() {
           </div>
 
           <h1
-            className="text-[46px] font-[600] text-white mb-3 leading-[100%] tracking-[0%] text-center"
+            className="text-[56px] font-[600] text-white m-3 leading-[100%] tracking-[0%] text-center"
             style={{ fontFamily: "Franie, sans-serif" }}
           >
             Build Solana Apps Faster
@@ -1147,7 +1147,7 @@ export default function Hero() {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 pb-30 z-10">
+      <div className="absolute bottom-0 pb-8 z-10">
         <ProtocolLogos />
       </div>
     </section>

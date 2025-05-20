@@ -121,8 +121,10 @@ export default function Hero() {
       className="relative flex items-center justify-center rounded-b-3xl overflow-hidden"
       style={{
         background: "linear-gradient(to bottom, #131519, #1a2740)",
-        minHeight: `${heightScale * 100}vh`,
-        height: `${heightScale * 100}vh`,
+        minHeight: `${heightScale * 80}vh`,
+        height: `${heightScale * 90}vh`,
+        marginTop: `-${heightScale * 8}vh`,
+        zIndex: 1,
       }}
     >
       <div

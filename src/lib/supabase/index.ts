@@ -1,78 +1,47 @@
-import { StorageClient } from '@supabase/storage-js';
-import { createBucketIfNotExists, uploadFileDirect } from './client';
+import { createClient } from '@supabase/supabase-js';
+import { logAllBuckets, checkBucketExists } from './client';
 
 // Ensure we have the required environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Use the service role key for admin operations
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseKey;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('Missing Supabase environment variables. Please check your .env.local file.');
 }
 
-// Create a single instance of the storage client for the entire app
-const storageClient = new StorageClient(supabaseUrl || '', {
-  apikey: supabaseKey || '',
+// Create the regular client for public operations
+export const supabase = createClient(supabaseUrl || '', supabaseKey || '');
+
+// Create an admin client for operations that require bypassing RLS
+const adminClient = createClient(supabaseUrl || '', serviceRoleKey || '', {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
 });
 
 // Bucket name for app images
 export const APP_IMAGES_BUCKET = 'app-images';
 
-// Initialize the bucket when the app starts
-async function initializeBucket() {
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('Cannot initialize bucket: Missing Supabase credentials');
-    return;
-  }
+// No need to create bucket since it already exists
+console.log('Using existing Supabase storage bucket:', APP_IMAGES_BUCKET);
 
-  try {
-    // Try using the direct REST API first for reliability
-    await createBucketIfNotExists();
-  } catch (directError) {
-    console.error('Direct bucket initialization failed, trying StorageClient:', directError);
-    
-    try {
-      // Check if bucket exists
-      const { data: buckets, error: listError } = await storageClient.listBuckets();
-      
-      if (listError) {
-        console.error('Error listing buckets:', listError);
-        return;
-      }
-      
-      const bucketExists = buckets?.find(b => b.name === APP_IMAGES_BUCKET);
-      
-      if (!bucketExists) {
-        // Create the bucket if it doesn't exist
-        console.log(`Creating storage bucket: ${APP_IMAGES_BUCKET}`);
-        const { error: createError } = await storageClient.createBucket(APP_IMAGES_BUCKET, {
-          public: true // Make bucket publicly accessible
-        });
-        
-        if (createError) {
-          console.error('Error creating bucket:', createError);
-          return;
-        }
-        
-        console.log(`Created storage bucket: ${APP_IMAGES_BUCKET}`);
-      }
-    } catch (error) {
-      console.error('Error initializing storage bucket:', error);
-    }
-  }
-}
-
-// Initialize bucket when this module is imported
-initializeBucket().catch(console.error);
+// Log all buckets on startup for debugging
+logAllBuckets().catch(err => {
+  console.error('Error logging buckets:', err);
+});
 
 /**
- * Upload an image to Supabase Storage
+ * Upload an image to Supabase Storage using admin rights to bypass RLS
  * @param file The file to upload
  * @param path The path within the bucket where the file should be stored
  * @returns The URL of the uploaded file
  */
 export async function uploadImage(file: File, path: string): Promise<string> {
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase credentials');
+  if (!supabaseUrl) {
+    throw new Error('Missing Supabase URL');
   }
 
   if (!file) {
@@ -86,25 +55,12 @@ export async function uploadImage(file: File, path: string): Promise<string> {
   // Ensure path is sanitized (no leading slashes)
   const sanitizedPath = path.startsWith('/') ? path.substring(1) : path;
   
-  // Try the direct REST API method first
+  // Use the admin client to upload (bypasses RLS)
   try {
-    console.log(`Trying direct upload for ${sanitizedPath}...`);
-    const directUrl = await uploadFileDirect(file, sanitizedPath);
+    console.log(`Uploading to bucket ${APP_IMAGES_BUCKET}, path: ${sanitizedPath}`);
     
-    if (directUrl) {
-      console.log(`Direct upload successful for ${sanitizedPath}`);
-      return directUrl;
-    }
-  } catch (directError) {
-    console.warn('Direct upload failed, trying StorageClient:', directError);
-  }
-  
-  // Fall back to the StorageClient
-  try {
-    // Verify the bucket exists before attempting upload
-    await verifyBucketExists();
-    
-    const { data, error } = await storageClient
+    const { data, error } = await adminClient
+      .storage
       .from(APP_IMAGES_BUCKET)
       .upload(sanitizedPath, file, {
         cacheControl: '3600',
@@ -120,50 +76,14 @@ export async function uploadImage(file: File, path: string): Promise<string> {
       throw new Error('Upload successful but file path was not returned');
     }
 
+    console.log('Upload successful:', data);
+    
     // Return the public URL for the uploaded file
-    return `${supabaseUrl}/storage/v1/object/public/${APP_IMAGES_BUCKET}/${data.path}`;
+    const { data: urlData } = adminClient.storage.from(APP_IMAGES_BUCKET).getPublicUrl(data.path);
+    return urlData.publicUrl;
   } catch (error) {
     console.error('Error uploading image:', error);
     throw error;
-  }
-}
-
-/**
- * Verify the bucket exists, creating it if necessary
- */
-async function verifyBucketExists(): Promise<void> {
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase credentials');
-  }
-
-  // Try the direct method first
-  const bucketCreated = await createBucketIfNotExists();
-  if (bucketCreated) {
-    return;
-  }
-
-  // Fall back to the StorageClient
-  const { data: buckets, error } = await storageClient.listBuckets();
-  
-  if (error) {
-    console.error('Error listing buckets:', error);
-    throw error;
-  }
-  
-  const bucketExists = buckets?.find(b => b.name === APP_IMAGES_BUCKET);
-  
-  if (!bucketExists) {
-    console.log(`Creating storage bucket: ${APP_IMAGES_BUCKET}`);
-    const { error: createError } = await storageClient.createBucket(APP_IMAGES_BUCKET, {
-      public: true
-    });
-    
-    if (createError) {
-      console.error('Error creating bucket:', createError);
-      throw createError;
-    }
-    
-    console.log(`Created storage bucket: ${APP_IMAGES_BUCKET}`);
   }
 }
 
@@ -172,8 +92,8 @@ async function verifyBucketExists(): Promise<void> {
  * @param path The path of the file to delete
  */
 export async function deleteImage(path: string): Promise<void> {
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase credentials');
+  if (!supabaseUrl) {
+    throw new Error('Missing Supabase URL');
   }
 
   if (!path || path.trim() === '') {
@@ -181,7 +101,9 @@ export async function deleteImage(path: string): Promise<void> {
   }
   
   try {
-    const { error } = await storageClient
+    // Use admin client to bypass RLS
+    const { error } = await adminClient
+      .storage
       .from(APP_IMAGES_BUCKET)
       .remove([path]);
 
@@ -194,4 +116,4 @@ export async function deleteImage(path: string): Promise<void> {
   }
 }
 
-export { storageClient }; 
+export { supabase as storageClient }; 

@@ -1,10 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, schema } from '@/lib/db';
-import { uploadImage } from '@/lib/supabase';
-import { uploadFile as mockUploadFile } from '@/lib/mock-storage';
+import { supabaseAdmin, APP_IMAGES_BUCKET } from '@/lib/supabase/server';
 
-// Flag to use mock storage instead of Supabase
-const USE_MOCK_STORAGE = true;
+// Direct upload to Supabase storage bypassing RLS
+async function uploadToStorage(file: File, path: string): Promise<string> {
+  if (!file || !path) {
+    throw new Error('Missing file or path for upload');
+  }
+  
+  const sanitizedPath = path.startsWith('/') ? path.substring(1) : path;
+  
+  console.log(`Uploading screenshot to bucket ${APP_IMAGES_BUCKET}, path: ${sanitizedPath}`);
+  console.log(`Using service role key: ${process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10)}...`);
+  
+  try {
+    // Convert file to arrayBuffer
+    const buffer = Buffer.from(await file.arrayBuffer());
+    
+    // Upload file using admin client (bypasses RLS)
+    const { data, error } = await supabaseAdmin
+      .storage
+      .from(APP_IMAGES_BUCKET)
+      .upload(sanitizedPath, buffer, {
+        contentType: file.type,
+        cacheControl: '3600',
+        upsert: true,
+      });
+    
+    if (error) {
+      console.error('Supabase storage upload error:', error);
+      throw error;
+    }
+    
+    if (!data || !data.path) {
+      throw new Error('Upload successful but file path was not returned');
+    }
+    
+    console.log('Upload successful:', data);
+    
+    // Get the public URL
+    const { data: urlData } = supabaseAdmin
+      .storage
+      .from(APP_IMAGES_BUCKET)
+      .getPublicUrl(data.path);
+    
+    return urlData.publicUrl;
+  } catch (error) {
+    console.error('Detailed upload error:', error);
+    throw error;
+  }
+}
 
 // POST /api/screenshots - Add a screenshot to an app
 export async function POST(request: NextRequest) {
@@ -47,21 +92,9 @@ export async function POST(request: NextRequest) {
         
         console.log(`Attempting to upload to path: ${filePath}`);
         
-        if (USE_MOCK_STORAGE) {
-          // Use mock storage for development
-          imageUrl = await mockUploadFile(imageFile, filePath);
-          console.log(`Mock upload successful: ${imageUrl}`);
-        } else {
-          // Use Supabase storage for production
-          try {
-            imageUrl = await uploadImage(imageFile, filePath);
-            console.log(`Supabase upload successful: ${imageUrl}`);
-          } catch (supabaseError) {
-            console.error('Supabase upload failed, falling back to mock storage:', supabaseError);
-            imageUrl = await mockUploadFile(imageFile, filePath);
-            console.log(`Fallback mock upload successful: ${imageUrl}`);
-          }
-        }
+        // Upload to Supabase storage using admin client
+        imageUrl = await uploadToStorage(imageFile, filePath);
+        console.log(`Supabase upload successful: ${imageUrl}`);
       } catch (error: any) {
         console.error('Error processing screenshot upload:', error);
         
@@ -73,6 +106,7 @@ export async function POST(request: NextRequest) {
           { 
             error: 'Failed to upload screenshot',
             details: errorMessage,
+            code: error?.code || error?.statusCode || 'UNKNOWN',
             path: `screenshots/${imageFile.name}`
           },
           { status }
@@ -88,10 +122,14 @@ export async function POST(request: NextRequest) {
     }).returning();
     
     return NextResponse.json(newScreenshot[0], { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error adding screenshot:', error);
     return NextResponse.json(
-      { error: 'Failed to add screenshot' },
+      { 
+        error: 'Failed to add screenshot',
+        details: error?.message || 'Unknown error',
+        code: error?.code || error?.statusCode || 'UNKNOWN'
+      },
       { status: 500 }
     );
   }

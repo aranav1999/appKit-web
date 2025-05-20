@@ -1,11 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, schema } from '@/lib/db';
-import { uploadImage } from '@/lib/supabase';
-import { uploadFile as mockUploadFile } from '@/lib/mock-storage';
+import { supabaseAdmin, APP_IMAGES_BUCKET } from '@/lib/supabase/server';
 import { type NewApp } from '@/lib/db/schema';
 
-// Flag to use mock storage instead of Supabase
-const USE_MOCK_STORAGE = true;
+// Direct upload to Supabase storage bypassing RLS
+async function uploadToStorage(file: File, path: string): Promise<string> {
+  if (!file || !path) {
+    throw new Error('Missing file or path for upload');
+  }
+  
+  const sanitizedPath = path.startsWith('/') ? path.substring(1) : path;
+  
+  console.log(`Uploading app icon to bucket ${APP_IMAGES_BUCKET}, path: ${sanitizedPath}`);
+  console.log(`Using service role key: ${process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10)}...`);
+  
+  try {
+    // Convert file to arrayBuffer
+    const buffer = Buffer.from(await file.arrayBuffer());
+    
+    // Upload file using admin client (bypasses RLS)
+    const { data, error } = await supabaseAdmin
+      .storage
+      .from(APP_IMAGES_BUCKET)
+      .upload(sanitizedPath, buffer, {
+        contentType: file.type,
+        cacheControl: '3600',
+        upsert: true,
+      });
+    
+    if (error) {
+      console.error('Supabase storage upload error:', error);
+      throw error;
+    }
+    
+    if (!data || !data.path) {
+      throw new Error('Upload successful but file path was not returned');
+    }
+    
+    console.log('Upload successful:', data);
+    
+    // Get the public URL
+    const { data: urlData } = supabaseAdmin
+      .storage
+      .from(APP_IMAGES_BUCKET)
+      .getPublicUrl(data.path);
+    
+    return urlData.publicUrl;
+  } catch (error) {
+    console.error('Detailed upload error:', error);
+    throw error;
+  }
+}
 
 // GET /api/apps - Get all apps
 export async function GET() {
@@ -80,22 +125,10 @@ export async function POST(request: NextRequest) {
           
           console.log(`Uploading icon to path: ${filePath}`);
           
-          if (USE_MOCK_STORAGE) {
-            // Use mock storage for development
-            iconUrl = await mockUploadFile(iconFile, filePath);
-            console.log(`Mock upload successful: ${iconUrl}`);
-          } else {
-            // Use Supabase storage for production
-            try {
-              iconUrl = await uploadImage(iconFile, filePath);
-              console.log(`Supabase upload successful: ${iconUrl}`);
-            } catch (supabaseError) {
-              console.error('Supabase upload failed, falling back to mock storage:', supabaseError);
-              iconUrl = await mockUploadFile(iconFile, filePath);
-              console.log(`Fallback mock upload successful: ${iconUrl}`);
-            }
-          }
-        } catch (error) {
+          // Upload to Supabase storage using admin client
+          iconUrl = await uploadToStorage(iconFile, filePath);
+          console.log(`Supabase upload successful: ${iconUrl}`);
+        } catch (error: any) {
           console.error('Error uploading image:', error);
           // Continue with empty iconUrl rather than failing the entire request
         }
@@ -139,7 +172,7 @@ export async function POST(request: NextRequest) {
       { 
         error: 'Failed to create app',
         details: error?.message || 'Unknown error',
-        code: error?.code || 'UNKNOWN'
+        code: error?.code || error?.statusCode || 'UNKNOWN'
       },
       { status: 500 }
     );

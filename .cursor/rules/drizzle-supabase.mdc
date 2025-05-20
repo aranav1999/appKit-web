@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- use pnpm always
+- dont create any mock test files or mock routes or mock images etc for uploading when you're using images, just ask for the user if you didn't find a way to find images
+- dont create any mock apis or duplicate any functionality, update the existing apis, if you're adding anything related to DB ask the User before updating existing APIs
+- don't try fixing any type errors before the final version (isFinalVersion=true)
+- don't touch / try to update the tasks.md file, I(the user) will be updating that manually. It will contain the version and the next tasks that you need to focus on, Untill I (the user) explicitly tell you to go through the tasks.md file, don't read it or use that as a reference.
+- If there are existing files that you can edit, edit it, and try to avoid creating new files for the existing functionality whatsoever.

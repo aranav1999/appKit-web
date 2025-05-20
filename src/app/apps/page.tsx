@@ -211,9 +211,9 @@ function AppCard({ app, index }: { app: App; index: number }) {
       >
         {/* Card Banner */}
         <div className="relative h-40 w-full overflow-hidden bg-gradient-to-r from-[#1a1d22] to-[#1a2029]">
-          {app.featureBannerUrl || app.iconUrl ? (
+          {app.featureBannerUrl ? (
             <Image
-              src={app.featureBannerUrl || app.iconUrl || ""}
+              src={app.featureBannerUrl}
               alt={app.name || "App banner"}
               fill
               className="object-cover"

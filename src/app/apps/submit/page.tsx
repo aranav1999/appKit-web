@@ -312,18 +312,6 @@ export default function SubmitAppPage() {
       >
         <h1 className="text-3xl text-center font-bold mb-6 text-white">Launch Your App</h1>
         
-        {/* Mock storage notice */}
-        <div className="mb-6 p-3 bg-yellow-800/30 border border-yellow-700/50 rounded-lg text-yellow-200 text-sm">
-          <p className="mb-2 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-            <span className="font-medium">Development Mode</span>
-          </p>
-          <p>The app is currently using local mock storage for file uploads instead of Supabase, due to configuration issues.</p>
-          <p className="mt-1">Uploaded files are being saved to the <code className="bg-black/20 px-1 rounded">public/uploads</code> directory.</p>
-        </div>
-        
         {/* Immediate upload notice */}
         <div className="mb-6 p-3 bg-blue-800/30 border border-blue-700/50 rounded-lg text-blue-200 text-sm">
           <p className="flex items-center">

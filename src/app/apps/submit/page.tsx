@@ -2,7 +2,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { fetchCategories, createApp, uploadScreenshot, uploadFile } from '@/lib/api-client';
+import { fetchCategories, createApp, updateApp, uploadScreenshot, uploadFile } from '@/lib/api-client';
 import { Category } from '@/lib/db/schema';
 import { useRouter } from 'next/navigation';
 
@@ -214,6 +214,11 @@ export default function SubmitAppPage() {
       } else if (appLogo) {
         submitData.append('icon', appLogo);
       }
+      
+      // Include feature banner URL if it was uploaded
+      if (uploadedBannerUrl) {
+        submitData.append('featureBannerUrl', uploadedBannerUrl);
+      }
 
       // Add URLs
       submitData.append('websiteUrl', formData.website);
@@ -232,12 +237,8 @@ export default function SubmitAppPage() {
       // Create the app
       const createdApp = await createApp(submitData);
 
-      // If banner was pre-uploaded, add to app record
-      if (uploadedBannerUrl) {
-        // Optionally submit the banner URL in a separate call if needed
-      } 
-      // Upload banner if provided but not already uploaded
-      else if (featureBanner && !uploadedBannerUrl) {
+      // Upload banner as a screenshot if provided but not already uploaded via the immediate upload
+      if (featureBanner && !uploadedBannerUrl) {
         await uploadScreenshot(createdApp.id, featureBanner, 0);
       }
 

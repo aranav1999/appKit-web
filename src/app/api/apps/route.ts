@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
     const projectTwitter = formData.get('projectTwitter') as string || '';
     const submitterTwitter = formData.get('submitterTwitter') as string || '';
     const contractAddress = formData.get('contractAddress') as string || '';
+    const featureBannerUrl = formData.get('featureBannerUrl') as string || '';
     
     // Parse tags if present
     let tags: string[] = [];
@@ -156,6 +157,7 @@ export async function POST(request: NextRequest) {
       projectTwitter,
       submitterTwitter,
       contractAddress,
+      featureBannerUrl,
       tags,
     };
     

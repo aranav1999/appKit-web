@@ -8,30 +8,46 @@ const seedDatabase = async () => {
   try {
     console.log('🌱 Seeding database...');
 
+    // Delete existing categories
+    console.log('Deleting existing categories...');
+    await db.delete(schema.categories);
+
     // Insert categories
     const categories = await db.insert(schema.categories).values([
       {
-        name: 'Productivity',
-        description: 'Apps to help you get things done',
-        iconUrl: 'https://placehold.co/200x200?text=Productivity',
+        name: 'AI',
+        description: 'Artificial Intelligence applications',
+        iconUrl: 'https://placehold.co/200x200?text=AI',
         isActive: true,
       },
       {
-        name: 'Games',
-        description: 'Fun games for all ages',
-        iconUrl: 'https://placehold.co/200x200?text=Games',
+        name: 'Launchpad',
+        description: 'Launchpad and fundraising applications',
+        iconUrl: 'https://placehold.co/200x200?text=Launchpad',
+        isActive: true,
+      },
+      {
+        name: 'Trading',
+        description: 'Trading and exchange applications',
+        iconUrl: 'https://placehold.co/200x200?text=Trading',
+        isActive: true,
+      },
+      {
+        name: 'Wallets',
+        description: 'Wallet and asset management applications',
+        iconUrl: 'https://placehold.co/200x200?text=Wallets',
         isActive: true,
       },
       {
         name: 'Social',
-        description: 'Stay connected with friends and family',
+        description: 'Social networking applications',
         iconUrl: 'https://placehold.co/200x200?text=Social',
         isActive: true,
       },
       {
-        name: 'Education',
-        description: 'Learn something new',
-        iconUrl: 'https://placehold.co/200x200?text=Education',
+        name: 'Other',
+        description: 'Miscellaneous applications',
+        iconUrl: 'https://placehold.co/200x200?text=Other',
         isActive: true,
       },
     ]).returning();
@@ -44,7 +60,7 @@ const seedDatabase = async () => {
         name: 'TaskMaster',
         description: 'The ultimate task management app with powerful features for organizing your work and personal life.',
         iconUrl: 'https://placehold.co/512x512?text=TM',
-        category: 'Productivity',
+        category: 'AI',
         price: 'Free',
         developer: 'TaskMaster Inc.',
         rating: 4.5,
@@ -54,7 +70,7 @@ const seedDatabase = async () => {
         name: 'BlockPuzzle',
         description: 'Addictive puzzle game that challenges your spatial reasoning skills.',
         iconUrl: 'https://placehold.co/512x512?text=BP',
-        category: 'Games',
+        category: 'Other',
         price: '$1.99',
         developer: 'Fun Games Studio',
         rating: 4.8,
@@ -74,7 +90,7 @@ const seedDatabase = async () => {
         name: 'MathGenius',
         description: 'Learn mathematics in a fun and interactive way with adaptive learning technology.',
         iconUrl: 'https://placehold.co/512x512?text=MG',
-        category: 'Education',
+        category: 'AI',
         price: '$4.99',
         developer: 'EduTech Solutions',
         rating: 4.7,

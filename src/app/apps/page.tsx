@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Global, IPhone, Smartphone, Copy } from "@solar-icons/react";
+import { Global, IPhone, Smartphone, Copy, ArrowRight } from "@solar-icons/react";
 import Image from "next/image";
 import { fetchApps, fetchCategories } from "@/lib/api-client";
 import { App, Category } from "@/lib/db/schema";
@@ -287,6 +287,40 @@ function AppCard({ app, index }: { app: App; index: number }) {
             </a>
           </div>
 
+          {/* Links section with border above */}
+          <div className="flex gap-1 mt-3 pt-2 border-t border-[#23262B]">
+            {app.websiteUrl && (
+              <a
+                href={app.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200"
+              >
+                <Global size={13} weight="Bold" /> <span>Website</span>
+              </a>
+            )}
+            {app.androidUrl && (
+              <a
+                href={app.androidUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+              >
+                <Smartphone size={13} weight="Bold" /> <span>Android</span>
+              </a>
+            )}
+            {app.iosUrl && (
+              <a
+                href={app.iosUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+              >
+                <IPhone size={13} weight="Bold" /> <span>iOS</span>
+              </a>
+            )}
+          </div>
+
           {/* CA, Graph, and Market Cap Row */}
           <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
             <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
@@ -360,40 +394,6 @@ function AppCard({ app, index }: { app: App; index: number }) {
               {marketCap}
             </a>
           </div>
-
-          {/* Links */}
-          <div className="flex gap-1 mt-2">
-            {app.websiteUrl && (
-              <a
-                href={app.websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200"
-              >
-                <Global size={13} weight="Bold" /> <span>Website</span>
-              </a>
-            )}
-            {app.androidUrl && (
-              <a
-                href={app.androidUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
-              >
-                <Smartphone size={13} weight="Bold" /> <span>Android</span>
-              </a>
-            )}
-            {app.iosUrl && (
-              <a
-                href={app.iosUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
-              >
-                <IPhone size={13} weight="Bold" /> <span>iOS</span>
-              </a>
-            )}
-          </div>
         </div>
       </motion.div>
     </motion.div>
@@ -456,6 +456,31 @@ function FeaturedApp({ app }: { app: any }) {
             <span>X</span>
           </a>
         </div>
+        
+        {/* Links section with border above */}
+        <div className="flex gap-1 mt-3 pt-2 border-t border-[#23262B]">
+          <a
+            href={app.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200"
+          >
+            <Global size={15} weight="Bold" /> <span>Website</span>
+          </a>
+          <a
+            href={app.android}
+            className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+          >
+            <Smartphone size={15} weight="Bold" /> <span>Android</span>
+          </a>
+          <a
+            href={app.ios}
+            className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+          >
+            <IPhone size={15} weight="Bold" /> <span>iOS</span>
+          </a>
+        </div>
+        
         {/* CA, Graph, and Market Cap Row at the bottom */}
         <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
           <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
@@ -524,29 +549,6 @@ function FeaturedApp({ app }: { app: any }) {
               className="inline-block"
             />
             {marketCap}
-          </a>
-        </div>
-
-        <div className="flex gap-1 mt-2">
-          <a
-            href={app.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200"
-          >
-            <Global size={15} weight="Bold" /> <span>Website</span>
-          </a>
-          <a
-            href={app.android}
-            className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
-          >
-            <Smartphone size={15} weight="Bold" /> <span>Android</span>
-          </a>
-          <a
-            href={app.ios}
-            className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
-          >
-            <IPhone size={15} weight="Bold" /> <span>iOS</span>
           </a>
         </div>
       </div>
@@ -821,7 +823,7 @@ export default function AppsPage() {
       <div className="max-w-7xl mx-auto px-4 py-10 relative z-10">
         {/* Semantic Search Bar */}
         <div className="mb-8">
-          <div className="flex justify-center my-12">
+          <div className="flex justify-center my-12 mb-4">
             <h1
               className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-center select-none px-4 py-4 rounded-xl shadow-2xl "
               style={{
@@ -832,9 +834,37 @@ export default function AppsPage() {
               Build & Launch Solana Apps, Faster
             </h1>
           </div>
+          
+          <div className="flex justify-center mb-8">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <Link 
+                href="/apps/submit" 
+                className="bg-white text-black hover:bg-white/90 transition-all duration-200 font-semibold py-2 px-6 rounded-full flex items-center gap-2 shadow-lg"
+              >
+                <motion.span
+                  initial={{ marginRight: 0 }}
+                  whileHover={{ marginRight: 2 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  Submit App
+                </motion.span>
+                <motion.div
+                  initial={{ marginLeft: 0 }}
+                  whileHover={{ marginLeft: 2 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  <ArrowRight size={20} weight="Bold" />
+                </motion.div>
+              </Link>
+            </motion.div>
+          </div>
+          
           <input
             type="text"
-            placeholder="Search apps..."
+            placeholder="Search apps, devs, CAs and more..."
             className="w-full p-3 rounded-lg border border-[#23262B] bg-[#181A20] text-white/90 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-white/40"
           />
         </div>
@@ -842,7 +872,15 @@ export default function AppsPage() {
         {/* Featured App */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-4 text-white">Featured App</h2>
-          {mockApps.length > 0 && <FeaturedApp app={mockApps[0]} />}
+          {apps.length > 0 && <FeaturedApp app={{
+            name: apps[0].name,
+            description: apps[0].description,
+            banner: apps[0].featureBannerUrl || apps[0].iconUrl,
+            tags: apps[0].tags || [],
+            website: apps[0].websiteUrl,
+            android: apps[0].androidUrl,
+            ios: apps[0].iosUrl
+          }} />}
         </div>
 
         {/* Apps Grid/Table */}

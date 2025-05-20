@@ -15,6 +15,13 @@
       "when": 1708261000000,
       "tag": "0001_add_app_fields",
       "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1747750307450,
+      "tag": "0002_smooth_loki",
+      "breakpoints": true
     }
   ]
-} 
+}

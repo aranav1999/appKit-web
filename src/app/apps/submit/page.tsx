@@ -257,8 +257,23 @@ export default function SubmitAppPage() {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#131519] to-[#1a2740] -z-10" />
       
-      {/* Background decorative elements */}
+      {/* Enhanced Hexagon Background Pattern */}
       <div className="absolute inset-0 overflow-hidden -z-5">
+        {/* Hexagon pattern overlay - reduced size, moved to top-right corner */}
+        <svg 
+          className="absolute top-0 right-0 w-[40%] h-[40%] opacity-1"
+          viewBox="0 0 100 100" 
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <pattern id="largeHexagonPattern" width="10" height="17.32" patternUnits="userSpaceOnUse" patternTransform="scale(1.5) rotate(15)">
+              <path d="M5,0 L10,8.66 L5,17.32 L0,8.66Z" fill="none" stroke="#64C6FF" strokeWidth="0.3"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#largeHexagonPattern)" />
+        </svg>
+
         {/* Left decoration */}
         <motion.svg 
           id="settingsIcon"
@@ -281,13 +296,13 @@ export default function SubmitAppPage() {
         {/* Right decoration circle */}
         <motion.svg 
           id="circleElement"
-          className="absolute right-12 top-[40%] opacity-5 w-[350px] h-[350px]" 
+          className="absolute right-12 top-[40%] opacity-1 w-[240px] h-[240px]" 
           viewBox="0 0 200 200" 
           xmlns="http://www.w3.org/2000/svg"
           variants={circleVariants}
           animate="animate"
         >
-          <circle cx="100" cy="100" r="100" fill="#64C6FF" />
+          <circle cx="100" cy="100" r="100" className='opacity-10' fill="#64C6FF" />
         </motion.svg>
         
         {/* Bottom right zigzag */}
@@ -311,8 +326,17 @@ export default function SubmitAppPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={spring}
       >
-        <h1 className="text-3xl text-center font-bold mb-6 text-white">Launch Your App</h1>
-        
+          <div className="flex justify-center my-12 mb-8">
+            <h1
+              className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-center select-none px-4 py-4 rounded-xl shadow-2xl "
+              style={{
+                textShadow: "0 4px 24px rgba(0,0,0,0.45), 0 1px 0 #fff",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Submit Your App
+            </h1>
+          </div>
         {formError && (
           <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-200 text-sm">
             {formError}

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Global, IPhone, Smartphone, Copy, ArrowRight } from "@solar-icons/react";
+import { ArrowRightUp as Global, IPhone, Smartphone, Copy, ArrowRight, List, Widget4, LinkSquare} from "@solar-icons/react";
 import Image from "next/image";
 import { fetchApps, fetchCategories } from "@/lib/api-client";
 import { App, Category } from "@/lib/db/schema";
@@ -665,6 +665,7 @@ export default function AppsPage() {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [selectedTag, setSelectedTag] = useState<string>("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Add state for actual data
   const [apps, setApps] = useState<App[]>([]);
@@ -727,15 +728,32 @@ export default function AppsPage() {
     return Array.from(tags);
   }, []);
 
-  // Filter apps by selected tag
+  // Filter apps by selected tag and search query
   const filteredApps = React.useMemo(() => {
     return apps.filter((app) => {
-      if (selectedTag === "All") return true;
-      return (
-        app.tags && Array.isArray(app.tags) && app.tags.includes(selectedTag)
-      );
+      // First check tag filter
+      const matchesTag = selectedTag === "All" || 
+        (app.tags && Array.isArray(app.tags) && app.tags.includes(selectedTag));
+      
+      if (!matchesTag) return false;
+      
+      // If no search query, just return tag matches
+      if (!searchQuery.trim()) return true;
+      
+      // Case insensitive search
+      const query = searchQuery.toLowerCase();
+      
+      // Search across multiple fields for semantic search
+      const matchesName = app.name?.toLowerCase().includes(query);
+      const matchesDescription = app.description?.toLowerCase().includes(query);
+      const matchesTags = app.tags?.some(tag => tag.toLowerCase().includes(query));
+      const matchesCategory = app.category?.toLowerCase().includes(query);
+      const matchesTwitter = app.projectTwitter?.toLowerCase().includes(query);
+      
+      // Return true if any field matches
+      return matchesName || matchesDescription || matchesTags || matchesCategory || matchesTwitter;
     });
-  }, [apps, selectedTag]);
+  }, [apps, selectedTag, searchQuery]);
 
   // Handle clicks outside the dropdown to close it
   useEffect(() => {
@@ -876,6 +894,23 @@ export default function AppsPage() {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#131519] to-[#1a2740] -z-10" />
 
+      {/* Hexagon pattern background */}
+      <div className="absolute inset-0 -z-5">
+        <svg 
+          className="absolute top-0 right-0 w-[40%] h-[40%] opacity-1"
+          viewBox="0 0 100 100" 
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <pattern id="largeHexagonPattern" width="10" height="17.32" patternUnits="userSpaceOnUse" patternTransform="scale(1.5) rotate(15)">
+              <path d="M5,0 L10,8.66 L5,17.32 L0,8.66Z" fill="none" stroke="#64C6FF" strokeWidth="0.3"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#largeHexagonPattern)" />
+        </svg>
+      </div>
+
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden -z-5">
         {/* Left decoration */}
@@ -898,20 +933,20 @@ export default function AppsPage() {
         </motion.svg>
 
         {/* Right decoration circle */}
-        <motion.svg
+        <motion.svg 
           id="circleElement"
-          className="absolute right-12 top-[40%] opacity-5 w-[350px] h-[350px]"
-          viewBox="0 0 200 200"
+          className="absolute right-12 top-[40%] opacity-1 w-[240px] h-[240px]" 
+          viewBox="0 0 200 200" 
           xmlns="http://www.w3.org/2000/svg"
           variants={circleVariants}
           animate="animate"
         >
-          <circle cx="100" cy="100" r="100" fill="#64C6FF" />
+          <circle cx="100" cy="100" r="100" className='opacity-10' fill="#64C6FF" />
         </motion.svg>
-
+        
         {/* Bottom right zigzag */}
         <svg
-          className="absolute right-0 bottom-0 opacity-10 w-[300px] h-[300px]"
+          className="absolute right-0 bottom-0 opacity-20 w-[300px] h-[300px]"
           viewBox="0 0 446 520"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -966,11 +1001,36 @@ export default function AppsPage() {
             </motion.div>
           </div>
           
-          <input
-            type="text"
-            placeholder="Search apps, devs, CAs and more..."
-            className="w-full p-3 rounded-lg border border-[#23262B] bg-[#181A20] text-white/90 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-white/40"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search apps, devs, CAs and more..."
+              className="w-full p-3 pl-10 rounded-lg border border-[#23262B] bg-[#181A20] text-white/90 focus:outline-none focus:ring-2 focus:ring-white/10 placeholder:text-white/40"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-white/40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+              </svg>
+            </div>
+            {searchQuery && (
+              <button 
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-white/40 hover:text-white/60"
+                onClick={() => setSearchQuery("")}
+              >
+                <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </button>
+            )}
+          </div>
+          
+          {searchQuery && filteredApps.length === 0 && (
+            <div className="mt-4 text-center text-white/70">
+              No results found for "{searchQuery}". Try a different search term.
+            </div>
+          )}
         </div>
 
         {/* Featured App */}
@@ -1057,7 +1117,7 @@ export default function AppsPage() {
                     : "text-white/60 hover:text-white"
                 }`}
               >
-                <Global size={20} weight="Bold" />
+                <Widget4 size={20} weight="Bold" />
               </button>
               <button
                 onClick={() => setViewMode("table")}
@@ -1067,7 +1127,7 @@ export default function AppsPage() {
                     : "text-white/60 hover:text-white"
                 }`}
               >
-                <Smartphone size={20} weight="Bold" />
+                <List size={20} weight="Bold" />
               </button>
             </div>
           </div>

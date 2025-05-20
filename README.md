@@ -1,6 +1,7 @@
 # Solana  App Kit
 
-Build Solana Apps in Minutes
+Build Solana Apps in Minutes 
+From Trading to Social to AI to Launchpads to Wallets 
 
 ## Getting Started
 

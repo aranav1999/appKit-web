@@ -556,6 +556,110 @@ function FeaturedApp({ app }: { app: any }) {
   );
 }
 
+// Add new TrendingAppCard component after the FeaturedApp component
+function TrendingAppCard({ app, index }: { app: App; index: number }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(CA);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  };
+
+  return (
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+      whileHover="hover"
+      className="relative"
+    >
+      <motion.div
+        initial="initial"
+        whileHover="hover"
+        variants={cardHoverVariants}
+        className="bg-[#23262B]/50 backdrop-blur-sm border border-[#2D3138] rounded-[18px] overflow-hidden shadow-lg transition-all p-4"
+      >
+        <div className="flex items-start gap-3">
+          {/* App Icon - Increased size */}
+          <div className="flex-shrink-0 w-20 h-20 bg-[#181A20] rounded-xl shadow overflow-hidden border border-[#2D3138] relative">
+            {app.iconUrl ? (
+              <Image
+                src={app.iconUrl}
+                alt={app.name || "App icon"}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <span className="text-gray-400 text-xs">No logo</span>
+              </div>
+            )}
+          </div>
+
+          {/* App Info */}
+          <div className="flex-1 overflow-hidden">
+            <h3 className="text-md font-semibold text-white mb-1 truncate">
+              {app.name}
+            </h3>
+            <p className="text-xs text-gray-400 line-clamp-2 mb-2">
+              {app.description}
+            </p>
+            
+            <div className="flex flex-wrap gap-2 mt-1">
+              {app.websiteUrl && (
+                <a
+                  href={app.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200"
+                >
+                  <Global size={10} weight="Bold" /> <span>Website</span>
+                </a>
+              )}
+              
+              <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
+                <Image
+                  src="/icons/send-logo.png"
+                  alt="Solana"
+                  width={10}
+                  height={10}
+                  className="inline-block"
+                />
+                {shortenCA(CA)}
+                <button
+                  onClick={handleCopy}
+                  className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition"
+                  title="Copy CA"
+                >
+                  {copied ? (
+                    <Image
+                      src="/icons/Check_Icon.svg"
+                      alt="Copied"
+                      width={10}
+                      height={10}
+                      className="inline-block transition-all duration-200"
+                    />
+                  ) : (
+                    <Image
+                      src="/Copy_Icon.svg"
+                      alt="Copy"
+                      width={10}
+                      height={10}
+                      className="inline-block transition-all duration-200"
+                    />
+                  )}
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function AppsPage() {
   const [copied, setCopied] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
@@ -837,7 +941,7 @@ export default function AppsPage() {
           
           <div className="flex justify-center mb-8">
             <motion.div
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
               <Link 
@@ -881,6 +985,19 @@ export default function AppsPage() {
             android: apps[0].androidUrl,
             ios: apps[0].iosUrl
           }} />}
+        </div>
+        
+        {/* Trending Apps Section */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-white">Trending</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredApps.slice(0, 4).map((app, i) => (
+              <TrendingAppCard key={`trending-${app.id || i}`} app={app} index={i} />
+            ))}
+          </div>
         </div>
 
         {/* Apps Grid/Table */}

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion"; // Added framer-motion import
 import ProtocolLogos from "./ProtocolLogos";
+import Link from "next/link";
 
 export default function Hero() {
   const [windowWidth, setWindowWidth] = useState(0);
@@ -46,7 +47,13 @@ export default function Hero() {
         // Rapidly rotate left and right with jerkier motion
         await plusIconControls.start({
           rotate: [0, -25, 25, -10, 0],
-          filter: ["blur(0px)", "blur(3px)", "blur(1px)", "blur(2px)", "blur(0px)"],
+          filter: [
+            "blur(0px)",
+            "blur(3px)",
+            "blur(1px)",
+            "blur(2px)",
+            "blur(0px)",
+          ],
           transition: {
             duration: 2, // Shorter duration for jerkier motion
             ease: "backOut", // More abrupt easing
@@ -54,8 +61,8 @@ export default function Hero() {
         });
 
         // Random pause between animations
-        await new Promise((resolve) =>
-          setTimeout(resolve, Math.random() * 800 + 200) // Shorter, more unpredictable pauses
+        await new Promise(
+          (resolve) => setTimeout(resolve, Math.random() * 800 + 200) // Shorter, more unpredictable pauses
         );
       }
     };
@@ -960,9 +967,8 @@ export default function Hero() {
             Build Solana Apps Faster
           </h1>
           <p className="text-xl md:text-2xl text-white/80 mb-4">
-            In under 15 minutes and less than 50
-            <br />
-            lines of code.
+            From AI to Social to Launchpads to Wallets to Trading <br/> -- in under 15
+            minutes and less than 50 lines of code.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4 w-1/2">
@@ -982,12 +988,12 @@ export default function Hero() {
                 <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
               </svg>
             </a>
-            <a
-              href="#"
+            <Link
+              href="/apps"
               className="px-8 py-3 rounded-full bg-[#2D3747] text-white font-semibold w-full"
             >
-              Build on SAK
-            </a>
+              Apps
+            </Link>
           </div>
         </div>
       </div>
@@ -996,4 +1002,4 @@ export default function Hero() {
       </div>
     </section>
   );
-} 
+}

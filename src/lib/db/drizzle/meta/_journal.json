@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1708260000000,
+      "tag": "0000_initial_migration",
+      "breakpoints": false
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1708261000000,
+      "tag": "0001_add_app_fields",
+      "breakpoints": false
+    }
+  ]
+} 

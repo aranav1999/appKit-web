@@ -1,7 +1,10 @@
 'use client';
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { fetchCategories, createApp, uploadScreenshot, uploadFile } from '@/lib/api-client';
+import { Category } from '@/lib/db/schema';
+import { useRouter } from 'next/navigation';
 
 const spring = { type: 'spring', mass: 1, damping: 10, stiffness: 100 };
 const TAGS = [
@@ -11,14 +14,52 @@ const TAGS = [
 ];
 
 export default function SubmitAppPage() {
+  const router = useRouter();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [featureBanner, setFeatureBanner] = useState<File | null>(null);
   const [appLogo, setAppLogo] = useState<File | null>(null);
   const [isDraggingBanner, setIsDraggingBanner] = useState(false);
   const [isDraggingLogo, setIsDraggingLogo] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  
+  // Form data
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    category: '',
+    website: '',
+    androidUrl: '',
+    iosUrl: '',
+    solanaMobileUrl: '',
+    submitterTwitter: '',
+    projectTwitter: '',
+    contractAddress: '',
+  });
   
   const featureBannerRef = useRef<HTMLInputElement>(null);
   const appLogoRef = useRef<HTMLInputElement>(null);
+
+  // Add state for uploaded file URLs
+  const [uploadedIconUrl, setUploadedIconUrl] = useState<string | null>(null);
+  const [uploadedBannerUrl, setUploadedBannerUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState<{icon: boolean, banner: boolean}>({icon: false, banner: false});
+  const [uploadError, setUploadError] = useState<{icon: string | null, banner: string | null}>({icon: null, banner: null});
+
+  // Fetch categories on mount
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const categoriesData = await fetchCategories();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+      }
+    }
+    
+    loadCategories();
+  }, []);
 
   const toggleTag = (tag: string) => {
     setSelectedTags(tags =>
@@ -28,17 +69,47 @@ export default function SubmitAppPage() {
     );
   };
 
-  const handleFeatureBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFeatureBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setFeatureBanner(file);
+    if (file) {
+      setFeatureBanner(file);
+      setIsUploading(prev => ({...prev, banner: true}));
+      setUploadError(prev => ({...prev, banner: null}));
+      
+      try {
+        const uploadResult = await uploadFile(file, 'banner');
+        setUploadedBannerUrl(uploadResult.url);
+        console.log('Banner uploaded successfully:', uploadResult.url);
+      } catch (error) {
+        console.error('Failed to upload banner:', error);
+        setUploadError(prev => ({...prev, banner: 'Failed to upload image. Please try again.'}));
+      } finally {
+        setIsUploading(prev => ({...prev, banner: false}));
+      }
+    }
   };
 
-  const handleAppLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAppLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setAppLogo(file);
+    if (file) {
+      setAppLogo(file);
+      setIsUploading(prev => ({...prev, icon: true}));
+      setUploadError(prev => ({...prev, icon: null}));
+      
+      try {
+        const uploadResult = await uploadFile(file, 'icon');
+        setUploadedIconUrl(uploadResult.url);
+        console.log('Icon uploaded successfully:', uploadResult.url);
+      } catch (error) {
+        console.error('Failed to upload icon:', error);
+        setUploadError(prev => ({...prev, icon: 'Failed to upload image. Please try again.'}));
+      } finally {
+        setIsUploading(prev => ({...prev, icon: false}));
+      }
+    }
   };
 
-  const handleDrop = useCallback((e: React.DragEvent, setFile: React.Dispatch<React.SetStateAction<File | null>>, setIsDragging: React.Dispatch<React.SetStateAction<boolean>>) => {
+  const handleDrop = useCallback(async (e: React.DragEvent, setFile: React.Dispatch<React.SetStateAction<File | null>>, setIsDragging: React.Dispatch<React.SetStateAction<boolean>>, fileType: 'icon' | 'banner') => {
     e.preventDefault();
     setIsDragging(false);
     
@@ -46,6 +117,25 @@ export default function SubmitAppPage() {
       const file = e.dataTransfer.files[0];
       if (file.type.startsWith('image/')) {
         setFile(file);
+        
+        // Handle upload immediately
+        setIsUploading(prev => ({...prev, [fileType]: true}));
+        setUploadError(prev => ({...prev, [fileType]: null}));
+        
+        try {
+          const uploadResult = await uploadFile(file, fileType);
+          if (fileType === 'icon') {
+            setUploadedIconUrl(uploadResult.url);
+          } else {
+            setUploadedBannerUrl(uploadResult.url);
+          }
+          console.log(`${fileType} uploaded successfully:`, uploadResult.url);
+        } catch (error) {
+          console.error(`Failed to upload ${fileType}:`, error);
+          setUploadError(prev => ({...prev, [fileType]: 'Failed to upload image. Please try again.'}));
+        } finally {
+          setIsUploading(prev => ({...prev, [fileType]: false}));
+        }
       }
     }
   }, []);
@@ -85,6 +175,79 @@ export default function SubmitAppPage() {
         repeat: Infinity,
         ease: "easeInOut"
       }
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setFormError(null);
+
+    try {
+      // Validate form data
+      if (!formData.name) {
+        setFormError('App name is required');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      if (!uploadedIconUrl && !appLogo) {
+        setFormError('App logo is required');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Create form data for submission
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('description', formData.description);
+      submitData.append('category', formData.category);
+      
+      // Pass the pre-uploaded icon URL if available, otherwise upload with form
+      if (uploadedIconUrl) {
+        submitData.append('iconUrl', uploadedIconUrl);
+      } else if (appLogo) {
+        submitData.append('icon', appLogo);
+      }
+
+      // Add URLs
+      submitData.append('websiteUrl', formData.website);
+      submitData.append('androidUrl', formData.androidUrl);
+      submitData.append('iosUrl', formData.iosUrl);
+      submitData.append('solanaMobileUrl', formData.solanaMobileUrl);
+      
+      // Add social media and contract info
+      submitData.append('submitterTwitter', formData.submitterTwitter);
+      submitData.append('projectTwitter', formData.projectTwitter);
+      submitData.append('contractAddress', formData.contractAddress);
+      
+      // Add tags
+      submitData.append('tags', JSON.stringify(selectedTags));
+
+      // Create the app
+      const createdApp = await createApp(submitData);
+
+      // If banner was pre-uploaded, add to app record
+      if (uploadedBannerUrl) {
+        // Optionally submit the banner URL in a separate call if needed
+      } 
+      // Upload banner if provided but not already uploaded
+      else if (featureBanner && !uploadedBannerUrl) {
+        await uploadScreenshot(createdApp.id, featureBanner, 0);
+      }
+
+      // Redirect to app detail page
+      router.push(`/apps/${createdApp.id}`);
+    } catch (error) {
+      console.error('Error submitting app:', error);
+      setFormError('Failed to submit app. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -148,7 +311,40 @@ export default function SubmitAppPage() {
         transition={spring}
       >
         <h1 className="text-3xl text-center font-bold mb-6 text-white">Launch Your App</h1>
-        <form className="relative bg-[#23262B]/50 backdrop-blur-sm rounded-lg shadow-lg p-6 flex flex-col gap-4 border border-[#2D3138] overflow-hidden shadow-[0_0_15px_rgba(100,198,255,0.1)]">
+        
+        {/* Mock storage notice */}
+        <div className="mb-6 p-3 bg-yellow-800/30 border border-yellow-700/50 rounded-lg text-yellow-200 text-sm">
+          <p className="mb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium">Development Mode</span>
+          </p>
+          <p>The app is currently using local mock storage for file uploads instead of Supabase, due to configuration issues.</p>
+          <p className="mt-1">Uploaded files are being saved to the <code className="bg-black/20 px-1 rounded">public/uploads</code> directory.</p>
+        </div>
+        
+        {/* Immediate upload notice */}
+        <div className="mb-6 p-3 bg-blue-800/30 border border-blue-700/50 rounded-lg text-blue-200 text-sm">
+          <p className="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium">Instant Upload</span>
+          </p>
+          <p>Images are uploaded immediately when selected and will be linked to your app when you submit the form.</p>
+        </div>
+        
+        {formError && (
+          <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-200 text-sm">
+            {formError}
+          </div>
+        )}
+        
+        <form 
+          className="relative bg-[#23262B]/50 backdrop-blur-sm rounded-lg shadow-lg p-6 flex flex-col gap-4 border border-[#2D3138] overflow-hidden shadow-[0_0_15px_rgba(100,198,255,0.1)]"
+          onSubmit={handleSubmit}
+        >
           {/* SVG Pattern backgrounds */}
           <div className="absolute inset-0 -z-10">
             {/* Hexagon pattern */}
@@ -208,28 +404,48 @@ export default function SubmitAppPage() {
           
           {/* App Details */}
           <div className="border-b border-[#2D3138] pb-4 mb-2">
-            {/* <h3 className="text-xl font-bold mb-4 text-white flex items-center">
-              <div className="w-1 h-5 bg-white rounded-full mr-2"></div>
-              Basic Information
-            </h3> */}
             <div className="space-y-3">
               <div>
                 <label className="block font-medium mb-1 text-white/80">App Name</label>
-                <input type="text" className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
+                <input 
+                  type="text" 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" 
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1 text-white/80">Description (max 90 chars)</label>
-                <textarea maxLength={90} className="w-full p-2 border border-[#2D3138] rounded-2xl bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
+                <textarea 
+                  maxLength={90} 
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-[#2D3138] rounded-2xl bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" 
+                />
+              </div>
+              <div>
+                <label className="block font-medium mb-1 text-white/80">Category</label>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 focus:outline-none focus:ring-2 focus:ring-white/20"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
           
           {/* Tags */}
           <div className="border-b border-[#2D3138] pb-4 mb-2">
-            {/* <h3 className="text-xl font-bold mb-4 text-white flex items-center">
-              <div className="w-1 h-5 bg-white rounded-full mr-2"></div>
-              Tags
-            </h3> */}
             <div className="flex flex-wrap gap-2 items-center mb-2">
               {TAGS.map(tag => (
                 <label key={tag} className="flex items-center cursor-pointer">
@@ -256,10 +472,6 @@ export default function SubmitAppPage() {
           
           {/* Images */}
           <div className="border-b border-[#2D3138] pb-4 mb-2">
-            {/* <h3 className="text-xl font-bold mb-4 text-white flex items-center">
-              <div className="w-1 h-5 bg-white rounded-full mr-2"></div>
-              Images
-            </h3> */}
             <div className="space-y-6">
               {/* Feature Banner Upload */}
               <div>
@@ -268,14 +480,17 @@ export default function SubmitAppPage() {
                   {featureBanner && (
                     <div className="relative w-full h-36 bg-[#181A20] rounded-lg overflow-hidden border border-[#2D3138]">
                       <Image 
-                        src={URL.createObjectURL(featureBanner)} 
+                        src={uploadedBannerUrl || URL.createObjectURL(featureBanner)} 
                         alt="Feature Banner Preview" 
                         fill
                         className="object-cover"
                       />
                       <button 
                         className="absolute top-2 right-2 bg-black/50 rounded-full p-1 text-white hover:bg-black/75"
-                        onClick={() => setFeatureBanner(null)}
+                        onClick={() => {
+                          setFeatureBanner(null);
+                          setUploadedBannerUrl(null);
+                        }}
                       >
                         <svg 
                           width="16" 
@@ -295,7 +510,7 @@ export default function SubmitAppPage() {
                   
                   <div 
                     onClick={() => featureBannerRef.current?.click()}
-                    onDrop={(e) => handleDrop(e, setFeatureBanner, setIsDraggingBanner)}
+                    onDrop={(e) => handleDrop(e, setFeatureBanner, setIsDraggingBanner, 'banner')}
                     onDragOver={handleDragOver}
                     onDragEnter={(e) => handleDragEnter(e, setIsDraggingBanner)}
                     onDragLeave={(e) => handleDragLeave(e, setIsDraggingBanner)}
@@ -305,27 +520,48 @@ export default function SubmitAppPage() {
                         : 'border-[#2D3138] bg-[#181A20] hover:border-white/50'
                     }`}
                   >
-                    <div className="flex flex-col items-center text-white/60">
-                      <svg 
-                        width="24" 
-                        height="24" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="mb-2"
-                      >
-                        <path 
-                          d="M16.6725 13.5H12.5V17.5H11.5V13.5H7.3275L12 8.82753L16.6725 13.5Z" 
-                          fill="currentColor"
-                        />
-                        <path 
-                          d="M19 19V11.825L18.25 11.075L12 4.82753L5.75 11.075L5 11.825V19H19ZM20 20H4V11.4L12 3.4L20 11.4V20Z" 
-                          fill="currentColor"
-                        />
-                      </svg>
-                      <span className="text-sm font-medium mb-1">Upload Banner</span>
-                      <span className="text-xs text-white/40">{isDraggingBanner ? 'Drop image here' : 'Click or drag & drop'}</span>
-                    </div>
+                    {isUploading.banner ? (
+                      <div className="flex flex-col items-center text-white/60">
+                        <svg className="animate-spin h-6 w-6 text-white mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-sm font-medium mb-1">Uploading...</span>
+                      </div>
+                    ) : featureBanner ? (
+                      <div className="flex flex-col items-center text-white/60">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-2">
+                          <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="currentColor" />
+                        </svg>
+                        <span className="text-sm font-medium mb-1">{uploadedBannerUrl ? 'Uploaded Successfully' : 'Ready to Submit'}</span>
+                        <span className="text-xs text-white/40">Click to change</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center text-white/60">
+                        <svg 
+                          width="24" 
+                          height="24" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="mb-2"
+                        >
+                          <path 
+                            d="M16.6725 13.5H12.5V17.5H11.5V13.5H7.3275L12 8.82753L16.6725 13.5Z" 
+                            fill="currentColor"
+                          />
+                          <path 
+                            d="M19 19V11.825L18.25 11.075L12 4.82753L5.75 11.075L5 11.825V19H19ZM20 20H4V11.4L12 3.4L20 11.4V20Z" 
+                            fill="currentColor"
+                          />
+                        </svg>
+                        <span className="text-sm font-medium mb-1">Upload Banner</span>
+                        <span className="text-xs text-white/40">{isDraggingBanner ? 'Drop image here' : 'Click or drag & drop'}</span>
+                      </div>
+                    )}
+                    {uploadError.banner && (
+                      <p className="text-xs text-red-400 mt-1">{uploadError.banner}</p>
+                    )}
                     <input
                       type="file"
                       ref={featureBannerRef}
@@ -345,14 +581,17 @@ export default function SubmitAppPage() {
                   {appLogo && (
                     <div className="relative w-24 h-24 bg-[#181A20] rounded-lg overflow-hidden border border-[#2D3138] mx-auto">
                       <Image 
-                        src={URL.createObjectURL(appLogo)} 
+                        src={uploadedIconUrl || URL.createObjectURL(appLogo)} 
                         alt="App Logo Preview" 
                         fill
                         className="object-cover"
                       />
                       <button 
                         className="absolute top-1 right-1 bg-black/50 rounded-full p-1 text-white hover:bg-black/75"
-                        onClick={() => setAppLogo(null)}
+                        onClick={() => {
+                          setAppLogo(null);
+                          setUploadedIconUrl(null);
+                        }}
                       >
                         <svg 
                           width="12" 
@@ -372,37 +611,58 @@ export default function SubmitAppPage() {
                   
                   <div 
                     onClick={() => appLogoRef.current?.click()}
-                    onDrop={(e) => handleDrop(e, setAppLogo, setIsDraggingLogo)}
                     onDragOver={handleDragOver}
                     onDragEnter={(e) => handleDragEnter(e, setIsDraggingLogo)}
                     onDragLeave={(e) => handleDragLeave(e, setIsDraggingLogo)}
+                    onDrop={(e) => handleDrop(e, setAppLogo, setIsDraggingLogo, 'icon')}
                     className={`cursor-pointer flex flex-col items-center justify-center border border-dashed rounded-lg p-4 h-28 transition-colors ${
                       isDraggingLogo 
                         ? 'border-white/80 bg-[#181A20]/60' 
                         : 'border-[#2D3138] bg-[#181A20] hover:border-white/50'
                     }`}
                   >
-                    <div className="flex flex-col items-center text-white/60">
-                      <svg 
-                        width="24" 
-                        height="24" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="mb-2"
-                      >
-                        <path 
-                          d="M16.6725 13.5H12.5V17.5H11.5V13.5H7.3275L12 8.82753L16.6725 13.5Z" 
-                          fill="currentColor"
-                        />
-                        <path 
-                          d="M19 19V11.825L18.25 11.075L12 4.82753L5.75 11.075L5 11.825V19H19ZM20 20H4V11.4L12 3.4L20 11.4V20Z" 
-                          fill="currentColor"
-                        />
-                      </svg>
-                      <span className="text-sm font-medium mb-1">Upload Logo</span>
-                      <span className="text-xs text-white/40">{isDraggingLogo ? 'Drop image here' : 'Click or drag & drop'}</span>
-                    </div>
+                    {isUploading.icon ? (
+                      <div className="flex flex-col items-center text-white/60">
+                        <svg className="animate-spin h-6 w-6 text-white mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-sm font-medium mb-1">Uploading...</span>
+                      </div>
+                    ) : appLogo ? (
+                      <div className="flex flex-col items-center text-white/60">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-2">
+                          <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="currentColor" />
+                        </svg>
+                        <span className="text-sm font-medium mb-1">{uploadedIconUrl ? 'Uploaded Successfully' : 'Ready to Submit'}</span>
+                        <span className="text-xs text-white/40">Click to change</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center text-white/60">
+                        <svg 
+                          width="24" 
+                          height="24" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="mb-2"
+                        >
+                          <path 
+                            d="M16.6725 13.5H12.5V17.5H11.5V13.5H7.3275L12 8.82753L16.6725 13.5Z" 
+                            fill="currentColor"
+                          />
+                          <path 
+                            d="M19 19V11.825L18.25 11.075L12 4.82753L5.75 11.075L5 11.825V19H19ZM20 20H4V11.4L12 3.4L20 11.4V20Z" 
+                            fill="currentColor"
+                          />
+                        </svg>
+                        <span className="text-sm font-medium mb-1">Upload Logo</span>
+                        <span className="text-xs text-white/40">{isDraggingLogo ? 'Drop image here' : 'Click or drag & drop'}</span>
+                      </div>
+                    )}
+                    {uploadError.icon && (
+                      <p className="text-xs text-red-400 mt-1">{uploadError.icon}</p>
+                    )}
                     <input
                       type="file"
                       ref={appLogoRef}
@@ -419,67 +679,102 @@ export default function SubmitAppPage() {
           
           {/* Links */}
           <div className="border-b border-[#2D3138] pb-4 mb-2">
-            {/* <h3 className="text-xl font-bold mb-4 text-white flex items-center">
-              <div className="w-1 h-5 bg-white rounded-full mr-2"></div>
-              Links
-            </h3> */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block font-medium mb-1 text-white/80">Website</label>
-                <input type="text" className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
+                <input 
+                  type="text" 
+                  name="website"
+                  value={formData.website}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" 
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1 text-white/80">Android Link</label>
-                <input type="text" className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
+                <input 
+                  type="text" 
+                  name="androidUrl"
+                  value={formData.androidUrl}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" 
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1 text-white/80">iOS Link</label>
-                <input type="text" className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
+                <input 
+                  type="text" 
+                  name="iosUrl"
+                  value={formData.iosUrl}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" 
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1 text-white/80">Solana Mobile Link</label>
-                <input type="text" className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
+                <input 
+                  type="text" 
+                  name="solanaMobileUrl"
+                  value={formData.solanaMobileUrl}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" 
+                />
               </div>
             </div>
           </div>
           
           {/* Social Media */}
           <div className="border-b border-[#2D3138] pb-4 mb-2">
-            {/* <h3 className="text-xl font-bold mb-4 text-white flex items-center">
-              <div className="w-1 h-5 bg-white rounded-full mr-2"></div>
-              Social Media
-            </h3> */}
             <div className="space-y-3">
               <div>
                 <label className="block font-medium mb-1 text-white/80">Submitter Twitter</label>
-                <input type="text" className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
+                <input 
+                  type="text" 
+                  name="submitterTwitter"
+                  value={formData.submitterTwitter}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" 
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1 text-white/80">Project Twitter</label>
-                <input type="text" className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
+                <input 
+                  type="text" 
+                  name="projectTwitter"
+                  value={formData.projectTwitter}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" 
+                />
               </div>
             </div>
           </div>
           
           {/* Token Details */}
           <div>
-            {/* <h3 className="text-xl font-bold mb-4 text-white flex items-center">
-              <div className="w-1 h-5 bg-white rounded-full mr-2"></div>
-              Token Details
-            </h3> */}
             <div>
               <label className="block font-medium mb-1 text-white/80">Contract Address (CA)</label>
-              <input type="text" className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" />
+              <input 
+                type="text" 
+                name="contractAddress"
+                value={formData.contractAddress}
+                onChange={handleInputChange}
+                className="w-full p-2 border border-[#2D3138] rounded-[12px] bg-[#181A20] text-white/90 placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/20" 
+              />
             </div>
           </div>
 
           <motion.button
             type="submit"
-            className="mt-4 bg-white text-black rounded-[12px] px-6 py-2 font-medium transition hover:bg-neutral-200"
-            whileHover={{ scale: 1.015 }}
+            disabled={isSubmitting}
+            className={`mt-4 bg-white text-black rounded-[12px] px-6 py-2 font-medium transition ${
+              isSubmitting 
+                ? 'opacity-70 cursor-not-allowed' 
+                : 'hover:bg-neutral-200'
+            }`}
+            whileHover={isSubmitting ? {} : { scale: 1.015 }}
             transition={spring}
           >
-            Submit App
+            {isSubmitting ? 'Submitting...' : 'Submit App'}
           </motion.button>
         </form>
       </motion.div>

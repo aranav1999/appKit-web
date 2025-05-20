@@ -1,103 +1,109 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Global, IPhone, Smartphone, Copy } from '@solar-icons/react';
-import Image from 'next/image';
+"use client";
+import React, { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
+import { Global, IPhone, Smartphone, Copy } from "@solar-icons/react";
+import Image from "next/image";
+import { fetchApps, fetchCategories } from "@/lib/api-client";
+import { App, Category } from "@/lib/db/schema";
+import Link from "next/link";
 
 const mockApps = [
   {
     id: 1,
-    name: 'SolanaSwap',
-    description: 'A fast and secure DEX for Solana. Trade tokens instantly.',
-    tags: ['DeFi', 'Trading'],
-    banner: 'https://picsum.photos/seed/solanaswap/400/200',
-    website: 'https://solanaswap.app',
-    android: '#',
-    ios: '#',
+    name: "SolanaSwap",
+    description: "A fast and secure DEX for Solana. Trade tokens instantly.",
+    tags: ["DeFi", "Trading"],
+    banner: "https://picsum.photos/seed/solanaswap/400/200",
+    website: "https://solanaswap.app",
+    android: "#",
+    ios: "#",
   },
   {
     id: 2,
-    name: 'DePIN Connect',
-    description: 'Connect to decentralized physical infrastructure networks.',
-    tags: ['DePIN', 'SocialFi'],
-    banner: 'https://picsum.photos/seed/depinnet/400/200',
-    website: 'https://depinnet.app',
-    android: '#',
-    ios: '#',
+    name: "DePIN Connect",
+    description: "Connect to decentralized physical infrastructure networks.",
+    tags: ["DePIN", "SocialFi"],
+    banner: "https://picsum.photos/seed/depinnet/400/200",
+    website: "https://depinnet.app",
+    android: "#",
+    ios: "#",
   },
   {
     id: 3,
-    name: 'MemeFi',
-    description: 'The ultimate memecoin launchpad and trading platform.',
-    tags: ['Memecoins', 'DeFi'],
-    banner: 'https://picsum.photos/seed/memefi/400/200',
-    website: 'https://memefi.app',
-    android: '#',
-    ios: '#',
+    name: "MemeFi",
+    description: "The ultimate memecoin launchpad and trading platform.",
+    tags: ["Memecoins", "DeFi"],
+    banner: "https://picsum.photos/seed/memefi/400/200",
+    website: "https://memefi.app",
+    android: "#",
+    ios: "#",
   },
   {
     id: 4,
-    name: 'NFT Gallery',
-    description: 'Showcase and trade your NFTs with ease.',
-    tags: ['NFTs', 'SocialFi'],
-    banner: 'https://picsum.photos/seed/nftgallery/400/200',
-    website: 'https://nftgallery.app',
-    android: '#',
-    ios: '#',
+    name: "NFT Gallery",
+    description: "Showcase and trade your NFTs with ease.",
+    tags: ["NFTs", "SocialFi"],
+    banner: "https://picsum.photos/seed/nftgallery/400/200",
+    website: "https://nftgallery.app",
+    android: "#",
+    ios: "#",
   },
   {
     id: 5,
-    name: 'Solana Wallet',
-    description: 'Secure and user-friendly wallet for managing your Solana assets.',
-    tags: ['Wallet', 'Security'],
-    banner: 'https://picsum.photos/seed/solanawallet/400/200',
-    website: 'https://solanawallet.app',
-    android: '#',
-    ios: '#',
+    name: "Solana Wallet",
+    description:
+      "Secure and user-friendly wallet for managing your Solana assets.",
+    tags: ["Wallet", "Security"],
+    banner: "https://picsum.photos/seed/solanawallet/400/200",
+    website: "https://solanawallet.app",
+    android: "#",
+    ios: "#",
   },
   {
     id: 6,
-    name: 'GameFi Hub',
-    description: 'Play-to-earn games built on Solana with instant rewards.',
-    tags: ['GameFi', 'P2E'],
-    banner: 'https://picsum.photos/seed/gamefi/400/200',
-    website: 'https://gamefi.app',
-    android: '#',
-    ios: '#',
+    name: "GameFi Hub",
+    description: "Play-to-earn games built on Solana with instant rewards.",
+    tags: ["GameFi", "P2E"],
+    banner: "https://picsum.photos/seed/gamefi/400/200",
+    website: "https://gamefi.app",
+    android: "#",
+    ios: "#",
   },
   {
     id: 7,
-    name: 'SolPay',
-    description: 'Lightning-fast payment solution for Solana merchants and users.',
-    tags: ['Payments', 'Retail'],
-    banner: 'https://picsum.photos/seed/solpay/400/200',
-    website: 'https://solpay.app',
-    android: '#',
-    ios: '#',
+    name: "SolPay",
+    description:
+      "Lightning-fast payment solution for Solana merchants and users.",
+    tags: ["Payments", "Retail"],
+    banner: "https://picsum.photos/seed/solpay/400/200",
+    website: "https://solpay.app",
+    android: "#",
+    ios: "#",
   },
   {
     id: 8,
-    name: 'DAO Maker',
-    description: 'Create and manage decentralized autonomous organizations on Solana.',
-    tags: ['DAO', 'Governance'],
-    banner: 'https://picsum.photos/seed/daomaker/400/200',
-    website: 'https://daomaker.app',
-    android: '#',
-    ios: '#',
+    name: "DAO Maker",
+    description:
+      "Create and manage decentralized autonomous organizations on Solana.",
+    tags: ["DAO", "Governance"],
+    banner: "https://picsum.photos/seed/daomaker/400/200",
+    website: "https://daomaker.app",
+    android: "#",
+    ios: "#",
   },
   {
     id: 9,
-    name: 'SolStake',
-    description: 'Simplified staking solution with competitive APY rates.',
-    tags: ['Staking', 'Yield'],
-    banner: 'https://picsum.photos/seed/solstake/400/200',
-    website: 'https://solstake.app',
-    android: '#',
-    ios: '#',
+    name: "SolStake",
+    description: "Simplified staking solution with competitive APY rates.",
+    tags: ["Staking", "Yield"],
+    banner: "https://picsum.photos/seed/solstake/400/200",
+    website: "https://solstake.app",
+    android: "#",
+    ios: "#",
   },
 ];
 
-const spring = { type: 'spring', mass: 1, damping: 10, stiffness: 100 };
+const spring = { type: "spring", mass: 1, damping: 10, stiffness: 100 };
 
 const cardVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -108,64 +114,54 @@ const cardVariants = {
   },
 };
 
-function use3DImageTilt<T extends HTMLElement>() {
-  const ref = React.useRef<T>(null);
-  const [style, setStyle] = React.useState<React.CSSProperties>({});
-  const [isHover, setIsHover] = React.useState(false);
+// Animation variants for background elements
+const settingsIconVariants = {
+  animate: {
+    rotate: 360,
+    transition: {
+      duration: 20,
+      repeat: Infinity,
+      ease: "linear",
+    },
+  },
+};
 
-  React.useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * 12;
-      const rotateY = ((x - centerX) / centerX) * -12;
-      setStyle({
-        transform: `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.10)`,
-        transition: isHover ? 'transform 0.15s cubic-bezier(.22,1,.36,1)' : 'transform 0.3s cubic-bezier(.22,1,.36,1)',
-        zIndex: 2,
-        boxShadow: isHover ? '0 8px 32px 0 rgba(0,0,0,0.25)' : '0 2px 8px 0 rgba(0,0,0,0.10)'
-      });
-    };
-    const handleMouseEnter = () => {
-      setIsHover(true);
-      setStyle(s => ({ ...s, transform: 'perspective(900px) rotateX(0deg) rotateY(0deg) scale(1.10)', zIndex: 2, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.25)', transition: 'transform 0.2s cubic-bezier(.22,1,.36,1)' }));
-    };
-    const handleMouseLeave = () => {
-      setIsHover(false);
-      setStyle({
-        transform: 'perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)',
-        transition: 'transform 0.4s cubic-bezier(.22,1,.36,1)',
-        zIndex: 1,
-        boxShadow: '0 2px 8px 0 rgba(0,0,0,0.10)'
-      });
-    };
-    el.addEventListener('mousemove', handleMouseMove);
-    el.addEventListener('mouseenter', handleMouseEnter);
-    el.addEventListener('mouseleave', handleMouseLeave);
-    return () => {
-      el.removeEventListener('mousemove', handleMouseMove);
-      el.removeEventListener('mouseenter', handleMouseEnter);
-      el.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, [isHover]);
-  return [ref, style] as const;
-}
+const circleVariants = {
+  animate: {
+    scale: [1, 1.1, 1],
+    opacity: [0.6, 0.8, 0.6],
+    transition: {
+      duration: 8,
+      repeat: Infinity,
+      ease: "easeInOut",
+    },
+  },
+};
+
+// Replace 3D tilt with subtle hover animations
+const cardHoverVariants = {
+  initial: {
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    scale: 1,
+  },
+  hover: {
+    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.2)",
+    scale: 1.02,
+    transition: { duration: 0.2, ease: "easeOut" },
+  },
+};
 
 // Helper to shorten CA
 function shortenCA(ca: string) {
   if (ca.length <= 10) return ca;
-  return ca.slice(0, 5) + '....' + ca.slice(-4);
+  return ca.slice(0, 5) + "...." + ca.slice(-4);
 }
 
 // Example CA and market cap for all cards (could be per-app in real data)
-const CA = 'SENDdRQtYMWaQrBroBrJ2Q53fgVuq95CV9UPGEvpCxa';
-const marketCap = '$30M';
-const dexscreenerUrl = 'https://dexscreener.com/solana/esr8sbvggbmrcgcddfl9x8dwpgldatgllkkgx3uukoaq';
+const CA = "SENDdRQtYMWaQrBroBrJ2Q53fgVuq95CV9UPGEvpCxa";
+const marketCap = "$30M";
+const dexscreenerUrl =
+  "https://dexscreener.com/solana/esr8sbvggbmrcgcddfl9x8dwpgldatgllkkgx3uukoaq";
 
 // Helper to generate sparkline points for SVG - now using deterministic values
 function getRandomSparklinePoints(seedId = 0) {
@@ -181,69 +177,16 @@ function getRandomSparklinePoints(seedId = 0) {
     "0,12 5,8 10,12 15,6 20,2 25,9 30,9 35,10 40,10", // 7
     "0,9 5,4 10,3 15,10 20,5 25,7 30,4 35,5 40,8", // 8
   ];
-  
+
   // Use seedId to select a point pattern, or fallback to the first pattern
   const pointIndex = seedId % predefinedPoints.length;
   return predefinedPoints[pointIndex];
 }
 
-export default function AppsPage() {
-  const [featuredImgRef, featuredImgStyle] = use3DImageTilt<HTMLImageElement>();
+// Replace AppCard component
+function AppCard({ app, index }: { app: App; index: number }) {
+  const sparklinePoints = getRandomSparklinePoints(app.id || index);
   const [copied, setCopied] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [selectedTag, setSelectedTag] = useState<string>('All');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  // Dropdown ref for handling outside clicks
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
-  
-  // Handle clicks outside the dropdown to close it
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    }
-    
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownRef]);
-  
-  // Generate sparkline points once for featured and each grid card
-  const featuredSparkline = React.useMemo(() => getRandomSparklinePoints(0), []);
-  const gridSparklines = React.useMemo(() => 
-    mockApps.slice(1).map((app, i) => getRandomSparklinePoints(app.id)), 
-    []
-  );
-  
-  // Get all unique tags from mockApps
-  const allTags = React.useMemo(() => {
-    const tags = new Set<string>();
-    tags.add('All'); // Add "All" as the default option
-    mockApps.forEach(app => {
-      app.tags.forEach(tag => tags.add(tag));
-    });
-    return Array.from(tags);
-  }, []);
-  
-  // Filter apps based on selected tag
-  const filteredApps = React.useMemo(() => {
-    if (selectedTag === 'All') return mockApps.slice(1);
-    return mockApps.slice(1).filter(app => app.tags.includes(selectedTag));
-  }, [selectedTag]);
-  
-  // Call hooks at the top level for each app
-  const [img1Ref, img1Style] = use3DImageTilt<HTMLImageElement>();
-  const [img2Ref, img2Style] = use3DImageTilt<HTMLImageElement>();
-  const [img3Ref, img3Style] = use3DImageTilt<HTMLImageElement>();
-  const [img4Ref, img4Style] = use3DImageTilt<HTMLImageElement>();
-  const [img5Ref, img5Style] = use3DImageTilt<HTMLImageElement>();
-  const [img6Ref, img6Style] = use3DImageTilt<HTMLImageElement>();
-  const [img7Ref, img7Style] = use3DImageTilt<HTMLImageElement>();
-  const [img8Ref, img8Style] = use3DImageTilt<HTMLImageElement>();
-  const [img9Ref, img9Style] = use3DImageTilt<HTMLImageElement>();
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(CA);
@@ -251,47 +194,590 @@ export default function AppsPage() {
     setTimeout(() => setCopied(false), 1200);
   };
 
-  // Map the refs and styles to the apps
-  const imageRefs = [img1Ref, img2Ref, img3Ref, img4Ref, img5Ref, img6Ref, img7Ref, img8Ref, img9Ref];
-  const imageStyles = [img1Style, img2Style, img3Style, img4Style, img5Style, img6Style, img7Style, img8Style, img9Style];
+  return (
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+      whileHover="hover"
+      className="relative"
+    >
+      <motion.div
+        initial="initial"
+        whileHover="hover"
+        variants={cardHoverVariants}
+        className="bg-[#23262B]/50 backdrop-blur-sm border border-[#2D3138] rounded-[18px] overflow-hidden shadow-lg transition-all"
+      >
+        {/* Card Banner */}
+        <div className="relative h-40 w-full overflow-hidden bg-gradient-to-r from-[#1a1d22] to-[#1a2029]">
+          {app.featureBannerUrl || app.iconUrl ? (
+            <Image
+              src={app.featureBannerUrl || app.iconUrl || ""}
+              alt={app.name || "App banner"}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <span className="text-gray-400 text-sm">No image available</span>
+            </div>
+          )}
+        </div>
 
-  // Animation variants for background elements
-  const settingsIconVariants = {
-    animate: {
-      rotate: 360,
-      transition: {
-        duration: 20,
-        repeat: Infinity,
-        ease: "linear"
-      }
-    }
+        {/* Card Content */}
+        <div className="p-4">
+          <div className="flex items-start gap-4">
+            {/* App Icon */}
+            <div className="flex-shrink-0 w-16 h-16 bg-[#181A20] rounded-2xl shadow overflow-hidden border border-[#2D3138] relative">
+              {app.iconUrl ? (
+                <Image
+                  src={app.iconUrl}
+                  alt={app.name || "App icon"}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <span className="text-gray-400 text-xs">No logo</span>
+                </div>
+              )}
+            </div>
+
+            {/* App Info */}
+            <div className="flex-1 overflow-hidden">
+              <h3 className="text-lg font-semibold text-white mb-1 truncate">
+                {app.name}
+              </h3>
+              <p className="text-[13px] text-gray-400 line-clamp-2">
+                {app.description}
+              </p>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-1 mt-2">
+                {Array.isArray(app.tags) &&
+                  app.tags?.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2 py-0.5 text-[10px] font-medium bg-[#1B1D22] rounded-full text-[#64C6FF] border border-[#2D3138]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+              </div>
+            </div>
+          </div>
+
+          {/* X (Twitter) link */}
+          <div className="flex mt-2">
+            <a
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#181A20] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium border border-[#23262B] hover:bg-[#23262B] transition"
+            >
+              <Image
+                src="/icons/twitter-x.svg"
+                alt="X"
+                width={18}
+                height={14}
+                className="inline-block"
+              />
+              <span>{app.projectTwitter?.replace("https://x.com/", "")}</span>
+            </a>
+          </div>
+
+          {/* CA, Graph, and Market Cap Row */}
+          <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
+            <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
+              <Image
+                src="/icons/send-logo.png"
+                alt="Solana"
+                width={12}
+                height={12}
+                className="inline-block"
+              />
+              {shortenCA(CA)}
+              <button
+                onClick={handleCopy}
+                className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition"
+                title="Copy CA"
+              >
+                {copied ? (
+                  <Image
+                    src="/icons/Check_Icon.svg"
+                    alt="Copied"
+                    width={11}
+                    height={11}
+                    className="inline-block transition-all duration-200"
+                  />
+                ) : (
+                  <Image
+                    src="/Copy_Icon.svg"
+                    alt="Copy"
+                    width={11}
+                    height={11}
+                    className="inline-block transition-all duration-200"
+                  />
+                )}
+              </button>
+            </span>
+
+            {/* Inline SVG sparkline graph */}
+            <span className="flex items-center justify-center mx-2">
+              <svg
+                width="36"
+                height="16"
+                viewBox="0 0 40 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <polyline
+                  fill="none"
+                  stroke="#4ADE80"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  points={sparklinePoints}
+                />
+              </svg>
+            </span>
+
+            {/* Dexscreener link */}
+            <a
+              href={dexscreenerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
+            >
+              <Image
+                src="/icons/dexscreener.png"
+                alt="Dexscreener"
+                width={12}
+                height={12}
+                className="inline-block"
+              />
+              {marketCap}
+            </a>
+          </div>
+
+          {/* Links */}
+          <div className="flex gap-1 mt-2">
+            {app.websiteUrl && (
+              <a
+                href={app.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200"
+              >
+                <Global size={13} weight="Bold" /> <span>Website</span>
+              </a>
+            )}
+            {app.androidUrl && (
+              <a
+                href={app.androidUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+              >
+                <Smartphone size={13} weight="Bold" /> <span>Android</span>
+              </a>
+            )}
+            {app.iosUrl && (
+              <a
+                href={app.iosUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+              >
+                <IPhone size={13} weight="Bold" /> <span>iOS</span>
+              </a>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// Replace FeaturedApp component
+function FeaturedApp({ app }: { app: any }) {
+  const [copied, setCopied] = useState(false);
+  const featuredSparkline = useMemo(() => getRandomSparklinePoints(0), []);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(CA);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
   };
 
-  const circleVariants = {
-    animate: {
-      scale: [1, 1.1, 1],
-      opacity: [0.6, 0.8, 0.6],
-      transition: {
-        duration: 8,
-        repeat: Infinity,
-        ease: "easeInOut"
+  return (
+    <motion.div
+      initial="initial"
+      whileHover="hover"
+      variants={cardHoverVariants}
+      className="flex flex-col md:flex-row items-center bg-[#23262B]/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 gap-6 border border-[#23262B] transition-transform duration-200"
+    >
+      <motion.img
+        src={app.banner}
+        alt={app.name}
+        className="w-full md:w-64 h-40 object-cover rounded-xl border border-[#23262B] bg-[#181A20]"
+        whileHover={{ scale: 1.03 }}
+        transition={{ duration: 0.2 }}
+      />
+      <div className="flex-1">
+        <h3 className="text-xl font-semibold mb-2 text-white/90">{app.name}</h3>
+        <p className="mb-2 text-white/70">{app.description}</p>
+        <div className="mb-2 flex flex-wrap gap-2">
+          {app.tags.map((tag: string) => (
+            <span
+              key={tag}
+              className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+        {/* X (Twitter) link below CTAs */}
+        <div className="flex mt-2">
+          <a
+            href="https://x.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#181A20] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium border border-[#23262B] hover:bg-[#23262B] transition"
+          >
+            <Image
+              src="/icons/twitter-x.svg"
+              alt="X"
+              width={18}
+              height={14}
+              className="inline-block"
+            />
+            <span>X</span>
+          </a>
+        </div>
+        {/* CA, Graph, and Market Cap Row at the bottom */}
+        <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
+          <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
+            <Image
+              src="/icons/send-logo.png"
+              alt="Solana"
+              width={14}
+              height={14}
+              className="inline-block"
+            />
+            {shortenCA(CA)}
+            <button
+              onClick={handleCopy}
+              className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition"
+              title="Copy CA"
+            >
+              {copied ? (
+                <Image
+                  src="/icons/Check_Icon.svg"
+                  alt="Copied"
+                  width={13}
+                  height={13}
+                  className="inline-block transition-all duration-200"
+                />
+              ) : (
+                <Image
+                  src="/Copy_Icon.svg"
+                  alt="Copy"
+                  width={13}
+                  height={13}
+                  className="inline-block transition-all duration-200"
+                />
+              )}
+            </button>
+          </span>
+          {/* Inline SVG sparkline graph as placeholder */}
+          <span className="flex items-center justify-center mx-2">
+            <svg
+              width="40"
+              height="16"
+              viewBox="0 0 40 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <polyline
+                fill="none"
+                stroke="#4ADE80"
+                strokeWidth="2"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                points={featuredSparkline}
+              />
+            </svg>
+          </span>
+          <a
+            href={dexscreenerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
+          >
+            <Image
+              src="/icons/dexscreener.png"
+              alt="Dexscreener"
+              width={14}
+              height={14}
+              className="inline-block"
+            />
+            {marketCap}
+          </a>
+        </div>
+
+        <div className="flex gap-1 mt-2">
+          <a
+            href={app.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200"
+          >
+            <Global size={15} weight="Bold" /> <span>Website</span>
+          </a>
+          <a
+            href={app.android}
+            className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+          >
+            <Smartphone size={15} weight="Bold" /> <span>Android</span>
+          </a>
+          <a
+            href={app.ios}
+            className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+          >
+            <IPhone size={15} weight="Bold" /> <span>iOS</span>
+          </a>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function AppsPage() {
+  const [copied, setCopied] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const [selectedTag, setSelectedTag] = useState<string>("All");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Add state for actual data
+  const [apps, setApps] = useState<App[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Dropdown ref for handling outside clicks
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  // Fetch apps and categories from API
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Fetch apps and categories in parallel
+        const [appsData, categoriesData] = await Promise.all([
+          fetchApps(),
+          fetchCategories(),
+        ]);
+
+        setApps(appsData);
+        setCategories(categoriesData);
+      } catch (err) {
+        console.error("Error loading data:", err);
+        setError("Failed to load apps. Please try again later.");
+        // Use mock data as fallback
+        setApps(
+          mockApps.map(
+            (app) =>
+              ({
+                ...app,
+                iconUrl: app.banner,
+                websiteUrl: app.website,
+                androidUrl: app.android,
+                iosUrl: app.ios,
+                tags: app.tags,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              } as unknown as App)
+          )
+        );
+      } finally {
+        setLoading(false);
       }
     }
-  };
+
+    loadData();
+  }, []);
+
+  // Get all unique tags from mockApps
+  const allTags = React.useMemo(() => {
+    const tags = new Set<string>();
+    tags.add("All"); // Add "All" as the default option
+    mockApps.forEach((app) => {
+      app.tags.forEach((tag) => tags.add(tag));
+    });
+    return Array.from(tags);
+  }, []);
+
+  // Filter apps by selected tag
+  const filteredApps = React.useMemo(() => {
+    return apps.filter((app) => {
+      if (selectedTag === "All") return true;
+      return (
+        app.tags && Array.isArray(app.tags) && app.tags.includes(selectedTag)
+      );
+    });
+  }, [apps, selectedTag]);
+
+  // Handle clicks outside the dropdown to close it
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
+
+  // Render loading state with skeletons
+  if (loading) {
+    return (
+      <div className="relative min-h-screen overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#131519] to-[#1a2740] -z-10" />
+
+        <div className="max-w-7xl mx-auto px-4 py-10 relative z-10">
+          {/* Skeleton Search Bar */}
+          <div className="mb-8">
+            <div className="flex justify-center my-12">
+              <div className="h-12 w-3/4 bg-[#23262B]/50 rounded-xl animate-pulse"></div>
+            </div>
+            <div className="w-full h-12 rounded-lg bg-[#23262B]/50 animate-pulse"></div>
+          </div>
+
+          {/* Skeleton Featured App */}
+          <div className="mb-12">
+            <div className="h-8 w-40 bg-[#23262B]/50 rounded-lg mb-4 animate-pulse"></div>
+            <div className="flex flex-col md:flex-row bg-[#23262B]/50 rounded-2xl p-6 gap-6 animate-pulse">
+              <div className="w-full md:w-64 h-40 bg-[#181A20] rounded-xl"></div>
+              <div className="flex-1 space-y-4">
+                <div className="h-6 bg-[#181A20] rounded-lg w-1/3"></div>
+                <div className="h-4 bg-[#181A20] rounded-lg w-full"></div>
+                <div className="h-4 bg-[#181A20] rounded-lg w-5/6"></div>
+                <div className="flex gap-2">
+                  <div className="h-6 bg-[#181A20] rounded-full w-16"></div>
+                  <div className="h-6 bg-[#181A20] rounded-full w-16"></div>
+                </div>
+                <div className="h-px bg-[#2D3138] w-full my-2"></div>
+                <div className="flex justify-between">
+                  <div className="h-6 bg-[#181A20] rounded-full w-24"></div>
+                  <div className="h-6 bg-[#181A20] rounded-full w-20"></div>
+                  <div className="h-6 bg-[#181A20] rounded-full w-24"></div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-8 bg-[#181A20] rounded-full w-24"></div>
+                  <div className="h-8 bg-[#181A20] rounded-full w-24"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Skeleton Apps Grid */}
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-32 bg-[#23262B]/50 rounded-lg animate-pulse"></div>
+                <div className="h-8 w-24 bg-[#23262B]/50 rounded-lg animate-pulse"></div>
+              </div>
+              <div className="flex gap-2">
+                <div className="h-10 w-10 bg-[#23262B]/50 rounded-lg animate-pulse"></div>
+                <div className="h-10 w-10 bg-[#23262B]/50 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array(6)
+                .fill(null)
+                .map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-[#23262B]/50 rounded-[18px] overflow-hidden animate-pulse"
+                  >
+                    <div className="h-40 bg-[#181A20]"></div>
+                    <div className="p-4">
+                      <div className="flex items-start gap-4">
+                        <div className="w-16 h-16 bg-[#181A20] rounded-2xl"></div>
+                        <div className="flex-1 space-y-2">
+                          <div className="h-5 bg-[#181A20] rounded-lg w-3/4"></div>
+                          <div className="h-4 bg-[#181A20] rounded-lg w-full"></div>
+                          <div className="flex gap-1">
+                            <div className="h-4 bg-[#181A20] rounded-full w-12"></div>
+                            <div className="h-4 bg-[#181A20] rounded-full w-14"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-2">
+                        <div className="h-6 w-12 bg-[#181A20] rounded-full"></div>
+                      </div>
+                      <div className="flex justify-between mt-3 pt-2 border-t border-[#2D3138]">
+                        <div className="h-6 bg-[#181A20] rounded-full w-20"></div>
+                        <div className="h-4 w-10 bg-[#181A20]"></div>
+                        <div className="h-6 bg-[#181A20] rounded-full w-20"></div>
+                      </div>
+                      <div className="flex gap-1 mt-2">
+                        <div className="h-8 bg-[#181A20] rounded-full w-24"></div>
+                        <div className="h-8 bg-[#181A20] rounded-full w-24"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#131519] flex items-center justify-center">
+        <div className="bg-[#23262B]/50 p-8 rounded-lg shadow-lg text-white/90 max-w-md text-center">
+          <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+          <p className="mb-4">{error}</p>
+          <button
+            className="px-4 py-2 bg-white text-black rounded-md"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#131519] to-[#1a2740] -z-10" />
-      
+
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden -z-5">
         {/* Left decoration */}
-        <motion.svg 
+        <motion.svg
           id="settingsIcon"
-          className="absolute left-0 top-[20%] opacity-10 w-[200px] h-[200px]" 
-          viewBox="0 0 205 209" 
-          fill="none" 
+          className="absolute left-0 top-[20%] opacity-10 w-[200px] h-[200px]"
+          viewBox="0 0 205 209"
+          fill="none"
           xmlns="http://www.w3.org/2000/svg"
           variants={settingsIconVariants}
           animate="animate"
@@ -304,24 +790,24 @@ export default function AppsPage() {
             fillOpacity="0.6"
           />
         </motion.svg>
-        
+
         {/* Right decoration circle */}
-        <motion.svg 
+        <motion.svg
           id="circleElement"
-          className="absolute right-12 top-[40%] opacity-5 w-[350px] h-[350px]" 
-          viewBox="0 0 200 200" 
+          className="absolute right-12 top-[40%] opacity-5 w-[350px] h-[350px]"
+          viewBox="0 0 200 200"
           xmlns="http://www.w3.org/2000/svg"
           variants={circleVariants}
           animate="animate"
         >
           <circle cx="100" cy="100" r="100" fill="#64C6FF" />
         </motion.svg>
-        
+
         {/* Bottom right zigzag */}
-        <svg 
-          className="absolute right-0 bottom-0 opacity-10 w-[300px] h-[300px]" 
-          viewBox="0 0 446 520" 
-          fill="none" 
+        <svg
+          className="absolute right-0 bottom-0 opacity-10 w-[300px] h-[300px]"
+          viewBox="0 0 446 520"
+          fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
@@ -339,8 +825,8 @@ export default function AppsPage() {
             <h1
               className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white text-center select-none px-4 py-4 rounded-xl shadow-2xl "
               style={{
-                textShadow: '0 4px 24px rgba(0,0,0,0.45), 0 1px 0 #fff',
-                letterSpacing: '-0.02em',
+                textShadow: "0 4px 24px rgba(0,0,0,0.45), 0 1px 0 #fff",
+                letterSpacing: "-0.02em",
               }}
             >
               Build & Launch Solana Apps, Faster
@@ -356,88 +842,7 @@ export default function AppsPage() {
         {/* Featured App */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-4 text-white">Featured App</h2>
-          <motion.div
-            className="flex flex-col md:flex-row items-center bg-[#23262B]/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 gap-6 border border-[#23262B] transition-transform duration-200"
-            initial="hidden"
-            animate="visible"
-            variants={cardVariants}
-          >
-            <motion.img
-              ref={featuredImgRef}
-              style={featuredImgStyle}
-              src={mockApps[0].banner}
-              alt={mockApps[0].name}
-              className="w-full md:w-64 h-40 object-cover rounded-xl border border-[#23262B] bg-[#181A20]"
-              whileHover={{ scale: 1.10 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-            />
-            <div className="flex-1">
-              <h3 className="text-xl font-semibold mb-2 text-white/90">{mockApps[0].name}</h3>
-              <p className="mb-2 text-white/70">{mockApps[0].description}</p>
-              <div className="mb-2 flex flex-wrap gap-2">
-                {mockApps[0].tags.map(tag => (
-                  <span key={tag} className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              {/* X (Twitter) link below CTAs */}
-              <div className="flex mt-2">
-                <a href="https://x.com/" target="_blank" rel="noopener noreferrer" className="bg-[#181A20] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium border border-[#23262B] hover:bg-[#23262B] transition">
-                  <Image src="/icons/twitter-x.svg" alt="X" width={14} height={14} className="inline-block" />
-                  <span>X</span>
-                </a>
-              </div>
-              {/* CA, Graph, and Market Cap Row at the bottom */}
-              <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
-                <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
-                  <Image src="/icons/send-logo.png" alt="Solana" width={14} height={14} className="inline-block" />
-                  {shortenCA(CA)}
-                  <button onClick={handleCopy} className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition" title="Copy CA">
-                    {copied ? (
-                      <Image src="/icons/Check_Icon.svg" alt="Copied" width={13} height={13} className="inline-block transition-all duration-200" />
-                    ) : (
-                      <Image src="/Copy_Icon.svg" alt="Copy" width={13} height={13} className="inline-block transition-all duration-200" />
-                    )}
-                  </button>
-                </span>
-                {/* Inline SVG sparkline graph as placeholder */}
-                <span className="flex items-center justify-center mx-2">
-                  <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <polyline
-                      fill="none"
-                      stroke="#4ADE80"
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                      points={featuredSparkline}
-                    />
-                  </svg>
-                </span>
-                <a
-                  href={dexscreenerUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
-                >
-                  <Image src="/icons/dexscreener.png" alt="Dexscreener" width={14} height={14} className="inline-block" />
-                  {marketCap}
-                </a>
-              </div>
-              
-              <div className="flex gap-1 mt-2">
-                <a href={mockApps[0].website} target="_blank" rel="noopener noreferrer" className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200">
-                  <Global size={15} weight="Bold" /> <span>Website</span>
-                </a>
-                <a href={mockApps[0].android} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                  <Smartphone size={15} weight="Bold" /> <span>Android</span>
-                </a>
-                <a href={mockApps[0].ios} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                  <IPhone size={15} weight="Bold" /> <span>iOS</span>
-                </a>
-              </div>
-            </div>
-          </motion.div>
+          {mockApps.length > 0 && <FeaturedApp app={mockApps[0]} />}
         </div>
 
         {/* Apps Grid/Table */}
@@ -447,23 +852,28 @@ export default function AppsPage() {
               <h2 className="text-2xl font-bold text-white">All Apps</h2>
               {/* Custom themed dropdown */}
               <div className="relative" ref={dropdownRef}>
-                <button 
+                <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center gap-2 bg-[#2D3138] text-white rounded-lg px-3 py-1.5 text-sm font-medium border border-[#23262B] hover:bg-[#32363F] transition-colors focus:outline-none focus:ring-1 focus:ring-white/10"
                 >
                   <span>{selectedTag}</span>
-                  <svg 
-                    className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? 'transform rotate-180' : ''}`} 
-                    xmlns="http://www.w3.org/2000/svg" 
+                  <svg
+                    className={`h-4 w-4 transition-transform duration-200 ${
+                      isDropdownOpen ? "transform rotate-180" : ""
+                    }`}
+                    xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                   >
-                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fill="currentColor"/>
+                    <path
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      fill="currentColor"
+                    />
                   </svg>
                 </button>
-                
+
                 {isDropdownOpen && (
                   <div className="absolute z-10 mt-1 w-48 bg-[#23262B] border border-[#32363F] rounded-lg shadow-lg py-1 max-h-56 overflow-y-auto scrollbar-hide">
-                    {allTags.map(tag => (
+                    {allTags.map((tag) => (
                       <button
                         key={tag}
                         onClick={() => {
@@ -471,9 +881,9 @@ export default function AppsPage() {
                           setIsDropdownOpen(false);
                         }}
                         className={`w-full text-left px-4 py-2 text-sm ${
-                          selectedTag === tag 
-                            ? 'bg-[#32363F] text-white font-medium' 
-                            : 'text-white/80 hover:bg-[#32363F] hover:text-white'
+                          selectedTag === tag
+                            ? "bg-[#32363F] text-white font-medium"
+                            : "text-white/80 hover:bg-[#32363F] hover:text-white"
                         }`}
                       >
                         {tag}
@@ -485,17 +895,21 @@ export default function AppsPage() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => setViewMode('grid')}
+                onClick={() => setViewMode("grid")}
                 className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'grid' ? 'bg-[#2D3138] text-white' : 'text-white/60 hover:text-white'
+                  viewMode === "grid"
+                    ? "bg-[#2D3138] text-white"
+                    : "text-white/60 hover:text-white"
                 }`}
               >
                 <Global size={20} weight="Bold" />
               </button>
               <button
-                onClick={() => setViewMode('table')}
+                onClick={() => setViewMode("table")}
                 className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'table' ? 'bg-[#2D3138] text-white' : 'text-white/60 hover:text-white'
+                  viewMode === "table"
+                    ? "bg-[#2D3138] text-white"
+                    : "text-white/60 hover:text-white"
                 }`}
               >
                 <Smartphone size={20} weight="Bold" />
@@ -503,173 +917,135 @@ export default function AppsPage() {
             </div>
           </div>
 
-          {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredApps.map((app, i) => {
-                return (
-                  <motion.div
-                    key={app.id}
-                    className="bg-[#23262B]/80 backdrop-blur-sm rounded-2xl shadow-lg p-4 flex flex-col border border-[#23262B] transition-transform duration-200"
-                    initial="hidden"
-                    animate="visible"
-                    whileHover="hover"
-                    variants={cardVariants}
-                    transition={{ ...spring, delay: i * 0.1 }}
-                  >
-                    <motion.img
-                      ref={imageRefs[i]}
-                      style={imageStyles[i]}
-                      src={app.banner}
-                      alt={app.name}
-                      className="w-full h-32 object-cover rounded-xl mb-3 border border-[#23262B] bg-[#181A20]"
-                      whileHover={{ scale: 1.10 }}
-                      transition={{ type: 'spring', stiffness: 200, damping: 18 }}
-                    />
-                    <h3 className="text-lg font-semibold mb-1 text-white/90">{app.name}</h3>
-                    <p className="text-white/70 mb-2 text-sm">{app.description}</p>
-                    <div className="mb-2 flex flex-wrap gap-2">
-                      {app.tags.map(tag => (
-                        <span key={tag} className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex gap-1 mt-auto">
-                      <a href={app.website} target="_blank" rel="noopener noreferrer" className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200">
-                        <Global size={13} weight="Bold" /> <span>Website</span>
-                      </a>
-                      <a href={app.android} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                        <Smartphone size={13} weight="Bold" /> <span>Android</span>
-                      </a>
-                      <a href={app.ios} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                        <IPhone size={13} weight="Bold" /> <span>iOS</span>
-                      </a>
-                    </div>
-
-                    {/* CA, Graph, and Market Cap Row at the bottom */}
-                    <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-[#23262B]">
-                      <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
-                        <Image src="/icons/send-logo.png" alt="Solana" width={14} height={14} className="inline-block" />
-                        {shortenCA(CA)}
-                        <button onClick={handleCopy} className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition" title="Copy CA">
-                          {copied ? (
-                            <Image src="/icons/Check_Icon.svg" alt="Copied" width={13} height={13} className="inline-block transition-all duration-200" />
-                          ) : (
-                            <Image src="/Copy_Icon.svg" alt="Copy" width={13} height={13} className="inline-block transition-all duration-200" />
-                          )}
-                        </button>
-                      </span>
-                      {/* Inline SVG sparkline graph as placeholder */}
-                      <span className="flex items-center justify-center mx-2">
-                        <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <polyline
-                            fill="none"
-                            stroke="#4ADE80"
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                            strokeLinecap="round"
-                            points={gridSparklines[i]}
-                          />
-                        </svg>
-                      </span>
-                      <a
-                        href={dexscreenerUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
-                      >
-                        <Image src="/icons/dexscreener.png" alt="Dexscreener" width={14} height={14} className="inline-block" />
-                        {marketCap}
-                      </a>
-                    </div>
-                  </motion.div>
-                );
-              })}
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredApps.map((app, i) => (
+                <AppCard key={app.id || i} app={app} index={i} />
+              ))}
             </div>
           ) : (
-            <div className="bg-[#23262B]/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#23262B] overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-[#2D3138]">
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">App</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Description</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Tags</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">CA</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Market Cap</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Actions</th>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-[#2D3138]">
+                <thead className="bg-[#1D1F25]">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+                    >
+                      App
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+                    >
+                      Description
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+                    >
+                      Category
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider"
+                    >
+                      Links
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-[#23262B]/50 divide-y divide-[#2D3138]">
+                  {filteredApps.map((app, i) => (
+                    <tr
+                      key={app.id || i}
+                      className="hover:bg-[#1A1D22]/50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="h-12 w-12 flex-shrink-0 rounded-xl overflow-hidden bg-[#1B1D22] border border-[#2D3138] relative">
+                            {app.iconUrl ? (
+                              <Image
+                                src={app.iconUrl}
+                                alt={app.name || "App icon"}
+                                fill
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="flex items-center justify-center h-full">
+                                <span className="text-gray-400 text-xs">
+                                  No logo
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-white font-medium">{app.name}</p>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {Array.isArray(app.tags) &&
+                                app.tags?.slice(0, 2).map((tag, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="px-1.5 py-0.5 text-[10px] bg-[#1B1D22] rounded-full text-[#64C6FF] border border-[#2D3138]"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-white/80 text-sm line-clamp-2">
+                          {app.description}
+                        </p>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 py-1 text-xs text-white/90 bg-[#1B1D22] rounded-full border border-[#2D3138]">
+                          {app.category || "Uncategorized"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex gap-1">
+                          {app.websiteUrl && (
+                            <a
+                              href={app.websiteUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200"
+                            >
+                              <Global size={13} />
+                            </a>
+                          )}
+                          {app.androidUrl && (
+                            <a
+                              href={app.androidUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+                            >
+                              <Smartphone size={13} />
+                            </a>
+                          )}
+                          {app.iosUrl && (
+                            <a
+                              href={app.iosUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]"
+                            >
+                              <IPhone size={13} />
+                            </a>
+                          )}
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filteredApps.map((app, i) => (
-                      <tr key={app.id} className="border-b border-[#2D3138] last:border-0 hover:bg-[#2D3138]/50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={app.banner}
-                              alt={app.name}
-                              className="w-12 h-12 rounded-lg object-cover"
-                            />
-                            <span className="font-medium text-white/90">{app.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-white/70 text-sm">{app.description}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-wrap gap-2">
-                            {app.tags.map(tag => (
-                              <span key={tag} className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-medium border border-[#2D3138]">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="bg-[#181A20] text-white/80 px-2 py-0.5 rounded-full text-xs font-mono border border-[#2D3138] flex items-center gap-1">
-                            <Image src="/icons/send-logo.png" alt="Solana" width={14} height={14} className="inline-block" />
-                            {shortenCA(CA)}
-                            <button onClick={handleCopy} className="ml-1 p-0.5 hover:bg-[#23262B] rounded transition" title="Copy CA">
-                              {copied ? (
-                                <Image src="/icons/Check_Icon.svg" alt="Copied" width={13} height={13} className="inline-block transition-all duration-200" />
-                              ) : (
-                                <Image src="/Copy_Icon.svg" alt="Copy" width={13} height={13} className="inline-block transition-all duration-200" />
-                              )}
-                            </button>
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <a
-                            href={dexscreenerUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-[#181A20] text-green-400 text-xs font-semibold px-2 py-0.5 rounded-full border border-[#2D3138] flex items-center gap-1 transition-colors duration-200 hover:bg-[#23262B]"
-                          >
-                            <Image src="/icons/dexscreener.png" alt="Dexscreener" width={14} height={14} className="inline-block" />
-                            {marketCap}
-                          </a>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex gap-1">
-                            <a href={app.website} target="_blank" rel="noopener noreferrer" className="bg-white text-black rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-neutral-200">
-                              <Global size={13} weight="Bold" />
-                            </a>
-                            <a href={app.android} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                              <Smartphone size={13} weight="Bold" />
-                            </a>
-                            <a href={app.ios} className="bg-[#2D3138] text-white rounded-full px-2 py-1 flex items-center gap-1 text-xs font-medium transition hover:bg-[#32363F]">
-                              <IPhone size={13} weight="Bold" />
-                            </a>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
       </div>
     </div>
   );
-} 
+}

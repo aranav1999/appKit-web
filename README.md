@@ -1,9 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Solana  App Kit
+
+Build Solana Apps in Minutes
 
 ## Getting Started
 
-First, run the development server:
+First, set up your environment variables:
 
+1. Follow the detailed instructions in [src/ENV_SETUP.md](src/ENV_SETUP.md) to set up your environment variables.
+
+2. Generate the database migrations:
+```bash
+npm run db:generate
+```
+
+3. Apply the migrations to your database:
+```bash
+npm run db:migrate
+```
+
+4. (Optional) Seed your database with sample data:
+```bash
+npm run db:seed
+```
+
+5. Run the development server:
 ```bash
 npm run dev
 # or
@@ -16,9 +36,61 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Backend Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses:
+
+- **Drizzle ORM** for database operations
+- **Supabase Storage** for image uploads
+- **PostgreSQL** as the database
+
+### Project Structure
+
+```
+src/
+  ├── lib/
+  │   ├── db/
+  │   │   ├── drizzle/        # Database migrations
+  │   │   ├── schema.ts       # Database schema definitions
+  │   │   ├── index.ts        # Database connection
+  │   │   ├── migrate.ts      # Migration utility
+  │   │   └── seed.ts         # Database seeding utility
+  │   └── supabase/
+  │       └── index.ts        # Supabase storage utilities
+  └── app/
+      ├── api/                # API routes
+      │   ├── apps/           # App-related endpoints
+      │   ├── categories/     # Category-related endpoints
+      │   └── screenshots/    # Screenshot-related endpoints
+      └── ...                 # Frontend pages
+```
+
+### Database Schema
+
+The main entities in the database are:
+- **Apps**: Main app listings
+- **Screenshots**: App screenshots
+- **Categories**: App categories
+
+### API Routes
+
+The following API routes are available:
+
+- `GET /api/apps` - Get all apps
+- `POST /api/apps` - Create a new app
+- `GET /api/apps/:id` - Get a specific app
+- `PATCH /api/apps/:id` - Update an app
+- `DELETE /api/apps/:id` - Delete an app
+
+- `POST /api/screenshots` - Add a screenshot
+- `PATCH /api/screenshots/:id` - Update a screenshot
+- `DELETE /api/screenshots/:id` - Delete a screenshot
+
+- `GET /api/categories` - Get all categories
+- `POST /api/categories` - Create a new category
+- `GET /api/categories/:id` - Get a specific category
+- `PATCH /api/categories/:id` - Update a category
+- `DELETE /api/categories/:id` - Delete a category
 
 ## Learn More
 
@@ -26,8 +98,8 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Drizzle ORM Documentation](https://orm.drizzle.team/docs/overview) - learn about Drizzle ORM.
+- [Supabase Storage Documentation](https://supabase.com/docs/guides/storage) - learn about Supabase Storage.
 
 ## Deploy on Vercel
 

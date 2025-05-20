@@ -26,7 +26,7 @@ export default function Header() {
 
   return (
     <header
-      className={`py-4 px-6 flex justify-between items-center relative ${
+      className={`py-8 z-20 px-16 flex justify-between items-center relative ${
         isMobileWidth ? "bg-[#0C101A]" : "bg-[#131519]"
       }`}
     >

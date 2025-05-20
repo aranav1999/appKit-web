@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: "https",
@@ -14,6 +17,18 @@ const nextConfig: NextConfig = {
         hostname: "ik.imagekit.io",
         port: "",
         pathname: "/scriptscrypt/**",
+      },
+      {
+        protocol: "https",
+        hostname: "placehold.co",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "wwcwgygtdzrpupurlcho.supabase.co",
+        port: "",
+        pathname: "/storage/v1/object/public/app-images/**",
       },
     ],
   },

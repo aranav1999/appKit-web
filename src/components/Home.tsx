@@ -109,7 +109,9 @@ export default function Hero() {
   };
 
   const handleAddressCopy = () => {
-    navigator.clipboard.writeText("SENDdRQtYMWaQrBroBrJ2Q53fgVuq95CV9UPGEvpCxa");
+    navigator.clipboard.writeText(
+      "SENDdRQtYMWaQrBroBrJ2Q53fgVuq95CV9UPGEvpCxa"
+    );
     setIsAddressCopied(true);
     setTimeout(() => {
       setIsAddressCopied(false);
@@ -270,10 +272,7 @@ export default function Hero() {
                   d="M84.8449 2.36017C93.3022 0.868169 97.5308 0.122166 101.452 1.08139C102.81 1.41346 104.127 1.89276 105.381 2.51079C109.002 4.29605 111.747 7.56744 117.238 14.1102C122.729 20.653 125.475 23.9244 129.096 25.7097C130.349 26.3277 131.666 26.807 133.024 27.139C136.945 28.0983 141.151 27.3563 149.563 25.8723C157.975 24.3883 162.181 23.6463 166.102 24.6056C167.46 24.9376 168.777 25.4169 170.03 26.035C173.651 27.8202 176.412 31.1093 181.933 37.6875C187.541 44.3707 190.346 47.7122 191.468 51.6587C191.828 52.9219 192.056 54.2185 192.151 55.5283C192.447 59.6207 190.957 63.7147 187.978 71.9027C185.02 80.0316 183.541 84.096 183.823 88.1608C183.915 89.4879 184.145 90.8018 184.508 92.0814C185.622 96.0006 188.382 99.3087 193.9 105.925C199.419 112.541 202.178 115.849 203.292 119.769C203.656 121.048 203.886 122.362 203.978 123.689C204.26 127.754 202.775 131.835 199.805 139.996C196.835 148.158 195.351 152.239 192.522 155.172C191.599 156.129 190.578 156.988 189.477 157.735C186.105 160.022 181.865 160.783 173.385 162.306C164.905 163.828 160.665 164.589 157.293 166.876C156.192 167.623 155.171 168.482 154.248 169.439C151.42 172.372 149.941 176.437 146.983 184.566C144.003 192.754 142.514 196.848 139.657 199.793C138.743 200.736 137.735 201.582 136.648 202.319C133.251 204.621 128.955 205.379 120.363 206.895C111.906 208.387 107.677 209.133 103.755 208.174C102.398 207.842 101.081 207.363 99.8272 206.745C96.2062 204.959 93.4607 201.688 87.9697 195.145C82.4787 188.602 79.7331 185.331 76.1122 183.546C74.8587 182.928 73.5414 182.448 72.1839 182.116C68.2623 181.157 64.0565 181.899 55.6448 183.383C47.233 184.867 43.0272 185.609 39.1056 184.65C37.7481 184.318 36.4308 183.838 35.1773 183.22C31.5564 181.435 28.796 178.146 23.2753 171.568C17.6664 164.885 14.862 161.543 13.7394 157.597C13.3801 156.333 13.1514 155.037 13.0567 153.727C12.7611 149.635 14.2449 145.557 17.2123 137.402C20.1798 129.246 21.6635 125.169 21.3679 121.077C21.2733 119.767 21.0445 118.47 20.6852 117.207C19.5626 113.26 16.7732 109.937 11.1944 103.289C5.61558 96.6418 2.82617 93.3181 1.70359 89.3716C1.3443 88.1085 1.11555 86.8118 1.02093 85.502C0.725336 81.4096 2.20906 77.332 5.17652 69.1767C8.14395 61.0215 9.62766 56.9439 12.4841 53.9985C13.3984 53.0557 14.407 52.2093 15.4941 51.4724C18.8904 49.1702 23.1635 48.4164 31.7097 46.9087C40.2559 45.401 44.5291 44.6471 47.9253 42.3449C49.0125 41.608 50.0211 40.7615 50.9354 39.8187C53.7918 36.8733 55.2755 32.7957 58.2429 24.6405C61.2103 16.4853 62.694 12.4076 65.5505 9.46217C66.4647 8.51942 67.4733 7.67297 68.5604 6.9361C71.9567 4.63389 76.2528 3.87599 84.8449 2.36017ZM76.2076 126.871C81.6658 133.375 84.3949 136.627 87.9757 138.409C89.2874 139.062 90.6695 139.563 92.095 139.901C95.9865 140.825 100.154 140.077 108.488 138.58C116.766 137.094 120.905 136.35 124.218 134.151C125.431 133.346 126.549 132.405 127.55 131.346C130.281 128.457 131.719 124.505 134.595 116.602L134.809 116.013C137.685 108.109 139.123 104.157 138.887 100.189C138.801 98.7346 138.549 97.2951 138.137 95.898C137.012 92.0846 134.319 88.855 128.932 82.396C123.508 75.8934 120.796 72.6421 117.221 70.8491C115.911 70.1923 114.531 69.6876 113.106 69.3448C109.218 68.409 105.037 69.1465 96.6752 70.6217C88.2746 72.1037 84.0743 72.8447 80.7279 75.0731C79.5469 75.8596 78.4567 76.7745 77.4773 77.8012C74.7022 80.7103 73.2278 84.7621 70.2792 92.8658C67.3306 100.969 65.8563 105.021 66.113 109.033C66.2036 110.449 66.4508 111.851 66.8502 113.212C67.982 117.07 70.7239 120.337 76.2076 126.871Z"
                   fill="#64C6FF"
                 />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                />
+                <path fillRule="evenodd" clipRule="evenodd" />
                 <defs>
                   <linearGradient
                     id="paint0_linear_1_4"
@@ -965,7 +964,7 @@ export default function Hero() {
           {/* Terminal display above heading */}
           <div className="mb-4 flex flex-col justify-center items-center">
             <motion.div
-              className="mb-8 relative text-white font-mono text-sm cursor-pointer group"
+              className="mb-16 relative text-white opacity-40 font-mono text-xs cursor-pointer group"
               onClick={handleAddressCopy}
               role="button"
               tabIndex={0}
@@ -975,32 +974,32 @@ export default function Hero() {
                   handleAddressCopy();
                 }
               }}
-              whileHover={{ 
+              whileHover={{
                 scale: 1.02,
-                textShadow: "0 0 8px rgba(255, 255, 255, 0.5)" 
+                // textShadow: "0 0 8px rgba(255, 255, 255, 0.5)"
               }}
               animate={
-                isAddressCopied 
-                  ? { 
+                isAddressCopied
+                  ? {
                       scale: [1, 1.05, 1],
-                      color: ["#ffffff", "#4ade80", "#ffffff"],
-                      transition: { duration: 0.5 }
-                    } 
+                      color: ["#ffffff", "#64C6FF", "#ffffff"],
+                      transition: { duration: 0.5 },
+                    }
                   : {}
               }
             >
-              <motion.span 
+              <motion.span
                 className="absolute left-1/2 transform -translate-x-1/2 -top-4 text-[10px] text-gray-400 whitespace-nowrap tracking-wider"
                 initial={{ opacity: 0 }}
-                animate={{ 
+                animate={{
                   opacity: isAddressCopied ? 0.8 : 0,
                 }}
               >
                 copied
               </motion.span>
-              <div 
+              <div
                 className="absolute left-1/2 transform -translate-x-1/2 -top-4 text-[10px] text-gray-400 whitespace-nowrap tracking-wider opacity-0 group-hover:opacity-50 transition-opacity duration-200"
-                style={{ display: isAddressCopied ? 'none' : 'block' }}
+                style={{ display: isAddressCopied ? "none" : "block" }}
               >
                 click to copy
               </div>
@@ -1067,34 +1066,89 @@ export default function Hero() {
           </h1>
           <div className="text-xl md:text-2xl text-white/80 mb-4 flex flex-col items-center text-center w-full max-w-4xl px-4">
             <div className="flex items-center justify-center">
-              <span>From <span className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80 font-semibold">AI</span> to</span>
-              <div className="ml-2 relative h-[34px] md:h-[40px] inline-block" style={{ perspective: "1000px", minWidth: "80px" }}>
-                <div 
+              <span>
+                From{" "}
+              </span>
+              <div
+                className="ml-2 relative h-[34px] md:h-[40px] inline-block mr-2"
+                style={{ perspective: "1000px", minWidth: "80px" }}
+              >
+                <div
                   className="flex flex-col absolute inset-0"
-                  style={{ 
+                  style={{
                     transformStyle: "preserve-3d",
-                    animation: "textRotate 8s ease-in-out infinite" 
+                    animation:
+                      "leftTextRotate 10s cubic-bezier(0.2, 0.8, 0.2, 1) infinite",
+                    animationDelay: "0s",
                   }}
                 >
-                  {["Social", "Launchpad", "Wallets", "Trading"].map((word, index) => (
-                    <div 
-                      key={word}
-                      className="absolute inset-0 flex items-center justify-start whitespace-nowrap"
-                      style={{ 
-                        backfaceVisibility: "hidden",
-                        transform: `rotateX(${index * 90}deg) translateZ(20px)`,
-                        opacity: 1
-                      }}
-                    >
-                      <span className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80 font-semibold">
-                        {word}
-                      </span>
-                    </div>
-                  ))}
+                  {["Wallets", "Trading", "Gaming", "DeFi"].map(
+                    (word, index) => (
+                      <div
+                        key={word}
+                        className="absolute flex items-center justify-start rounded-none left-0"
+                        style={{
+                          backfaceVisibility: "hidden",
+                          transform: `rotateX(${
+                            index * 90
+                          }deg) translateZ(20px)`,
+                          opacity: 1,
+                          padding: "0.25rem 0.5rem",
+                          background: "rgba(44, 49, 58, 0.4)",
+                          borderRadius: "2px",
+                          minWidth: "fit-content",
+                        }}
+                      >
+                        <span className="font-semibold text-white whitespace-nowrap">
+                          {word}
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+              <span className="mx-4 ml-8">to</span>
+              <div
+                className="relative h-[34px] md:h-[40px] inline-block ml-2"
+                style={{ perspective: "1000px", minWidth: "100px" }}
+              >
+                <div
+                  className="flex flex-col absolute inset-0"
+                  style={{
+                    transformStyle: "preserve-3d",
+                    animation:
+                      "textRotate 10s cubic-bezier(0.2, 0.8, 0.2, 1) infinite",
+                    animationDelay: "5s",
+                  }}
+                >
+                  {["AI", "Social", "Launchpad", "Gaming"].map(
+                    (word, index) => (
+                      <div
+                        key={word}
+                        className="absolute flex items-center justify-start rounded-none left-0"
+                        style={{
+                          backfaceVisibility: "hidden",
+                          transform: `rotateX(${
+                            index * 90
+                          }deg) translateZ(20px)`,
+                          opacity: 1,
+                          padding: "0.25rem 0.5rem",
+                          background: "rgba(44, 49, 58, 0.4)",
+                          borderRadius: "2px",
+                          minWidth: "fit-content",
+                        }}
+                      >
+                        <span className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80 font-semibold whitespace-nowrap">
+                          {word}
+                        </span>
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
             </div>
-            <div className="mt-1"> in under 15 minutes and less than 50 lines of code.</div>
+            {/* @ts-ignore */}
+            <div className="mt-1"> under 15 minutes and ~50 lines of code.</div>
           </div>
           <style jsx global>{`
             .text-gradient {
@@ -1102,19 +1156,48 @@ export default function Hero() {
               background-clip: text;
               -webkit-text-fill-color: transparent;
             }
-            @keyframes textRotate {
-              0%, 20% {
+            
+            @keyframes leftTextRotate {
+              0%,
+              18% {
                 transform: rotateX(0deg);
               }
-              25%, 45% {
+              20%,
+              38% {
                 transform: rotateX(-90deg);
               }
-              50%, 70% {
+              40%,
+              58% {
                 transform: rotateX(-180deg);
               }
-              75%, 95% {
+              60%,
+              78% {
                 transform: rotateX(-270deg);
               }
+              80%,
+              100% {
+                transform: rotateX(-360deg);
+              }
+            }
+
+            @keyframes textRotate {
+              0%,
+              18% {
+                transform: rotateX(0deg);
+              }
+              20%,
+              38% {
+                transform: rotateX(-90deg);
+              }
+              40%,
+              58% {
+                transform: rotateX(-180deg);
+              }
+              60%,
+              78% {
+                transform: rotateX(-270deg);
+              }
+              80%,
               100% {
                 transform: rotateX(-360deg);
               }
@@ -1142,7 +1225,15 @@ export default function Hero() {
               href="/apps"
               className="px-8 py-3 rounded-full bg-[#2D3747] text-white font-semibold w-full"
             >
-              Apps
+              <div className="flex items-center text-center justify-center gap-2">
+                <Image
+                  src="/logo/appkitWhite.svg"
+                  alt="AppKit"
+                  width={20}
+                  height={20}
+                />
+                Apps
+              </div>
             </Link>
           </div>
         </div>

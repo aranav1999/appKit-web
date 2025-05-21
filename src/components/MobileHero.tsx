@@ -93,7 +93,7 @@ export default function MobileHero() {
       }}
     >
       {/* Content */}
-      <div className="z-10 text-center mb-30">
+      <div className="z-10 text-center mb-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -102,7 +102,7 @@ export default function MobileHero() {
         >
           {/* Solana address with copy functionality */}
           <motion.div
-            className="mb-6 relative text-white font-mono text-sm cursor-pointer group"
+            className="mb-8 relative text-white opacity-40 font-mono text-sm cursor-pointer group"
             onClick={handleAddressCopy}
             role="button"
             tabIndex={0}
@@ -213,8 +213,8 @@ export default function MobileHero() {
             </div>
           </motion.div>
 
-          <h1 className="text-4xl font-bold text-white mb-2">Build Solana</h1>
-          <h1 className="text-4xl font-bold text-white mb-4">Apps Faster</h1>
+          <h1 className="text-5xl font-bold text-white mb-2">Build Solana</h1>
+          <h1 className="text-5xl font-bold text-white mb-4">Apps Faster</h1>
           
           {/* Rotating text component */}
           <div className="text-gray-300 text-sm mb-4 flex flex-col items-center text-center w-full">
@@ -250,7 +250,7 @@ export default function MobileHero() {
               </div>
             </div>
             <div>
-              in under 15 minutes and less than 50 lines of code.
+              in under 15 minutes and &lt;50 lines of code.
             </div>
           </div>
           
@@ -260,22 +260,22 @@ export default function MobileHero() {
               background-clip: text;
               -webkit-text-fill-color: transparent;
             }
-            @keyframes textRotate {
-              0%, 20% {
-                transform: rotateX(0deg);
-              }
-              25%, 45% {
-                transform: rotateX(-90deg);
-              }
-              50%, 70% {
-                transform: rotateX(-180deg);
-              }
-              75%, 95% {
-                transform: rotateX(-270deg);
-              }
-              100% {
-                transform: rotateX(-360deg);
-              }
+                        @keyframes textRotate {
+               0%, 23% {
+                  transform: rotateX(0deg);
+                }
+               25%, 48% {
+                  transform: rotateX(-90deg);
+                }
+               50%, 73% {
+                  transform: rotateX(-180deg);
+                }
+               75%, 98% {
+                  transform: rotateX(-270deg);
+                }
+                100% {
+                  transform: rotateX(-360deg);
+                }
             }
           `}</style>
         </motion.div>

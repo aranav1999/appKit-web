@@ -407,11 +407,27 @@ export default function Demo() {
       {/* SuperApp section with background color */}
       <motion.div
         variants={containerVariants}
-        className="container mx-auto bg-[#1C2027] py-10 px-4 md:px-8 m-4 rounded-3xl"
+        className="container mx-auto bg-[#1C2027] py-10 px-4 md:px-8 m-4 rounded-3xl relative overflow-hidden"
       >
+        {/* Hexagon pattern background */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <svg 
+            className="absolute top-0 right-0 w-full h-full opacity-2"
+            viewBox="0 0 100 100" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <pattern id="superAppHexagonPattern" width="10" height="17.32" patternUnits="userSpaceOnUse" patternTransform="scale(1.8) rotate(15)">
+                <path d="M5,0 L10,8.66 L5,17.32 L0,8.66Z" fill="none" stroke="#64C6FF" strokeWidth="0.3"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#superAppHexagonPattern)" />
+          </svg>
+        </div>
+
         <motion.div
           variants={itemVariants}
-          className="flex flex-col md:flex-row justify-between items-center mb-10"
+          className="flex flex-col md:flex-row justify-between items-center mb-10 relative z-10"
         >
           <motion.div
             variants={itemVariants}
@@ -710,17 +726,32 @@ export default function Demo() {
                   key={`desktop-app-row1-${appIndex}`}
                   variants={cardVariants}
                   whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  className={`rounded-2xl p-6 shadow-lg ${
+                  className={`rounded-2xl p-6 shadow-lg relative overflow-hidden group ${
                     app.name === "SendAI Mobile" 
-                      ? "bg-gradient-to-r from-[#13161B] to-[#1C2840]" 
+                      ? "bg-gradient-to-r from-[#0BA8F0] to-[#0C91F1]" 
                       : app.name === "Neptune Wallet"
-                      ? "bg-gradient-to-r from-[#151519] to-[#3E1B1C]"
+                      ? "bg-gradient-to-r from-[#1C2027] to-[#2C333F]"
                       : app.name === "Sendshot" 
-                      ? "bg-gradient-to-r from-[#15161C] to-[#231D3D]"
-                      : "bg-[#262A33]"
+                      ? "bg-gradient-to-r from-[#FFA844] to-[#FFBF44]"
+                      : "bg-gradient-to-r from-[#9089FF] to-[#AAA6FD]"
                   }`}
                 >
-                  <div className="flex justify-between items-start mb-1">
+                  {/* Hexagon pattern background */}
+                  <div className="absolute inset-0 z-0 overflow-hidden transition-opacity duration-300">
+                    <svg 
+                      className="absolute top-0 right-0 w-full h-full opacity-[0.02] group-hover:opacity-10"
+                      viewBox="0 0 100 100" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <pattern id={`hexagonPattern-${appIndex}`} width="10" height="17.32" patternUnits="userSpaceOnUse" patternTransform="scale(1.2) rotate(15)">
+                          <path d="M5,0 L10,8.66 L5,17.32 L0,8.66Z" fill="none" stroke="#FFFFFF" strokeWidth="0.3"/>
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill={`url(#hexagonPattern-${appIndex})`} />
+                    </svg>
+                  </div>
+                  <div className="flex justify-between items-start mb-1 relative z-10">
                     <div className="text-white font-medium text-lg">
                       {app.name}
                     </div>
@@ -777,15 +808,30 @@ export default function Demo() {
                   key={`desktop-app-row2-${appIndex}`}
                   variants={cardVariants}
                   whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  className={`rounded-2xl p-6 shadow-lg ${
+                  className={`rounded-2xl p-6 shadow-lg relative overflow-hidden group ${
                     app.name === "Send Guys" 
-                      ? "bg-gradient-to-r from-[#13171A] to-[#1C3D33]" 
+                      ? "bg-gradient-to-r from-[#00C978] to-[#00C9A7]" 
                       : app.name === "Social Trading App"
-                      ? "bg-gradient-to-r from-[#15161B] to-[#3D1F3D]"
+                      ? "bg-gradient-to-r from-[#9089FF] to-[#AAA6FD]"
                       : "bg-[#262A33]"
                   }`}
                 >
-                  <div className="flex justify-between items-start mb-1">
+                  {/* Hexagon pattern background */}
+                  <div className="absolute inset-0 z-0 overflow-hidden transition-opacity duration-300">
+                    <svg 
+                      className="absolute top-0 right-0 w-full h-full opacity-[0.02] group-hover:opacity-10"
+                      viewBox="0 0 100 100" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <pattern id={`hexagonPattern-row2-${appIndex}`} width="10" height="17.32" patternUnits="userSpaceOnUse" patternTransform="scale(1.2) rotate(15)">
+                          <path d="M5,0 L10,8.66 L5,17.32 L0,8.66Z" fill="none" stroke="#FFFFFF" strokeWidth="0.3"/>
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill={`url(#hexagonPattern-row2-${appIndex})`} />
+                    </svg>
+                  </div>
+                  <div className="flex justify-between items-start mb-1 relative z-10">
                     <div className="text-white font-medium text-lg">
                       {app.name}
                     </div>

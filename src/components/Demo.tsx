@@ -19,6 +19,8 @@ export default function Demo() {
   const countAnimationControls = useAnimationControls();
   const [milestoneReached, setMilestoneReached] = useState(false);
   const milestoneTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoScrollTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Monitor window resize to detect mobile view
   useEffect(() => {
@@ -194,6 +196,9 @@ export default function Demo() {
       if (milestoneTimeoutRef.current) {
         clearTimeout(milestoneTimeoutRef.current);
       }
+      if (autoScrollTimerRef.current) {
+        clearInterval(autoScrollTimerRef.current);
+      }
     };
   }, []);
 
@@ -350,9 +355,46 @@ export default function Demo() {
     },
   ];
 
+  // Auto-scrolling for mobile carousel
+  useEffect(() => {
+    if (!isMobile || isPaused) return;
+    
+    const startAutoScroll = () => {
+      autoScrollTimerRef.current = setInterval(() => {
+        setCurrentSlide((prev) => {
+          // Calculate total number of slides
+          const totalSlides = appScreenshots.length * 2;
+          return (prev + 1) % totalSlides;
+        });
+      }, 3000); // Change slide every 3 seconds
+    };
+    
+    startAutoScroll();
+    
+    return () => {
+      if (autoScrollTimerRef.current) {
+        clearInterval(autoScrollTimerRef.current);
+      }
+    };
+  }, [isMobile, isPaused, appScreenshots.length]);
+
+  // Pause auto-scrolling when user interacts with carousel
+  const pauseAutoScroll = () => {
+    setIsPaused(true);
+    // Resume auto-scrolling after 5 seconds of inactivity
+    if (autoScrollTimerRef.current) {
+      clearInterval(autoScrollTimerRef.current);
+    }
+    
+    setTimeout(() => {
+      setIsPaused(false);
+    }, 5000);
+  };
+
   // Function to handle carousel navigation
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
+    pauseAutoScroll();
   };
 
   return (
@@ -376,9 +418,7 @@ export default function Demo() {
             className="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-0 text-center md:text-left max-w-s md:self-center"
           >
             <div className="md:hidden">
-              Send
-              <br />
-              SuperApp
+              Send SuperApp
               {/* and feel the magic! */}
             </div>
             <div className="hidden md:block">
@@ -396,8 +436,7 @@ export default function Demo() {
               variants={itemVariants}
               className="text-white/70 text-lg md:text-lg mb-4 text-center md:text-left max-w-full md:max-w-[300px]"
             >
-              An All in One <br className="md:hidden" />
-              Solana SuperApp.
+              An All in One Solana SuperApp.
             </motion.div>
             <motion.div
               variants={itemVariants}
@@ -503,6 +542,19 @@ export default function Demo() {
             variants={itemVariants}
             className="mt-10 relative flex flex-col items-center"
           >
+            {/* Current App Name Header */}
+            <motion.div
+              variants={itemVariants}
+              className="mb-4 bg-black/50 px-6 py-2 rounded-full"
+            >
+              <h3 className="text-white font-medium text-base text-center">
+                {appScreenshots[Math.floor(currentSlide / 2)].name}
+              </h3>
+              <p className="text-white/70 text-xs text-center">
+                {appScreenshots[Math.floor(currentSlide / 2)].description}
+              </p>
+            </motion.div>
+            
             <div className="w-full max-w-[280px] overflow-hidden">
               <div
                 className="flex transition-transform duration-300 ease-out"
@@ -514,6 +566,7 @@ export default function Demo() {
                     <div
                       key={`mobile-app-${appIndex}-image-${imageIndex}`}
                       className="w-full flex-shrink-0 flex justify-center pt-4"
+                      onTouchStart={pauseAutoScroll}
                     >
                       <motion.div
                         custom={imageIndex % 2 === 0 ? -3 : 3}
@@ -525,24 +578,18 @@ export default function Demo() {
                           background:
                             "linear-gradient(to bottom, #333A4A 40%, #1c2127 80%)",
                           padding: "20px",
-                          width: "240px",
-                          height: "440px",
+                          width: app.isLandscape ? "280px" : "240px",
+                          height: app.isLandscape ? "170px" : "440px",
                         }}
                       >
-                        <div className="relative w-full h-full overflow-hidden rounded-[32px] border-5 border-black">
+                        <div className={`relative w-full h-full overflow-hidden rounded-[32px] border-5 border-black`}>
                           <Image
                             src={image}
                             alt={`${app.name} Screenshot ${imageIndex + 1}`}
                             fill
-                            className="object-cover rounded-[24px]"
+                            className={`object-cover rounded-[24px]`}
                             priority
                           />
-                          {imageIndex === 0 && (
-                            <div className="absolute bottom-4 left-0 right-0 bg-black/70 p-2 text-center">
-                              <div className="text-white text-sm font-medium">{app.name}</div>
-                              <div className="text-white/80 text-xs">{app.description}</div>
-                            </div>
-                          )}
                         </div>
                       </motion.div>
                     </div>

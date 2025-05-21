@@ -1242,7 +1242,7 @@ export default function Hero() {
         </div>
       </section>
 
-      <div className="-mt-32 pb-16 md:-mt-40 md:pb-16 z-50 relative">
+      <div className="-mt-32 pb-16 md:-mt-32 lg:-mt-46 md:pb-16 z-50 relative">
         <ProtocolLogos />
       </div>
     </>

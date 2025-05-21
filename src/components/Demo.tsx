@@ -10,6 +10,8 @@ export default function Demo() {
   const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
   const [isMobile, setIsMobile] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [clickCount, setClickCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Monitor window resize to detect mobile view
   useEffect(() => {
@@ -26,6 +28,57 @@ export default function Demo() {
     // Cleanup
     return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
+
+  // Fetch initial click count from the API
+  useEffect(() => {
+    const fetchClickCount = async () => {
+      try {
+        const response = await fetch('/api/clicks');
+        if (response.ok) {
+          const data = await response.json();
+          setClickCount(data.count);
+        }
+      } catch (error) {
+        console.error('Failed to fetch click count:', error);
+      }
+    };
+
+    fetchClickCount();
+  }, []);
+
+  const handleComingSoonClick = async () => {
+    // Prevent multiple rapid clicks
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    // Optimistically update local count for better UX
+    setClickCount(prevCount => prevCount + 1);
+    
+    try {
+      const response = await fetch('/api/clicks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        // Get the real count from the server
+        const data = await response.json();
+        setClickCount(data.count);
+      } else {
+        // If server request fails, revert the count
+        setClickCount(prevCount => prevCount - 1);
+        console.error('Failed to update click count');
+      }
+    } catch (error) {
+      // If there's an error, revert the count
+      setClickCount(prevCount => prevCount - 1);
+      console.error('Error updating click count:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -182,6 +235,7 @@ export default function Demo() {
             variants={itemVariants}
             className="flex flex-col md:flex-row gap-3"
           >
+            {/* App store download buttons commented out
             <motion.a
               href="#"
               className="flex items-center justify-center gap-2 bg-white text-black px-5 py-3 md:px-3 md:py-3 rounded-full font-medium md:font-medium w-full md:w-auto text-xs md:text-xs whitespace-nowrap"
@@ -226,6 +280,44 @@ export default function Demo() {
               />
               Get it on Google Play
             </motion.a>
+            */}
+            
+            {/* Coming Soon button with click counter */}
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              {/* Count badge on the left */}
+              <motion.div 
+                className="flex items-center justify-center bg-white/10 text-white px-4 py-2 rounded-full text-base font-semibold min-w-[36px]"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {clickCount}
+              </motion.div>
+              
+              <motion.button
+                onClick={handleComingSoonClick}
+                disabled={isLoading}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-white/90 to-white/80 text-black px-6 py-3 rounded-full font-medium w-full md:w-auto text-sm whitespace-nowrap relative overflow-hidden"
+                whileHover={{
+                  scale: 1.03,
+                  boxShadow: "0 4px 15px rgba(255, 255, 255, 0.3)",
+                }}
+                whileTap={{ scale: 0.98 }}
+                transition={{
+                  type: "tween",
+                  ease: "easeOut",
+                  duration: 0.15,
+                }}
+              >
+                {isLoading ? (
+                  <span className="animate-pulse">SEND it</span>
+                ) : (
+                  <>
+                    Coming Soon
+                  </>
+                )}
+              </motion.button>
+            </div>
           </motion.div>
         </motion.div>
       </motion.div>

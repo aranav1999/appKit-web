@@ -22,6 +22,13 @@
       "when": 1747750307450,
       "tag": "0002_smooth_loki",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1747750307451,
+      "tag": "0003_add_click_counter",
+      "breakpoints": false
     }
   ]
 }

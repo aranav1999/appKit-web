@@ -44,6 +44,14 @@ export const categories = pgTable('categories', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// Click counter table
+export const clickCounter = pgTable('click_counter', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 50 }).notNull().unique(),
+  count: integer('count').default(0).notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Export all tables for use in the app
 export type App = typeof apps.$inferSelect;
 export type NewApp = typeof apps.$inferInsert;
@@ -52,4 +60,7 @@ export type Screenshot = typeof screenshots.$inferSelect;
 export type NewScreenshot = typeof screenshots.$inferInsert;
 
 export type Category = typeof categories.$inferSelect;
-export type NewCategory = typeof categories.$inferInsert; 
+export type NewCategory = typeof categories.$inferInsert;
+
+export type ClickCounter = typeof clickCounter.$inferSelect;
+export type NewClickCounter = typeof clickCounter.$inferInsert; 

@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useAnimationControls } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import confetti from 'canvas-confetti';
 
 export default function Demo() {
   const sectionRef = useRef(null);
@@ -12,6 +13,12 @@ export default function Demo() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [clickCount, setClickCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHolding, setIsHolding] = useState(false);
+  const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isHoldingRef = useRef(false);
+  const countAnimationControls = useAnimationControls();
+  const [milestoneReached, setMilestoneReached] = useState(false);
+  const milestoneTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Monitor window resize to detect mobile view
   useEffect(() => {
@@ -46,13 +53,168 @@ export default function Demo() {
     fetchClickCount();
   }, []);
 
+  // Set initial animation state on component mount
+  useEffect(() => {
+    countAnimationControls.start({ opacity: 1, scale: 1 });
+  }, []);
+
+  // Add utility function for haptic feedback
+  const triggerHapticFeedback = () => {
+    // Check if the device supports vibration
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(20); // Short vibration (20ms)
+    }
+  };
+
+  // Function to trigger confetti for milestone
+  const triggerMilestoneConfetti = () => {
+    // Set the milestone state for button text change
+    setMilestoneReached(true);
+    
+    // First confetti burst - center
+    confetti({
+      particleCount: 150,
+      spread: 100,
+      origin: { y: 0.6 }
+    });
+    
+    // Second confetti burst - from left
+    setTimeout(() => {
+      confetti({
+        particleCount: 70,
+        angle: 60,
+        spread: 70,
+        origin: { x: 0, y: 0.6 }
+      });
+    }, 200);
+    
+    // Third confetti burst - from right
+    setTimeout(() => {
+      confetti({
+        particleCount: 70,
+        angle: 120,
+        spread: 70,
+        origin: { x: 1, y: 0.6 }
+      });
+    }, 400);
+    
+    // Reset milestone state after a few seconds
+    if (milestoneTimeoutRef.current) {
+      clearTimeout(milestoneTimeoutRef.current);
+    }
+    
+    milestoneTimeoutRef.current = setTimeout(() => {
+      setMilestoneReached(false);
+    }, 4000);
+  };
+  
+  // Check if count is a milestone (multiple of 50)
+  const checkAndCelebrateMilestone = (count: number) => {
+    if (count > 0 && count % 50 === 0) {
+      triggerMilestoneConfetti();
+    }
+  };
+
+  // Handle button hold logic
+  const startHoldingCounter = async () => {
+    setIsHolding(true);
+    isHoldingRef.current = true;
+    
+    // Function to update counter during hold
+    const updateCounterDuringHold = async () => {
+      if (!isHoldingRef.current) return;
+      
+      // Optimistically update local count for better UX
+      setClickCount(prevCount => {
+        const newCount = prevCount + 1;
+        // Check for milestone
+        checkAndCelebrateMilestone(newCount);
+        return newCount;
+      });
+      
+      // Trigger haptic feedback
+      triggerHapticFeedback();
+      // Animate the counter
+      countAnimationControls.start({
+        scale: [1, 1.2, 1],
+        rotateX: [0, 15, 0],
+        transition: { duration: 0.2 } // Faster animation
+      });
+      
+      try {
+        const response = await fetch('/api/clicks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          // Get the real count from the server
+          const data = await response.json();
+          setClickCount(data.count);
+          // Check for milestone with server count
+          checkAndCelebrateMilestone(data.count);
+        } else {
+          // If server request fails, revert the count
+          setClickCount(prevCount => prevCount - 1);
+          console.error('Failed to update click count');
+        }
+      } catch (error) {
+        // If there's an error, revert the count
+        setClickCount(prevCount => prevCount - 1);
+        console.error('Error updating click count:', error);
+      }
+      
+      // Schedule next update if still holding - faster updates (200ms instead of 300ms)
+      if (isHoldingRef.current) {
+        holdTimerRef.current = setTimeout(updateCounterDuringHold, 180);
+      }
+    };
+    
+    // Start the hold update cycle
+    updateCounterDuringHold();
+  };
+  
+  const stopHoldingCounter = () => {
+    setIsHolding(false);
+    isHoldingRef.current = false;
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  };
+  
+  // Clean up any timers on unmount
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) {
+        clearTimeout(holdTimerRef.current);
+      }
+      if (milestoneTimeoutRef.current) {
+        clearTimeout(milestoneTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleComingSoonClick = async () => {
     // Prevent multiple rapid clicks
     if (isLoading) return;
     
     setIsLoading(true);
     // Optimistically update local count for better UX
-    setClickCount(prevCount => prevCount + 1);
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+    // Check for milestone
+    checkAndCelebrateMilestone(newCount);
+    // Trigger haptic feedback
+    triggerHapticFeedback();
+    // Animate the counter
+    countAnimationControls.start({
+      scale: [1, 1.2, 1],
+      rotateX: [0, 15, 0],
+      transition: { duration: 0.2 } // Faster animation
+    });
     
     try {
       const response = await fetch('/api/clicks', {
@@ -66,6 +228,8 @@ export default function Demo() {
         // Get the real count from the server
         const data = await response.json();
         setClickCount(data.count);
+        // Check for milestone with server count
+        checkAndCelebrateMilestone(data.count);
       } else {
         // If server request fails, revert the count
         setClickCount(prevCount => prevCount - 1);
@@ -286,16 +450,21 @@ export default function Demo() {
             <div className="flex items-center gap-3 w-full md:w-auto">
               {/* Count badge on the left */}
               <motion.div 
-                className="flex items-center justify-center bg-white/10 text-white px-4 py-2 rounded-full text-base font-semibold min-w-[36px]"
+                className="flex items-center justify-center bg-white/20 text-white px-4 py-2 rounded-full text-base font-semibold min-w-[40px] h-[40px] perspective-[500px]"
                 initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
+                animate={countAnimationControls}
+                style={{ transformStyle: "preserve-3d" }}
               >
                 {clickCount}
               </motion.div>
               
               <motion.button
                 onClick={handleComingSoonClick}
+                onMouseDown={startHoldingCounter}
+                onMouseUp={stopHoldingCounter}
+                onMouseLeave={stopHoldingCounter}
+                onTouchStart={startHoldingCounter}
+                onTouchEnd={stopHoldingCounter}
                 disabled={isLoading}
                 className="flex items-center justify-center gap-2 bg-gradient-to-r from-white/90 to-white/80 text-black px-6 py-3 rounded-full font-medium w-full md:w-auto text-sm whitespace-nowrap relative overflow-hidden"
                 whileHover={{
@@ -309,8 +478,10 @@ export default function Demo() {
                   duration: 0.15,
                 }}
               >
-                {isLoading ? (
-                  <span className="animate-pulse">SEND it</span>
+                {isLoading || isHolding ? (
+                  <span className={`animate-pulse ${milestoneReached ? 'text-[#FF4500] font-bold' : ''}`}>
+                    {milestoneReached ? 'keep SENDing it' : 'SEND it'}
+                  </span>
                 ) : (
                   <>
                     Coming Soon

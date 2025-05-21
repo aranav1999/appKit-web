@@ -673,8 +673,17 @@ export default function Demo() {
                       : "bg-[#262A33]"
                   }`}
                 >
-                  <div className="mb-1 text-white font-medium text-lg">
-                    {app.name}
+                  <div className="flex justify-between items-start mb-1">
+                    <div className="text-white font-medium text-lg">
+                      {app.name}
+                    </div>
+                    <motion.button
+                      className="text-xs bg-white/20 text-white px-2 py-1 rounded-full"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Coming Soon
+                    </motion.button>
                   </div>
                   <div className="mb-3 text-white/70 text-sm">
                     {app.description}
@@ -729,8 +738,17 @@ export default function Demo() {
                       : "bg-[#262A33]"
                   }`}
                 >
-                  <div className="mb-1 text-white font-medium text-lg">
-                    {app.name}
+                  <div className="flex justify-between items-start mb-1">
+                    <div className="text-white font-medium text-lg">
+                      {app.name}
+                    </div>
+                    <motion.button
+                      className="text-xs bg-white/20 text-white px-2 py-1 rounded-full"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Coming Soon
+                    </motion.button>
                   </div>
                   <div className="mb-3 text-white/70 text-sm">
                     {app.description}

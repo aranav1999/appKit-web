@@ -66,7 +66,7 @@ export default function ProtocolLogos() {
                     ))
                 ) : (
                     // Actual content
-                    protocols.slice(0, 12).map((protocol, index) => (
+                    protocols.map((protocol, index) => (
                         <motion.div
                             key={`${protocol.name}-${index}`}
                             onClick={() => handleProtocolClick(protocol.link)}

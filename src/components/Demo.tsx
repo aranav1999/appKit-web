@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useAnimationControls } from "framer-motion";
+import { motion, useAnimationControls, AnimationControls } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import confetti from 'canvas-confetti';
@@ -21,6 +21,25 @@ export default function Demo() {
   const milestoneTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const autoScrollTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [appClicks, setAppClicks] = useState<{[key: string]: number}>({});
+  const [showingAppClick, setShowingAppClick] = useState<{[key: string]: boolean}>({});
+  
+  // Pre-initialize animation controls for each app
+  // Create individual controls for each app we know about
+  const sendAIMobileControls = useAnimationControls();
+  const sendshotControls = useAnimationControls();
+  const neptuneWalletControls = useAnimationControls();
+  const sendGuysControls = useAnimationControls();
+  const socialTradingControls = useAnimationControls();
+  
+  // Map app names to their respective controls with proper typing
+  const controlsMap = useRef<{[key: string]: AnimationControls}>({
+    "SendAI Mobile": sendAIMobileControls,
+    "Sendshot": sendshotControls,
+    "Neptune Wallet": neptuneWalletControls,
+    "Send Guys": sendGuysControls,
+    "Social Trading App": socialTradingControls
+  });
 
   // Monitor window resize to detect mobile view
   useEffect(() => {
@@ -46,6 +65,13 @@ export default function Demo() {
         if (response.ok) {
           const data = await response.json();
           setClickCount(data.count);
+          
+          // Initialize all app-specific counters with the global count
+          const appClickData: {[key: string]: number} = {};
+          appScreenshots.forEach(app => {
+            appClickData[app.name] = data.count;
+          });
+          setAppClicks(appClickData);
         }
       } catch (error) {
         console.error('Failed to fetch click count:', error);
@@ -110,9 +136,9 @@ export default function Demo() {
     }, 4000);
   };
   
-  // Check if count is a milestone (multiple of 50)
+  // Check if count is a milestone (multiple of 25)
   const checkAndCelebrateMilestone = (count: number) => {
-    if (count > 0 && count % 50 === 0) {
+    if (count > 0 && count % 25 === 0) {
       triggerMilestoneConfetti();
     }
   };
@@ -246,6 +272,94 @@ export default function Demo() {
       console.error('Error updating click count:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Function for vibe app button clicks
+  const handleAppButtonClick = async (appName: string) => {
+    // Update local state to show animation
+    setShowingAppClick(prev => ({...prev, [appName]: true}));
+    
+    // Get current global click count
+    const currentGlobalCount = clickCount;
+    const newCount = currentGlobalCount + 1;
+    
+    // Update global click count (optimistic update)
+    setClickCount(newCount);
+    
+    // Also update the app-specific display counters to match the global count
+    setAppClicks(prev => {
+      const updated = {...prev};
+      appScreenshots.forEach(app => {
+        updated[app.name] = newCount;
+      });
+      return updated;
+    });
+    
+    // Check for milestone with global count - only show confetti on multiples of 25
+    checkAndCelebrateMilestone(newCount);
+    
+    // Animate the counter with premium effects
+    if (controlsMap.current[appName]) {
+      controlsMap.current[appName].start({
+        opacity: [0, 1, 1, 0],
+        y: [20, -10, -15, -30],
+        scale: [0.5, 1.3, 1.2, 0.8],
+        rotateX: [30, 0, 0, 15],
+        filter: ["blur(4px)", "blur(0px)", "blur(0px)", "blur(3px)"],
+        transition: { 
+          duration: 1.5, 
+          times: [0, 0.2, 0.7, 1],
+          ease: "easeOut" 
+        }
+      });
+    }
+    
+    // Also animate the global counter
+    countAnimationControls.start({
+      scale: [1, 1.2, 1],
+      rotateX: [0, 15, 0],
+      transition: { duration: 0.2 }
+    });
+    
+    // Trigger haptic feedback
+    triggerHapticFeedback();
+    
+    // Hide the number after animation completes
+    setTimeout(() => {
+      setShowingAppClick(prev => ({...prev, [appName]: false}));
+    }, 1500);
+    
+    try {
+      // Update global click count in database (no appName parameter)
+      const response = await fetch('/api/clicks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        // Get the real count from the server
+        const data = await response.json();
+        
+        // Update both the global counter and all app-specific counters
+        setClickCount(data.count);
+        setAppClicks(prev => {
+          const updated = {...prev};
+          appScreenshots.forEach(app => {
+            updated[app.name] = data.count;
+          });
+          return updated;
+        });
+        
+        // Check for milestone with server count
+        checkAndCelebrateMilestone(data.count);
+      } else {
+        console.error('Failed to update click count');
+      }
+    } catch (error) {
+      console.error('Error updating click count:', error);
     }
   };
 
@@ -434,11 +548,11 @@ export default function Demo() {
             className="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-0 text-center md:text-left max-w-s md:self-center"
           >
             <div className="md:hidden">
-              Send SuperApp
+              Solana SuperApp
               {/* and feel the magic! */}
             </div>
             <div className="hidden md:block">
-              Send
+              Solana
               <br />
               SuperApp
               {/* and feel the magic! */}
@@ -755,13 +869,41 @@ export default function Demo() {
                     <div className="text-white font-medium text-lg">
                       {app.name}
                     </div>
-                    <motion.button
-                      className="text-xs bg-white/20 text-white px-2 py-1 rounded-full"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      Coming Soon
-                    </motion.button>
+                    <div className="flex items-center gap-2">
+                      {/* Only show counter when clicked */}
+                      {showingAppClick[app.name] && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8, y: 0 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.8, y: 0 }}
+                          className="bg-white/20 backdrop-blur-sm text-white font-medium px-2 py-0.5 rounded-full text-xs"
+                        >
+                          {clickCount}
+                        </motion.div>
+                      )}
+                      
+                      {/* Interactive button with hover effect */}
+                      <motion.button
+                        data-app-button={app.name}
+                        className="group text-xs bg-white/20 text-white px-3 py-1.5 rounded-full relative overflow-hidden backdrop-blur-sm min-w-[85px]"
+                        whileHover={{ 
+                          scale: 1.05,
+                          backgroundColor: "rgba(255, 255, 255, 0.3)",
+                          boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)"
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleAppButtonClick(app.name)}
+                      >
+                        <div className="relative">
+                          <span className="block transition-opacity duration-200 group-hover:opacity-0">
+                            Coming Soon
+                          </span>
+                          <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 font-medium">
+                            SEND it
+                          </span>
+                        </div>
+                      </motion.button>
+                    </div>
                   </div>
                   <div className="mb-3 text-white/70 text-sm">
                     {app.description}
@@ -835,13 +977,41 @@ export default function Demo() {
                     <div className="text-white font-medium text-lg">
                       {app.name}
                     </div>
-                    <motion.button
-                      className="text-xs bg-white/20 text-white px-2 py-1 rounded-full"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      Coming Soon
-                    </motion.button>
+                    <div className="flex items-center gap-2">
+                      {/* Only show counter when clicked */}
+                      {showingAppClick[app.name] && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8, y: 0 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.8, y: 0 }}
+                          className="bg-white/20 backdrop-blur-sm text-white font-medium px-2 py-0.5 rounded-full text-xs"
+                        >
+                          {clickCount}
+                        </motion.div>
+                      )}
+                      
+                      {/* Interactive button with hover effect */}
+                      <motion.button
+                        data-app-button={app.name}
+                        className="group text-xs bg-white/20 text-white px-3 py-1.5 rounded-full relative overflow-hidden backdrop-blur-sm min-w-[85px]"
+                        whileHover={{ 
+                          scale: 1.05,
+                          backgroundColor: "rgba(255, 255, 255, 0.3)",
+                          boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)"
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleAppButtonClick(app.name)}
+                      >
+                        <div className="relative">
+                          <span className="block transition-opacity duration-200 group-hover:opacity-0">
+                            Coming Soon
+                          </span>
+                          <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 font-medium">
+                            SEND it
+                          </span>
+                        </div>
+                      </motion.button>
+                    </div>
                   </div>
                   <div className="mb-3 text-white/70 text-sm">
                     {app.description}

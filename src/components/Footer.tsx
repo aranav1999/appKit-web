@@ -27,8 +27,8 @@ export default function Footer() {
                             Built in Minutes.
                         </h2>
 
-                        <Link href="#" className="inline-block bg-white text-black font-semibold rounded-xl py-3 px-8 mb-4 w-64 text-center">
-                            Download the App
+                        <Link target="_blank" href="https://docs.solanaappkit.com/" className="inline-block bg-white text-black font-semibold rounded-xl py-3 px-8 mb-4 w-64 text-center">
+                            Documentation
                         </Link>
 
                         <div
@@ -70,7 +70,7 @@ export default function Footer() {
                                 <h3 className="text-white/50 font-medium text-sm mb-4">Resources</h3>
                                 <ul className="space-y-1">
                                     <li><Link href="https://github.com/SendArcade/solana-app-kit" target="_blank" className="text-white hover:text-white">Github</Link></li>
-                                    <li><Link href="https://docs.1doma.in/docs/introduction" className="text-white hover:text-white">Docs</Link></li>
+                                    <li><Link href="https://docs.solanaappkit.com/" className="text-white hover:text-white">Docs</Link></li>
                                 </ul>
                             </div>
 
@@ -80,6 +80,7 @@ export default function Footer() {
                                 <ul className="space-y-1">
                                     <li><Link href="https://x.com/sendarcadefun" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white">Send Arcade</Link></li>
                                     <li><Link href="https://x.com/sendaifun" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white">Send AI</Link></li>
+                                    <li><Link href="https://x.com/thesendcoincom" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white">SEND Coin </Link></li>
                                 </ul>
                             </div>
                         </div>

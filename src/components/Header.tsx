@@ -66,9 +66,13 @@ export default function Header() {
         </nav>
       </div>
       <div className="hidden md:block">
-        <button className="bg-white text-black rounded-full px-6 py-2 font-medium">
-          Download the App
-        </button>
+        <a
+          href="https://docs.solanaappkit.com/"
+          target="_blank"
+          className="bg-white text-black rounded-full px-6 py-2 font-medium"
+        >
+          Docs
+        </a>
       </div>
       <button className="md:hidden" onClick={() => setIsMobileMenuOpen(true)}>
         <Image src="/burger.svg" alt="Menu" width={33} height={23} />

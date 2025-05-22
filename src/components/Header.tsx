@@ -35,7 +35,7 @@ export default function Header() {
           <Image
             src="/Logo.svg"
             alt="AppKit Logo"
-            width={130}
+            width={160}
             height={36}
             priority
             className="mb-1"
@@ -65,7 +65,19 @@ export default function Header() {
           </a>
         </nav>
       </div>
-      <div className="hidden md:block">
+      <div className="hidden md:flex items-center space-x-4">
+        <a
+          href="https://x.com/solanaappkit"
+          target="_blank"
+          className="flex items-center justify-center w-9 h-9 bg-transparent hover:bg-white/10 rounded-md transition-colors"
+        >
+          <Image 
+            src="/icons/twitter-x.svg" 
+            alt="Twitter/X" 
+            width={32} 
+            height={32}
+          />
+        </a>
         <a
           href="https://docs.solanaappkit.com/"
           target="_blank"
@@ -105,6 +117,20 @@ export default function Header() {
           </div>
 
           <div className="mt-auto flex flex-col space-y-4">
+            <div className="flex justify-center space-x-4 mb-4">
+              <a
+                href="https://x.com/solanaappkit"
+                target="_blank"
+                className="flex items-center justify-center w-10 h-10 bg-white/10 rounded-full"
+              >
+                <Image 
+                  src="/icons/twitter-x.svg" 
+                  alt="Twitter/X" 
+                  width={20} 
+                  height={20}
+                />
+              </a>
+            </div>
             <button className="bg-white text-black rounded-full py-3 font-medium flex justify-center items-center gap-2">
               Github
               <svg

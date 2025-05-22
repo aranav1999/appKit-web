@@ -480,7 +480,7 @@ export default function Demo() {
           const totalSlides = appScreenshots.length * 2;
           return (prev + 1) % totalSlides;
         });
-      }, 3000); // Change slide every 3 seconds
+      }, 2000); // Change slide every 2 seconds (faster than before)
     };
     
     startAutoScroll();

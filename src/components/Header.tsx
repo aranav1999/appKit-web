@@ -26,7 +26,7 @@ export default function Header() {
 
   return (
     <header
-      className={`py-8 z-20 px-16 flex justify-between items-center relative ${
+      className={`py-8 z-20 px-8 md:px-16 flex justify-between items-center relative ${
         isMobileWidth ? "bg-[#0C101A]" : "bg-[#131519]"
       }`}
     >
@@ -91,9 +91,9 @@ export default function Header() {
       </button>
 
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-[#0C101A] z-50 flex flex-col p-6">
+        <div className="fixed inset-0 bg-[#0C101A] z-50 flex flex-col px-8 py-8">
           <div className="flex justify-between items-center">
-            <Image src="/Logo.svg" alt="AppKit Logo" width={87} height={24} />
+            <Image src="/Logo.svg" alt="AppKit Logo" width={160} height={36} />
             <button onClick={() => setIsMobileMenuOpen(false)}>
               <div className="text-white text-2xl">✕</div>
             </button>
@@ -117,11 +117,12 @@ export default function Header() {
           </div>
 
           <div className="mt-auto flex flex-col space-y-4">
-            <div className="flex justify-center space-x-4 mb-4">
+            
+            <div className="flex justify-left space-x-4 mb-4">
               <a
                 href="https://x.com/solanaappkit"
                 target="_blank"
-                className="flex items-center justify-center w-10 h-10 bg-white/10 rounded-full"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 rounded-full"
               >
                 <Image 
                   src="/icons/twitter-x.svg" 
@@ -129,6 +130,7 @@ export default function Header() {
                   width={20} 
                   height={20}
                 />
+                <span className="text-white">@solanaappkit</span>
               </a>
             </div>
             <button className="bg-white text-black rounded-full py-3 font-medium flex justify-center items-center gap-2">

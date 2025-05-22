@@ -26,6 +26,7 @@ export default function Demo() {
   // New state for waitlist modal
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [waitlistPlatform, setWaitlistPlatform] = useState('ios'); // Default to iOS
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   
@@ -525,6 +526,7 @@ export default function Demo() {
     setIsWaitlistModalOpen(false);
     // Reset form state when closing
     setWaitlistEmail('');
+    setWaitlistPlatform('ios'); // Reset platform to default
     setSubmitStatus('idle');
   };
 
@@ -541,7 +543,10 @@ export default function Demo() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: waitlistEmail }),
+        body: JSON.stringify({ 
+          email: waitlistEmail,
+          platform: waitlistPlatform 
+        }),
       });
       
       if (response.ok) {
@@ -1174,6 +1179,24 @@ export default function Demo() {
                     required
                     className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
+                </div>
+                
+                <div>
+                  <label htmlFor="platform" className="block text-sm font-medium text-white/80 mb-1">
+                    Preferred Platform
+                  </label>
+                  <select
+                    id="platform"
+                    name="platform"
+                    value={waitlistPlatform}
+                    onChange={(e) => setWaitlistPlatform(e.target.value)}
+                    required
+                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                    style={{ backgroundImage: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E\")", backgroundPosition: "right 0.5rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em", paddingRight: "2.5rem" }}
+                  >
+                    <option value="ios" className="bg-[#1C2027] text-white">iOS (Apple)</option>
+                    <option value="android" className="bg-[#1C2027] text-white">Android</option>
+                  </select>
                 </div>
                 
                 {submitStatus === 'error' && (

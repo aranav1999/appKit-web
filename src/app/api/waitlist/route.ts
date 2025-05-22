@@ -5,7 +5,7 @@ import { sql } from 'drizzle-orm';
 
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
+    const { email, platform } = await request.json();
 
     // Validate email
     if (!email || typeof email !== 'string' || !email.includes('@')) {
@@ -15,9 +15,16 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate platform
+    const validPlatforms = ['ios', 'android'];
+    const sanitizedPlatform = platform && typeof platform === 'string' && validPlatforms.includes(platform.toLowerCase()) 
+      ? platform.toLowerCase() 
+      : 'ios'; // Default to iOS if invalid
+
     // Insert email into waitlist table
     await db.insert(waitlist).values({
       email,
+      platform: sanitizedPlatform,
       signupDate: new Date(),
     });
 

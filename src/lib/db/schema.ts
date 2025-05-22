@@ -56,6 +56,7 @@ export const clickCounter = pgTable('click_counter', {
 export const waitlist = pgTable('waitlist', {
   id: serial('id').primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  platform: varchar('platform', { length: 20 }).default('ios'),
   signupDate: timestamp('signup_date').defaultNow().notNull(),
   isNotified: boolean('is_notified').default(false),
   notificationDate: timestamp('notification_date'),

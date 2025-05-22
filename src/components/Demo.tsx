@@ -424,9 +424,9 @@ export default function Demo() {
 
   // Featured app screenshots (for the larger top display)
   const featuredScreenshots = [
-    "/screenshots/For You.png",
-    "/screenshots/Add NFT.png",
-    "/screenshots/User_Profile.png",
+    "https://ik.imagekit.io/scriptscrypt/Solana%20App%20Kit/superapp1.png",
+    "https://ik.imagekit.io/scriptscrypt/Solana%20App%20Kit/superapp2.png",
+    "https://ik.imagekit.io/scriptscrypt/Solana%20App%20Kit/superapp3.png",
   ];
 
   // Array of app screenshots
@@ -677,14 +677,14 @@ export default function Demo() {
               {/* Waitlist button with click counter */}
               <div className="flex items-center gap-3 w-full md:w-auto">
                 {/* Count badge on the left */}
-                <motion.div 
+                {/* <motion.div 
                   className="flex items-center justify-center bg-white/20 text-white px-4 py-2 rounded-full text-base font-semibold min-w-[40px] h-[40px] perspective-[500px]"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={countAnimationControls}
                   style={{ transformStyle: "preserve-3d" }}
                 >
                   {clickCount}
-                </motion.div>
+                </motion.div> */}
                 
                 <motion.button
                   onClick={handleOpenWaitlistModal}
@@ -1137,7 +1137,7 @@ export default function Demo() {
             className="bg-[#1C2027] rounded-2xl p-6 md:p-8 w-full max-w-md border border-white/10 shadow-xl"
           >
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-white text-xl font-bold">Join SuperApp Waitlist</h3>
+              <h3 className="text-white text-xl font-bold">Join Solana SuperApp Waitlist</h3>
               <button 
                 onClick={handleCloseWaitlistModal}
                 className="text-white/60 hover:text-white transition-colors"

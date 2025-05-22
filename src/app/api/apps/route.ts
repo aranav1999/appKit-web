@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, schema } from '@/lib/db';
 import { supabaseAdmin, APP_IMAGES_BUCKET } from '@/lib/supabase/server';
 import { type NewApp } from '@/lib/db/schema';
+import { getApprovedAppsFromSheet, addAppToSheet } from '@/lib/sheets/sheets-service';
+import { sql } from 'drizzle-orm';
 
 // Direct upload to Supabase storage bypassing RLS
 async function uploadToStorage(file: File, path: string): Promise<string> {
@@ -52,12 +54,45 @@ async function uploadToStorage(file: File, path: string): Promise<string> {
   }
 }
 
-// GET /api/apps - Get all apps
+// GET /api/apps - Get all approved apps from the sheet
 export async function GET() {
   try {
-    // Fetch all apps from the database
-    const apps = await db.select().from(schema.apps);
-    return NextResponse.json(apps);
+    // Use the environment variable to determine if we should use sheets or database
+    const useSheets = process.env.USE_SHEETS_FOR_APPS === 'true';
+    
+    if (useSheets) {
+      console.log('Fetching approved apps from Google Sheet');
+      try {
+        // Fetch approved apps from the Google Sheet
+        const approvedApps = await getApprovedAppsFromSheet();
+        return NextResponse.json(approvedApps);
+      } catch (sheetError) {
+        console.error('Error fetching from sheet, falling back to database:', sheetError);
+        // Fall back to database - handle case where is_shown might not exist
+        try {
+          // Try filtering by isShown first using raw SQL to handle missing column
+          const apps = await db.select().from(schema.apps).where(sql`"is_shown" = true`);
+          return NextResponse.json(apps);
+        } catch (dbError) {
+          console.error('Error with isShown filter, returning all apps:', dbError);
+          // If isShown filtering fails, just return all apps
+          const allApps = await db.select().from(schema.apps);
+          return NextResponse.json(allApps);
+        }
+      }
+    } else {
+      console.log('Fetching apps from database');
+      try {
+        // Try to fetch only shown apps
+        const apps = await db.select().from(schema.apps).where(sql`"is_shown" = true`);
+        return NextResponse.json(apps);
+      } catch (error) {
+        console.error('Error with isShown filter, returning all apps:', error);
+        // If that fails (e.g., column doesn't exist), return all apps
+        const allApps = await db.select().from(schema.apps);
+        return NextResponse.json(allApps);
+      }
+    }
   } catch (error) {
     console.error('Error fetching apps:', error);
     return NextResponse.json(
@@ -139,7 +174,7 @@ export async function POST(request: NextRequest) {
     // Create app entry even if icon upload failed
     console.log('Creating database entry');
     
-    // Prepare valid insert data
+    // Prepare valid insert data (omitting isShown to avoid errors if column doesn't exist)
     const insertData = {
       name,
       description,
@@ -164,7 +199,32 @@ export async function POST(request: NextRequest) {
     // Create new app in database
     const newApp = await db.insert(schema.apps).values(insertData).returning();
     
+    // Try to set isShown to false separately
+    try {
+      // Use raw SQL to set isShown to false if the column exists
+      await db.execute(
+        sql`UPDATE "apps" 
+            SET "is_shown" = false 
+            WHERE "id" = ${newApp[0]?.id}`
+      );
+    } catch (columnError) {
+      console.warn('Could not set isShown (column might not exist yet):', columnError);
+    }
+    
     console.log(`Created app with ID: ${newApp[0]?.id}`);
+    
+    // Add to Google Sheet if feature is enabled
+    const useSheets = process.env.USE_SHEETS_FOR_APPS === 'true';
+    if (useSheets && newApp[0]) {
+      try {
+        await addAppToSheet(newApp[0]);
+        console.log(`Added app ${newApp[0].id} to Google Sheet`);
+      } catch (sheetError) {
+        console.error('Error adding to sheet (continuing):', sheetError);
+        // Don't fail the request if sheet add fails
+      }
+    }
+    
     return NextResponse.json(newApp[0], { status: 201 });
   } catch (error: any) {
     console.error('Error creating app:', error);

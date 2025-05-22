@@ -25,6 +25,8 @@
     "drizzle-kit": "^0.31.1",
     "drizzle-orm": "^0.43.1",
     "framer-motion": "^12.7.3",
+    "google-auth-library": "^9.6.3",
+    "googleapis": "^133.0.0",
     "next": "15.3.0",
     "pg": "^8.16.0",
     "react": "^19.0.0",

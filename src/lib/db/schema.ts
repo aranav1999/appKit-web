@@ -20,6 +20,7 @@ export const apps = pgTable('apps', {
   contractAddress: text('contract_address'),
   featureBannerUrl: text('feature_banner_url'),
   tags: text('tags').array(),
+  isShown: boolean('is_shown').default(false),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

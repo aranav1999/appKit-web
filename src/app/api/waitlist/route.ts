@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { waitlist } from '@/lib/db/schema';
 import { NextResponse } from 'next/server';
+import { sql } from 'drizzle-orm';
 
 export async function POST(request: Request) {
   try {
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     // Get count of waitlist entries
-    const result = await db.select({ count: db.fn.count() }).from(waitlist);
+    const result = await db.select({ count: sql`count(*)` }).from(waitlist);
     const count = Number(result[0]?.count || 0);
 
     return NextResponse.json({ count });

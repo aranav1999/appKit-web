@@ -459,8 +459,8 @@ export default function Demo() {
       name: "Send Guys",
       description: "Multiplayer game on $SOL and $SEND",
       images: [
-        "https://ik.imagekit.io/scriptscrypt/Solana%20App%20Kit/sendguys1.png",
-        "https://ik.imagekit.io/scriptscrypt/Solana%20App%20Kit/sendguys2.png",
+        "https://ik.imagekit.io/scriptscrypt/Solana%20App%20Kit/sendguys1.png?updatedAt=1747925330519",
+        "https://ik.imagekit.io/scriptscrypt/Solana%20App%20Kit/sendguys2.png?updatedAt=1747925330022",
       ],
       isLandscape: true,
     },
@@ -701,7 +701,7 @@ export default function Demo() {
                     duration: 0.15,
                   }}
                 >
-                  Join Waitlist
+                  Get Early Access
                 </motion.button>
               </div>
             </motion.div>
@@ -1137,7 +1137,7 @@ export default function Demo() {
             className="bg-[#1C2027] rounded-2xl p-6 md:p-8 w-full max-w-md border border-white/10 shadow-xl"
           >
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-white text-xl font-bold">Join Solana SuperApp Waitlist</h3>
+              <h3 className="text-white text-xl font-bold">Join Solana SuperApp Testflight</h3>
               <button 
                 onClick={handleCloseWaitlistModal}
                 className="text-white/60 hover:text-white transition-colors"
@@ -1156,7 +1156,7 @@ export default function Demo() {
                   </svg>
                 </div>
                 <h4 className="text-white text-xl font-medium mb-2">You're on the list!</h4>
-                <p className="text-white/70">Thank you for joining our waitlist. We'll keep you updated on our progress.</p>
+                <p className="text-white/70">Thank you for joining our waitlist. We'll keep you updated on the latest testflight updates.</p>
               </div>
             ) : (
               <form onSubmit={handleWaitlistSubmit} className="space-y-4">
@@ -1203,7 +1203,7 @@ export default function Demo() {
                 </button>
                 
                 <p className="text-white/50 text-xs text-center mt-4">
-                  We'll keep you updated on our progress and notify you when SuperApp launches.
+                  We'll keep you updated on the latest testflight updates and add you to the testing list.
                 </p>
               </form>
             )}

@@ -86,9 +86,23 @@ export default function Header() {
           Docs
         </a>
       </div>
-      <button className="md:hidden" onClick={() => setIsMobileMenuOpen(true)}>
-        <Image src="/burger.svg" alt="Menu" width={33} height={23} />
-      </button>
+      <div className="md:hidden flex items-center space-x-4">
+        <a
+          href="https://x.com/solanaappkit"
+          target="_blank"
+          className="flex items-center justify-center w-8 h-8 bg-transparent hover:bg-white/10 rounded-md transition-colors"
+        >
+          <Image 
+            src="/icons/twitter-x.svg" 
+            alt="Twitter/X" 
+            width={32} 
+            height={32}
+          />
+        </a>
+        <button onClick={() => setIsMobileMenuOpen(true)}>
+          <Image src="/burger.svg" alt="Menu" width={33} height={23} />
+        </button>
+      </div>
 
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-[#0C101A] z-50 flex flex-col px-8 py-8">

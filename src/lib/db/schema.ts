@@ -52,6 +52,17 @@ export const clickCounter = pgTable('click_counter', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// Waitlist table for SuperApp
+export const waitlist = pgTable('waitlist', {
+  id: serial('id').primaryKey(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  signupDate: timestamp('signup_date').defaultNow().notNull(),
+  isNotified: boolean('is_notified').default(false),
+  notificationDate: timestamp('notification_date'),
+  source: varchar('source', { length: 100 }),
+  notes: text('notes'),
+});
+
 // Export all tables for use in the app
 export type App = typeof apps.$inferSelect;
 export type NewApp = typeof apps.$inferInsert;
@@ -63,4 +74,7 @@ export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 
 export type ClickCounter = typeof clickCounter.$inferSelect;
-export type NewClickCounter = typeof clickCounter.$inferInsert; 
+export type NewClickCounter = typeof clickCounter.$inferInsert;
+
+export type Waitlist = typeof waitlist.$inferSelect;
+export type NewWaitlist = typeof waitlist.$inferInsert; 

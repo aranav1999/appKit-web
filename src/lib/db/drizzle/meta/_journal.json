@@ -29,6 +29,13 @@
       "when": 1747750307451,
       "tag": "0003_add_click_counter",
       "breakpoints": false
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1747750307452,
+      "tag": "0004_add_waitlist_table",
+      "breakpoints": false
     }
   ]
 }

@@ -23,6 +23,11 @@ export default function Demo() {
   const [isPaused, setIsPaused] = useState(false);
   const [appClicks, setAppClicks] = useState<{[key: string]: number}>({});
   const [showingAppClick, setShowingAppClick] = useState<{[key: string]: boolean}>({});
+  // New state for waitlist modal
+  const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   
   // Pre-initialize animation controls for each app
   // Create individual controls for each app we know about
@@ -511,6 +516,56 @@ export default function Demo() {
     pauseAutoScroll();
   };
 
+  // New function to handle waitlist signup
+  const handleOpenWaitlistModal = () => {
+    setIsWaitlistModalOpen(true);
+  };
+
+  const handleCloseWaitlistModal = () => {
+    setIsWaitlistModalOpen(false);
+    // Reset form state when closing
+    setWaitlistEmail('');
+    setSubmitStatus('idle');
+  };
+
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!waitlistEmail || isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: waitlistEmail }),
+      });
+      
+      if (response.ok) {
+        setSubmitStatus('success');
+        // Clear email field after successful submission
+        setWaitlistEmail('');
+        // Trigger confetti for successful signup
+        triggerMilestoneConfetti();
+        
+        // Close modal after a delay
+        setTimeout(() => {
+          handleCloseWaitlistModal();
+        }, 3000);
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Error submitting to waitlist:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <motion.div
       ref={sectionRef}
@@ -619,7 +674,7 @@ export default function Demo() {
               </motion.a>
               */}
               
-              {/* Coming Soon button with click counter */}
+              {/* Waitlist button with click counter */}
               <div className="flex items-center gap-3 w-full md:w-auto">
                 {/* Count badge on the left */}
                 <motion.div 
@@ -632,12 +687,7 @@ export default function Demo() {
                 </motion.div>
                 
                 <motion.button
-                  onClick={handleComingSoonClick}
-                  onMouseDown={startHoldingCounter}
-                  onMouseUp={stopHoldingCounter}
-                  onMouseLeave={stopHoldingCounter}
-                  onTouchStart={startHoldingCounter}
-                  onTouchEnd={stopHoldingCounter}
+                  onClick={handleOpenWaitlistModal}
                   disabled={isLoading}
                   className="flex items-center justify-center gap-2 bg-gradient-to-r from-white/90 to-white/80 text-black px-6 py-3 rounded-full font-medium w-full md:w-auto text-sm whitespace-nowrap relative overflow-hidden"
                   whileHover={{
@@ -651,15 +701,7 @@ export default function Demo() {
                     duration: 0.15,
                   }}
                 >
-                  {isLoading || isHolding ? (
-                    <span className={`animate-pulse ${milestoneReached ? 'text-[#FF4500] font-bold' : ''}`}>
-                      {milestoneReached ? 'keep SENDing it' : 'SEND it'}
-                    </span>
-                  ) : (
-                    <>
-                      Coming Soon
-                    </>
-                  )}
+                  Join Waitlist
                 </motion.button>
               </div>
             </motion.div>
@@ -1083,6 +1125,91 @@ export default function Demo() {
           </>
         )}
       </motion.div>
+
+      {/* Waitlist Modal */}
+      {isWaitlistModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ type: "spring", duration: 0.4 }}
+            className="bg-[#1C2027] rounded-2xl p-6 md:p-8 w-full max-w-md border border-white/10 shadow-xl"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-white text-xl font-bold">Join SuperApp Waitlist</h3>
+              <button 
+                onClick={handleCloseWaitlistModal}
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {submitStatus === 'success' ? (
+              <div className="text-center py-6">
+                <div className="text-green-400 text-6xl mx-auto mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h4 className="text-white text-xl font-medium mb-2">You're on the list!</h4>
+                <p className="text-white/70">Thank you for joining our waitlist. We'll keep you updated on our progress.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleWaitlistSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-white/80 mb-1">
+                    Email address
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={waitlistEmail}
+                    onChange={(e) => setWaitlistEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                
+                {submitStatus === 'error' && (
+                  <div className="text-red-400 text-sm font-medium">
+                    Something went wrong. Please try again.
+                  </div>
+                )}
+                
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !waitlistEmail}
+                  className={`w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0BA8F0] to-[#0C91F1] text-white px-6 py-3 rounded-lg font-medium text-sm ${
+                    isSubmitting || !waitlistEmail ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
+                  }`}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </>
+                  ) : (
+                    'Join Waitlist'
+                  )}
+                </button>
+                
+                <p className="text-white/50 text-xs text-center mt-4">
+                  We'll keep you updated on our progress and notify you when SuperApp launches.
+                </p>
+              </form>
+            )}
+          </motion.div>
+        </div>
+      )}
     </motion.div>
   );
 }

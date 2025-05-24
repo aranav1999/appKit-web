@@ -144,7 +144,7 @@ export default function ProtocolLogos() {
     return (
         <div className="w-full mt-12">
             <h3 className="text-slate-500 text-center text-xs font-medium mb-2 opacity-90">
-               PARNTER PROTOCOLS INTEGRATED
+               PARTNER PROTOCOLS INTEGRATED
             </h3>
             <div className="px-2 md:px-4">
                 {content}

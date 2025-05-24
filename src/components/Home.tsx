@@ -1210,7 +1210,7 @@ export default function Hero() {
               <a
                 href="https://github.com/SendArcade/solana-app-kit"
                 target="_blank"
-                className="px-8 py-3 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2 w-full"
+                className="px-8 py-3 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2 w-full transition-all duration-200 hover:scale-105 hover:shadow-lg"
               >
                 Github
                 <svg
@@ -1225,7 +1225,7 @@ export default function Hero() {
               </a>
               <Link
                 href="/apps"
-                className="px-8 py-3 rounded-full bg-[#2D3747] text-white font-semibold w-full"
+                className="px-8 py-3 rounded-full bg-[#2D3747] text-white font-semibold w-full transition-all duration-200 hover:scale-105 hover:shadow-lg hover:bg-[#3A4A5A]"
               >
                 <div className="flex items-center text-center justify-center gap-2">
                   <Image

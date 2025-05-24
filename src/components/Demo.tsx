@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion, useAnimationControls, AnimationControls } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import confetti from 'canvas-confetti';
+import confetti from "canvas-confetti";
 
 export default function Demo() {
   const sectionRef = useRef(null);
@@ -21,15 +21,20 @@ export default function Demo() {
   const milestoneTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const autoScrollTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [appClicks, setAppClicks] = useState<{[key: string]: number}>({});
-  const [showingAppClick, setShowingAppClick] = useState<{[key: string]: boolean}>({});
+  const [appClicks, setAppClicks] = useState<{ [key: string]: number }>({});
+  const [showingAppClick, setShowingAppClick] = useState<{
+    [key: string]: boolean;
+  }>({});
   // New state for waitlist modal
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
-  const [waitlistEmail, setWaitlistEmail] = useState('');
-  const [waitlistPlatform, setWaitlistPlatform] = useState('ios'); // Default to iOS
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [waitlistPlatform, setWaitlistPlatform] = useState("ios"); // Default to iOS
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
   // Pre-initialize animation controls for each app
   // Create individual controls for each app we know about
   const sendAIMobileControls = useAnimationControls();
@@ -37,14 +42,14 @@ export default function Demo() {
   const neptuneWalletControls = useAnimationControls();
   const sendGuysControls = useAnimationControls();
   const socialTradingControls = useAnimationControls();
-  
+
   // Map app names to their respective controls with proper typing
-  const controlsMap = useRef<{[key: string]: AnimationControls}>({
+  const controlsMap = useRef<{ [key: string]: AnimationControls }>({
     "SendAI Mobile": sendAIMobileControls,
-    "Sendshot": sendshotControls,
+    Sendshot: sendshotControls,
     "Neptune Wallet": neptuneWalletControls,
     "Send Guys": sendGuysControls,
-    "Social Trading App": socialTradingControls
+    "Social Trading App": socialTradingControls,
   });
 
   // Monitor window resize to detect mobile view
@@ -67,20 +72,20 @@ export default function Demo() {
   useEffect(() => {
     const fetchClickCount = async () => {
       try {
-        const response = await fetch('/api/clicks');
+        const response = await fetch("/api/clicks");
         if (response.ok) {
           const data = await response.json();
           setClickCount(data.count);
-          
+
           // Initialize all app-specific counters with the global count
-          const appClickData: {[key: string]: number} = {};
-          appScreenshots.forEach(app => {
+          const appClickData: { [key: string]: number } = {};
+          appScreenshots.forEach((app) => {
             appClickData[app.name] = data.count;
           });
           setAppClicks(appClickData);
         }
       } catch (error) {
-        console.error('Failed to fetch click count:', error);
+        console.error("Failed to fetch click count:", error);
       }
     };
 
@@ -95,7 +100,7 @@ export default function Demo() {
   // Add utility function for haptic feedback
   const triggerHapticFeedback = () => {
     // Check if the device supports vibration
-    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
       navigator.vibrate(20); // Short vibration (20ms)
     }
   };
@@ -104,44 +109,44 @@ export default function Demo() {
   const triggerMilestoneConfetti = () => {
     // Set the milestone state for button text change
     setMilestoneReached(true);
-    
+
     // First confetti burst - center
     confetti({
       particleCount: 150,
       spread: 100,
-      origin: { y: 0.6 }
+      origin: { y: 0.6 },
     });
-    
+
     // Second confetti burst - from left
     setTimeout(() => {
       confetti({
         particleCount: 70,
         angle: 60,
         spread: 70,
-        origin: { x: 0, y: 0.6 }
+        origin: { x: 0, y: 0.6 },
       });
     }, 200);
-    
+
     // Third confetti burst - from right
     setTimeout(() => {
       confetti({
         particleCount: 70,
         angle: 120,
         spread: 70,
-        origin: { x: 1, y: 0.6 }
+        origin: { x: 1, y: 0.6 },
       });
     }, 400);
-    
+
     // Reset milestone state after a few seconds
     if (milestoneTimeoutRef.current) {
       clearTimeout(milestoneTimeoutRef.current);
     }
-    
+
     milestoneTimeoutRef.current = setTimeout(() => {
       setMilestoneReached(false);
     }, 4000);
   };
-  
+
   // Check if count is a milestone (multiple of 25)
   const checkAndCelebrateMilestone = (count: number) => {
     if (count > 0 && count % 25 === 0) {
@@ -153,36 +158,36 @@ export default function Demo() {
   const startHoldingCounter = async () => {
     setIsHolding(true);
     isHoldingRef.current = true;
-    
+
     // Function to update counter during hold
     const updateCounterDuringHold = async () => {
       if (!isHoldingRef.current) return;
-      
+
       // Optimistically update local count for better UX
-      setClickCount(prevCount => {
+      setClickCount((prevCount) => {
         const newCount = prevCount + 1;
         // Check for milestone
         checkAndCelebrateMilestone(newCount);
         return newCount;
       });
-      
+
       // Trigger haptic feedback
       triggerHapticFeedback();
       // Animate the counter
       countAnimationControls.start({
         scale: [1, 1.2, 1],
         rotateX: [0, 15, 0],
-        transition: { duration: 0.2 } // Faster animation
+        transition: { duration: 0.2 }, // Faster animation
       });
-      
+
       try {
-        const response = await fetch('/api/clicks', {
-          method: 'POST',
+        const response = await fetch("/api/clicks", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
-        
+
         if (response.ok) {
           // Get the real count from the server
           const data = await response.json();
@@ -191,25 +196,25 @@ export default function Demo() {
           checkAndCelebrateMilestone(data.count);
         } else {
           // If server request fails, revert the count
-          setClickCount(prevCount => prevCount - 1);
-          console.error('Failed to update click count');
+          setClickCount((prevCount) => prevCount - 1);
+          console.error("Failed to update click count");
         }
       } catch (error) {
         // If there's an error, revert the count
-        setClickCount(prevCount => prevCount - 1);
-        console.error('Error updating click count:', error);
+        setClickCount((prevCount) => prevCount - 1);
+        console.error("Error updating click count:", error);
       }
-      
+
       // Schedule next update if still holding - faster updates (200ms instead of 300ms)
       if (isHoldingRef.current) {
         holdTimerRef.current = setTimeout(updateCounterDuringHold, 180);
       }
     };
-    
+
     // Start the hold update cycle
     updateCounterDuringHold();
   };
-  
+
   const stopHoldingCounter = () => {
     setIsHolding(false);
     isHoldingRef.current = false;
@@ -218,7 +223,7 @@ export default function Demo() {
       holdTimerRef.current = null;
     }
   };
-  
+
   // Clean up any timers on unmount
   useEffect(() => {
     return () => {
@@ -237,7 +242,7 @@ export default function Demo() {
   const handleComingSoonClick = async () => {
     // Prevent multiple rapid clicks
     if (isLoading) return;
-    
+
     setIsLoading(true);
     // Optimistically update local count for better UX
     const newCount = clickCount + 1;
@@ -250,17 +255,17 @@ export default function Demo() {
     countAnimationControls.start({
       scale: [1, 1.2, 1],
       rotateX: [0, 15, 0],
-      transition: { duration: 0.2 } // Faster animation
+      transition: { duration: 0.2 }, // Faster animation
     });
-    
+
     try {
-      const response = await fetch('/api/clicks', {
-        method: 'POST',
+      const response = await fetch("/api/clicks", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-      
+
       if (response.ok) {
         // Get the real count from the server
         const data = await response.json();
@@ -269,13 +274,13 @@ export default function Demo() {
         checkAndCelebrateMilestone(data.count);
       } else {
         // If server request fails, revert the count
-        setClickCount(prevCount => prevCount - 1);
-        console.error('Failed to update click count');
+        setClickCount((prevCount) => prevCount - 1);
+        console.error("Failed to update click count");
       }
     } catch (error) {
       // If there's an error, revert the count
-      setClickCount(prevCount => prevCount - 1);
-      console.error('Error updating click count:', error);
+      setClickCount((prevCount) => prevCount - 1);
+      console.error("Error updating click count:", error);
     } finally {
       setIsLoading(false);
     }
@@ -284,27 +289,27 @@ export default function Demo() {
   // Function for vibe app button clicks
   const handleAppButtonClick = async (appName: string) => {
     // Update local state to show animation
-    setShowingAppClick(prev => ({...prev, [appName]: true}));
-    
+    setShowingAppClick((prev) => ({ ...prev, [appName]: true }));
+
     // Get current global click count
     const currentGlobalCount = clickCount;
     const newCount = currentGlobalCount + 1;
-    
+
     // Update global click count (optimistic update)
     setClickCount(newCount);
-    
+
     // Also update the app-specific display counters to match the global count
-    setAppClicks(prev => {
-      const updated = {...prev};
-      appScreenshots.forEach(app => {
+    setAppClicks((prev) => {
+      const updated = { ...prev };
+      appScreenshots.forEach((app) => {
         updated[app.name] = newCount;
       });
       return updated;
     });
-    
+
     // Check for milestone with global count - only show confetti on multiples of 25
     checkAndCelebrateMilestone(newCount);
-    
+
     // Animate the counter with premium effects
     if (controlsMap.current[appName]) {
       controlsMap.current[appName].start({
@@ -313,59 +318,59 @@ export default function Demo() {
         scale: [0.5, 1.3, 1.2, 0.8],
         rotateX: [30, 0, 0, 15],
         filter: ["blur(4px)", "blur(0px)", "blur(0px)", "blur(3px)"],
-        transition: { 
-          duration: 1.5, 
+        transition: {
+          duration: 1.5,
           times: [0, 0.2, 0.7, 1],
-          ease: "easeOut" 
-        }
+          ease: "easeOut",
+        },
       });
     }
-    
+
     // Also animate the global counter
     countAnimationControls.start({
       scale: [1, 1.2, 1],
       rotateX: [0, 15, 0],
-      transition: { duration: 0.2 }
+      transition: { duration: 0.2 },
     });
-    
+
     // Trigger haptic feedback
     triggerHapticFeedback();
-    
+
     // Hide the number after animation completes
     setTimeout(() => {
-      setShowingAppClick(prev => ({...prev, [appName]: false}));
+      setShowingAppClick((prev) => ({ ...prev, [appName]: false }));
     }, 1500);
-    
+
     try {
       // Update global click count in database (no appName parameter)
-      const response = await fetch('/api/clicks', {
-        method: 'POST',
+      const response = await fetch("/api/clicks", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-      
+
       if (response.ok) {
         // Get the real count from the server
         const data = await response.json();
-        
+
         // Update both the global counter and all app-specific counters
         setClickCount(data.count);
-        setAppClicks(prev => {
-          const updated = {...prev};
-          appScreenshots.forEach(app => {
+        setAppClicks((prev) => {
+          const updated = { ...prev };
+          appScreenshots.forEach((app) => {
             updated[app.name] = data.count;
           });
           return updated;
         });
-        
+
         // Check for milestone with server count
         checkAndCelebrateMilestone(data.count);
       } else {
-        console.error('Failed to update click count');
+        console.error("Failed to update click count");
       }
     } catch (error) {
-      console.error('Error updating click count:', error);
+      console.error("Error updating click count:", error);
     }
   };
 
@@ -478,7 +483,7 @@ export default function Demo() {
   // Auto-scrolling for mobile carousel
   useEffect(() => {
     if (!isMobile || isPaused) return;
-    
+
     const startAutoScroll = () => {
       autoScrollTimerRef.current = setInterval(() => {
         setCurrentSlide((prev) => {
@@ -488,9 +493,9 @@ export default function Demo() {
         });
       }, 2000); // Change slide every 2 seconds (faster than before)
     };
-    
+
     startAutoScroll();
-    
+
     return () => {
       if (autoScrollTimerRef.current) {
         clearInterval(autoScrollTimerRef.current);
@@ -505,7 +510,7 @@ export default function Demo() {
     if (autoScrollTimerRef.current) {
       clearInterval(autoScrollTimerRef.current);
     }
-    
+
     setTimeout(() => {
       setIsPaused(false);
     }, 5000);
@@ -525,47 +530,55 @@ export default function Demo() {
   const handleCloseWaitlistModal = () => {
     setIsWaitlistModalOpen(false);
     // Reset form state when closing
-    setWaitlistEmail('');
-    setWaitlistPlatform('ios'); // Reset platform to default
-    setSubmitStatus('idle');
+    setWaitlistEmail("");
+    setWaitlistPlatform("ios"); // Reset platform to default
+    setSubmitStatus("idle");
   };
 
   const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!waitlistEmail || isSubmitting) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           email: waitlistEmail,
-          platform: waitlistPlatform 
+          platform: waitlistPlatform,
         }),
       });
-      
+
       if (response.ok) {
-        setSubmitStatus('success');
+        setSubmitStatus("success");
         // Clear email field after successful submission
-        setWaitlistEmail('');
+        setWaitlistEmail("");
         // Trigger confetti for successful signup
         triggerMilestoneConfetti();
-        
+
         // Close modal after a delay
         setTimeout(() => {
           handleCloseWaitlistModal();
         }, 3000);
       } else {
-        setSubmitStatus('error');
+        setSubmitStatus("error");
+        // Parse the error response to get the actual error message
+        try {
+          const errorData = await response.json();
+          setErrorMessage(errorData.error || "Something went wrong. Please try again.");
+        } catch (parseError) {
+          setErrorMessage("Something went wrong. Please try again.");
+        }
       }
     } catch (error) {
-      console.error('Error submitting to waitlist:', error);
-      setSubmitStatus('error');
+      console.error("Error submitting to waitlist:", error);
+      setErrorMessage("Network error. Please check your connection and try again.");
+      setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
     }
@@ -585,17 +598,32 @@ export default function Demo() {
       >
         {/* Hexagon pattern background */}
         <div className="absolute inset-0 z-0 overflow-hidden">
-          <svg 
+          <svg
             className="absolute top-0 right-0 w-full h-full opacity-2"
-            viewBox="0 0 100 100" 
+            viewBox="0 0 100 100"
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
-              <pattern id="superAppHexagonPattern" width="10" height="17.32" patternUnits="userSpaceOnUse" patternTransform="scale(1.8) rotate(15)">
-                <path d="M5,0 L10,8.66 L5,17.32 L0,8.66Z" fill="none" stroke="#64C6FF" strokeWidth="0.3"/>
+              <pattern
+                id="superAppHexagonPattern"
+                width="10"
+                height="17.32"
+                patternUnits="userSpaceOnUse"
+                patternTransform="scale(1.8) rotate(15)"
+              >
+                <path
+                  d="M5,0 L10,8.66 L5,17.32 L0,8.66Z"
+                  fill="none"
+                  stroke="#64C6FF"
+                  strokeWidth="0.3"
+                />
               </pattern>
             </defs>
-            <rect width="100%" height="100%" fill="url(#superAppHexagonPattern)" />
+            <rect
+              width="100%"
+              height="100%"
+              fill="url(#superAppHexagonPattern)"
+            />
           </svg>
         </div>
 
@@ -678,7 +706,7 @@ export default function Demo() {
                 Get it on Google Play
               </motion.a>
               */}
-              
+
               {/* Waitlist button with click counter */}
               <div className="flex items-center gap-3 w-full md:w-auto">
                 {/* Count badge on the left */}
@@ -690,7 +718,7 @@ export default function Demo() {
                 >
                   {clickCount}
                 </motion.div> */}
-                
+
                 <motion.button
                   onClick={handleOpenWaitlistModal}
                   disabled={isLoading}
@@ -731,7 +759,7 @@ export default function Demo() {
                 {appScreenshots[Math.floor(currentSlide / 2)].description}
               </p>
             </motion.div>
-            
+
             <div className="w-full max-w-[280px] overflow-hidden">
               <div
                 className="flex transition-transform duration-300 ease-out"
@@ -759,7 +787,9 @@ export default function Demo() {
                           height: app.isLandscape ? "170px" : "440px",
                         }}
                       >
-                        <div className={`relative w-full h-full overflow-hidden rounded-[32px] border-5 border-black`}>
+                        <div
+                          className={`relative w-full h-full overflow-hidden rounded-[32px] border-5 border-black`}
+                        >
                           <Image
                             src={image}
                             alt={`${app.name} Screenshot ${imageIndex + 1}`}
@@ -861,14 +891,14 @@ export default function Demo() {
       </motion.div>
 
       {/* Vibe Apps section without background */}
-      <motion.div 
+      <motion.div
         variants={containerVariants}
         className="container mx-auto py-10 px-4 md:px-8 m-4"
       >
         {!isMobile && (
           <>
             {/* Vibe Apps Header */}
-            <motion.div 
+            <motion.div
               variants={itemVariants}
               className="w-full max-w-7xl mx-auto my-8 mb-16 text-center"
             >
@@ -888,28 +918,43 @@ export default function Demo() {
                   variants={cardVariants}
                   whileHover={{ y: -5, transition: { duration: 0.2 } }}
                   className={`rounded-2xl p-6 shadow-lg relative overflow-hidden group ${
-                    app.name === "SendAI Mobile" 
-                      ? "bg-gradient-to-r from-[#0BA8F0] to-[#0C91F1]" 
+                    app.name === "SendAI Mobile"
+                      ? "bg-gradient-to-r from-[#0BA8F0] to-[#0C91F1]"
                       : app.name === "Neptune Wallet"
                       ? "bg-gradient-to-r from-[#1C2027] to-[#2C333F]"
-                      : app.name === "Sendshot" 
+                      : app.name === "Sendshot"
                       ? "bg-gradient-to-r from-[#FFA844] to-[#FFBF44]"
                       : "bg-gradient-to-r from-[#9089FF] to-[#AAA6FD]"
                   }`}
                 >
                   {/* Hexagon pattern background */}
                   <div className="absolute inset-0 z-0 overflow-hidden transition-opacity duration-300">
-                    <svg 
+                    <svg
                       className="absolute top-0 right-0 w-full h-full opacity-[0.02] group-hover:opacity-10"
-                      viewBox="0 0 100 100" 
+                      viewBox="0 0 100 100"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <defs>
-                        <pattern id={`hexagonPattern-${appIndex}`} width="10" height="17.32" patternUnits="userSpaceOnUse" patternTransform="scale(1.2) rotate(15)">
-                          <path d="M5,0 L10,8.66 L5,17.32 L0,8.66Z" fill="none" stroke="#FFFFFF" strokeWidth="0.3"/>
+                        <pattern
+                          id={`hexagonPattern-${appIndex}`}
+                          width="10"
+                          height="17.32"
+                          patternUnits="userSpaceOnUse"
+                          patternTransform="scale(1.2) rotate(15)"
+                        >
+                          <path
+                            d="M5,0 L10,8.66 L5,17.32 L0,8.66Z"
+                            fill="none"
+                            stroke="#FFFFFF"
+                            strokeWidth="0.3"
+                          />
                         </pattern>
                       </defs>
-                      <rect width="100%" height="100%" fill={`url(#hexagonPattern-${appIndex})`} />
+                      <rect
+                        width="100%"
+                        height="100%"
+                        fill={`url(#hexagonPattern-${appIndex})`}
+                      />
                     </svg>
                   </div>
                   <div className="flex justify-between items-start mb-1 relative z-10">
@@ -928,15 +973,15 @@ export default function Demo() {
                           {clickCount}
                         </motion.div>
                       )}
-                      
+
                       {/* Interactive button with hover effect */}
                       <motion.button
                         data-app-button={app.name}
                         className="group text-xs bg-white/20 text-white px-3 py-1.5 rounded-full relative overflow-hidden backdrop-blur-sm min-w-[85px]"
-                        whileHover={{ 
+                        whileHover={{
                           scale: 1.05,
                           backgroundColor: "rgba(255, 255, 255, 0.3)",
-                          boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)"
+                          boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)",
                         }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleAppButtonClick(app.name)}
@@ -998,8 +1043,8 @@ export default function Demo() {
                   variants={cardVariants}
                   whileHover={{ y: -5, transition: { duration: 0.2 } }}
                   className={`rounded-2xl p-6 shadow-lg relative overflow-hidden group ${
-                    app.name === "Send Guys" 
-                      ? "bg-gradient-to-r from-[#00C978] to-[#00C9A7]" 
+                    app.name === "Send Guys"
+                      ? "bg-gradient-to-r from-[#00C978] to-[#00C9A7]"
                       : app.name === "Social Trading App"
                       ? "bg-gradient-to-r from-[#9089FF] to-[#AAA6FD]"
                       : "bg-[#262A33]"
@@ -1007,17 +1052,32 @@ export default function Demo() {
                 >
                   {/* Hexagon pattern background */}
                   <div className="absolute inset-0 z-0 overflow-hidden transition-opacity duration-300">
-                    <svg 
+                    <svg
                       className="absolute top-0 right-0 w-full h-full opacity-[0.02] group-hover:opacity-10"
-                      viewBox="0 0 100 100" 
+                      viewBox="0 0 100 100"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <defs>
-                        <pattern id={`hexagonPattern-row2-${appIndex}`} width="10" height="17.32" patternUnits="userSpaceOnUse" patternTransform="scale(1.2) rotate(15)">
-                          <path d="M5,0 L10,8.66 L5,17.32 L0,8.66Z" fill="none" stroke="#FFFFFF" strokeWidth="0.3"/>
+                        <pattern
+                          id={`hexagonPattern-row2-${appIndex}`}
+                          width="10"
+                          height="17.32"
+                          patternUnits="userSpaceOnUse"
+                          patternTransform="scale(1.2) rotate(15)"
+                        >
+                          <path
+                            d="M5,0 L10,8.66 L5,17.32 L0,8.66Z"
+                            fill="none"
+                            stroke="#FFFFFF"
+                            strokeWidth="0.3"
+                          />
                         </pattern>
                       </defs>
-                      <rect width="100%" height="100%" fill={`url(#hexagonPattern-row2-${appIndex})`} />
+                      <rect
+                        width="100%"
+                        height="100%"
+                        fill={`url(#hexagonPattern-row2-${appIndex})`}
+                      />
                     </svg>
                   </div>
                   <div className="flex justify-between items-start mb-1 relative z-10">
@@ -1036,15 +1096,15 @@ export default function Demo() {
                           {clickCount}
                         </motion.div>
                       )}
-                      
+
                       {/* Interactive button with hover effect */}
                       <motion.button
                         data-app-button={app.name}
                         className="group text-xs bg-white/20 text-white px-3 py-1.5 rounded-full relative overflow-hidden backdrop-blur-sm min-w-[85px]"
-                        whileHover={{ 
+                        whileHover={{
                           scale: 1.05,
                           backgroundColor: "rgba(255, 255, 255, 0.3)",
-                          boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)"
+                          boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)",
                         }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleAppButtonClick(app.name)}
@@ -1077,7 +1137,9 @@ export default function Demo() {
                               imageIndex === 0 ? "right" : "left"
                             }, #333A4A 40%, #1c2127 80%)`,
                             padding: "8px",
-                            transform: `rotate(${imageIndex === 0 ? -2 : 2}deg)`,
+                            transform: `rotate(${
+                              imageIndex === 0 ? -2 : 2
+                            }deg)`,
                             transformOrigin: "center center",
                             width: "85%",
                           }}
@@ -1095,7 +1157,13 @@ export default function Demo() {
                     </div>
                   ) : (
                     // Portrait mode (default)
-                    <div className={`flex ${app.name === "Social Trading App" ? "justify-center" : "justify-between"} gap-4`}>
+                    <div
+                      className={`flex ${
+                        app.name === "Social Trading App"
+                          ? "justify-center"
+                          : "justify-between"
+                      } gap-4`}
+                    >
                       {app.images.map((image, imageIndex) => (
                         <motion.div
                           key={`desktop-app-row2-${appIndex}-image-${imageIndex}`}
@@ -1107,7 +1175,9 @@ export default function Demo() {
                               imageIndex === 0 ? "bottom" : "top"
                             }, #333A4A 40%, #1c2127 80%)`,
                             padding: "8px",
-                            transform: `rotate(${imageIndex === 0 ? -5 : 5}deg)`,
+                            transform: `rotate(${
+                              imageIndex === 0 ? -5 : 5
+                            }deg)`,
                             transformOrigin: "center center",
                             width: "45%",
                           }}
@@ -1134,39 +1204,71 @@ export default function Demo() {
       {/* Waitlist Modal */}
       {isWaitlistModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} 
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ type: "spring", duration: 0.4 }}
             className="bg-[#1C2027] rounded-2xl p-6 md:p-8 w-full max-w-md border border-white/10 shadow-xl"
           >
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-white text-xl font-bold">Join Solana SuperApp Testflight</h3>
-              <button 
+              <h3 className="text-white text-xl font-bold">
+                Join Solana SuperApp Testflight
+              </h3>
+              <button
                 onClick={handleCloseWaitlistModal}
                 className="text-white/60 hover:text-white transition-colors"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
-            
-            {submitStatus === 'success' ? (
+
+            {submitStatus === "success" ? (
               <div className="text-center py-6">
                 <div className="text-green-400 text-6xl mx-auto mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-16 w-16 mx-auto"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
-                <h4 className="text-white text-xl font-medium mb-2">You're on the list!</h4>
-                <p className="text-white/70">Thank you for joining our waitlist. We'll keep you updated on the latest testflight updates.</p>
+                <h4 className="text-white text-xl font-medium mb-2">
+                  You're on the list!
+                </h4>
+                <p className="text-white/70">
+                  Thank you for joining our waitlist. We'll keep you updated on
+                  the latest testflight updates.
+                </p>
               </div>
             ) : (
               <form onSubmit={handleWaitlistSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-white/80 mb-1">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-white/80 mb-1"
+                  >
                     Email address
                   </label>
                   <input
@@ -1180,9 +1282,12 @@ export default function Demo() {
                     className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="platform" className="block text-sm font-medium text-white/80 mb-1">
+                  <label
+                    htmlFor="platform"
+                    className="block text-sm font-medium text-white/80 mb-1"
+                  >
                     Preferred Platform
                   </label>
                   <select
@@ -1192,41 +1297,89 @@ export default function Demo() {
                     onChange={(e) => setWaitlistPlatform(e.target.value)}
                     required
                     className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
-                    style={{ backgroundImage: "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E\")", backgroundPosition: "right 0.5rem center", backgroundRepeat: "no-repeat", backgroundSize: "1.5em 1.5em", paddingRight: "2.5rem" }}
+                    style={{
+                      backgroundImage:
+                        "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E\")",
+                      backgroundPosition: "right 0.5rem center",
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "1.5em 1.5em",
+                      paddingRight: "2.5rem",
+                    }}
                   >
-                    <option value="ios" className="bg-[#1C2027] text-white">iOS (Apple)</option>
-                    <option value="android" className="bg-[#1C2027] text-white">Android</option>
+                    <option value="ios" className="bg-[#1C2027] text-white">
+                      iOS (Apple)
+                    </option>
+                    <option value="android" className="bg-[#1C2027] text-white">
+                      Android
+                    </option>
                   </select>
                 </div>
-                
-                {submitStatus === 'error' && (
-                  <div className="text-red-400 text-sm font-medium">
-                    Something went wrong. Please try again.
+
+                {submitStatus === "error" && (
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-amber-400 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.268 16.5c-.77.833.192 2.5 1.732 2.5z"
+                        />
+                      </svg>
+                      <p className="text-amber-200 text-sm font-medium">
+                        {errorMessage || "Something went wrong. Please try again."}
+                      </p>
+                    </div>
                   </div>
                 )}
-                
+
                 <button
                   type="submit"
                   disabled={isSubmitting || !waitlistEmail}
                   className={`w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0BA8F0] to-[#0C91F1] text-white px-6 py-3 rounded-lg font-medium text-sm ${
-                    isSubmitting || !waitlistEmail ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
+                    isSubmitting || !waitlistEmail
+                      ? "opacity-70 cursor-not-allowed"
+                      : "hover:shadow-lg"
                   }`}
                 >
                   {isSubmitting ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Processing...
                     </>
                   ) : (
-                    'Join Waitlist'
+                    "Join Waitlist"
                   )}
                 </button>
-                
+
                 <p className="text-white/50 text-xs text-center mt-4">
-                  We'll keep you updated on the latest testflight updates and add you to the testing list.
+                  We'll keep you updated on the latest testflight updates and
+                  add you to the testing list.
                 </p>
               </form>
             )}

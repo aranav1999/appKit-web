@@ -21,6 +21,16 @@ export async function POST(request: Request) {
       ? platform.toLowerCase() 
       : 'ios'; // Default to iOS if invalid
 
+    // Check if email already exists in waitlist
+    const existingEntry = await db.select().from(waitlist).where(sql`email = ${email}`).limit(1);
+    
+    if (existingEntry.length > 0) {
+      return NextResponse.json(
+        { error: 'You are already on waitlist for this email, please try with another email' },
+        { status: 400 }
+      );
+    }
+
     // Insert email into waitlist table
     await db.insert(waitlist).values({
       email,

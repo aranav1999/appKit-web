@@ -8,6 +8,7 @@ import Hero from "@/components/Home";
 import MobileHero from "@/components/MobileHero";
 import Protocols from "@/components/Protocols";
 import ProtocolLogos from "@/components/ProtocolLogos";
+import Header from "@/components/Header";
 
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
@@ -29,6 +30,8 @@ export default function Home() {
   }, []);
 
   return (
+    <div>
+      <Header />
     <div className="w-full flex flex-col flex-grow">
       {/* Main Content */}
       <main className="flex-grow">
@@ -46,6 +49,7 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
+    </div>
     </div>
   );
 }

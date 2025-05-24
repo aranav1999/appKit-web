@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRightUp, DocumentAdd } from "@solar-icons/react/ssr";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -83,7 +84,10 @@ export default function Header() {
           target="_blank"
           className="bg-white text-black rounded-full px-6 py-2 font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg hover:bg-gray-100"
         >
-          Docs
+          <div className="flex items-center gap-2">
+            <ArrowRightUp className="w-4 h-4"/>
+            Docs
+          </div>
         </a>
       </div>
       <div className="md:hidden flex items-center space-x-4">

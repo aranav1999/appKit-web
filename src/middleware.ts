@@ -9,6 +9,11 @@ let initialized = false;
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
+  // Skip middleware for API routes to avoid Edge Runtime conflicts
+  if (request.nextUrl.pathname.startsWith('/api/')) {
+    return NextResponse.next();
+  }
+  
   // Run the schema check only once during initialization
   if (!initialized) {
     console.log('🚀 Running initial schema check...');
@@ -27,7 +32,10 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Run on specific paths (to avoid running too often)
+// Run on specific paths but exclude API routes
 export const config = {
-  matcher: '/api/:path*',
+  matcher: [
+    // Match all paths except API routes
+    '/((?!api/|_next/|_vercel|favicon.ico).*)'
+  ],
 } 

@@ -3,6 +3,9 @@ import { db, schema } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { uploadImage } from '@/lib/supabase';
 
+// Specify Node.js runtime
+export const runtime = 'nodejs';
+
 // GET /api/categories - Get all categories
 export async function GET() {
   try {

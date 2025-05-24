@@ -5,6 +5,9 @@ import { type NewApp } from '@/lib/db/schema';
 import { getApprovedAppsFromSheet, addAppToSheet } from '@/lib/sheets/sheets-service';
 import { sql } from 'drizzle-orm';
 
+// Specify Node.js runtime
+export const runtime = 'nodejs';
+
 // Direct upload to Supabase storage bypassing RLS
 async function uploadToStorage(file: File, path: string): Promise<string> {
   if (!file || !path) {
@@ -57,6 +60,9 @@ async function uploadToStorage(file: File, path: string): Promise<string> {
 // GET /api/apps - Get all approved apps from the sheet
 export async function GET() {
   try {
+    console.log('GET /api/apps - Starting request');
+    console.log('Database URL defined:', !!process.env.DATABASE_URL);
+    
     // Use the environment variable to determine if we should use sheets or database
     const useSheets = process.env.USE_SHEETS_FOR_APPS === 'true';
     
@@ -68,30 +74,38 @@ export async function GET() {
         return NextResponse.json(approvedApps);
       } catch (sheetError) {
         console.error('Error fetching from sheet, falling back to database:', sheetError);
-        // Fall back to database - handle case where is_shown might not exist
-        try {
-          // Try filtering by isShown first using raw SQL to handle missing column
-          const apps = await db.select().from(schema.apps).where(sql`"is_shown" = true`);
-          return NextResponse.json(apps);
-        } catch (dbError) {
-          console.error('Error with isShown filter, returning all apps:', dbError);
-          // If isShown filtering fails, just return all apps
-          const allApps = await db.select().from(schema.apps);
-          return NextResponse.json(allApps);
-        }
       }
-    } else {
-      console.log('Fetching apps from database');
-      try {
-        // Try to fetch only shown apps
-        const apps = await db.select().from(schema.apps).where(sql`"is_shown" = true`);
-        return NextResponse.json(apps);
-      } catch (error) {
-        console.error('Error with isShown filter, returning all apps:', error);
-        // If that fails (e.g., column doesn't exist), return all apps
-        const allApps = await db.select().from(schema.apps);
-        return NextResponse.json(allApps);
+    }
+    
+    // If we're here, either sheets are not enabled or sheet fetch failed
+    console.log('Fetching apps from database using raw SQL...');
+    
+    try {
+      // Use raw SQL to avoid schema mismatch issues
+      const result = await db.execute(sql`
+        SELECT * FROM apps
+      `);
+      
+      console.log(`Successfully fetched ${result.rows.length} apps`);
+      return NextResponse.json(result.rows);
+    } catch (dbError) {
+      console.error('Database query error:', dbError);
+      
+      // Mock response for development if database is unavailable
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Returning mock data for development');
+        return NextResponse.json([
+          {
+            id: 1,
+            name: 'Mock App',
+            description: 'This is a mock app returned when database is unavailable',
+            iconUrl: 'https://placehold.co/100',
+            category: 'Development',
+          }
+        ]);
       }
+      
+      throw dbError;
     }
   } catch (error) {
     console.error('Error fetching apps:', error);

@@ -4,6 +4,9 @@ import { db, schema } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import { deleteImage, uploadImage } from '@/lib/supabase';
 
+// Specify Node.js runtime
+export const runtime = 'nodejs';
+
 // GET /api/apps/:id - Get a specific app
 export async function GET(
   _request: NextRequest,

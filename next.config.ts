@@ -33,6 +33,9 @@ const nextConfig: NextConfig = {
     ],
   },
   /* other config options here */
+  experimental: {
+    serverExternalPackages: ['pg'],
+  },
 };
 
 export default nextConfig;
